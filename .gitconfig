@@ -1,0 +1,11 @@
+# This is Git's per-user configuration file.
+[user]
+# Please adapt and uncomment the following lines:
+#	name = pascalzh
+#	email = pascal@pascal.(none)
+    email = 1315521905@qq.com
+    name = PascalZh
+[core]
+    editor = vim
+[alias]
+    lslog = log --oneline --decorate --graph

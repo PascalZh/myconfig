@@ -1,0 +1,125 @@
+"
+" functions{{{
+func! ManageMyVimrcFiles()
+  vsplit $MYVIMRC
+  wincmd p
+  wincmd q
+  vsplit ~/.vimrc.mappings
+  wincmd h
+  split ~/.vimrc.bundles
+  wincmd l
+  split ~/.vimrc.appearance
+  1wincmd w
+endfunc
+" Allow to trigger background
+    function! ToggleBG()
+        let s:tbg = &background
+        " Inversion
+        if s:tbg == "dark"
+            set background=light
+        else
+            set background=dark
+        endif
+    endfunction
+" QuickfixToggle(){{{2
+let g:quickfix_is_open=0
+func! QuickfixToggle()
+    if g:quickfix_is_open
+        cclose
+        let g:quickfix_is_open = 0
+        execute s:quickfix_return_to_window . "wincmd w"
+    else
+        let s:quickfix_return_to_window=winnr()
+        copen
+        let g:quickfix_is_open = 1
+    endif
+endfunc
+"}}}
+    
+" }}}
+    " basic {{{1
+    nnoremap <tab> :bnext<cr>
+    nnoremap <S-tab> :bprevious<CR>
+    inoremap jk <ESC>
+    nnoremap <space> za
+
+" leader and , {{{1
+let mapleader=";"
+nnoremap <leader>ev :call ManageMyVimrcFiles()<cr>
+nnoremap <leader>bg :call ToggleBG()<CR>
+" normal: <leader>c+...:NERDCommenter
+nnoremap <leader>gg :Ack!<Space>
+nnoremap <leader>sv :wa<cr>:so $MYVIMRC<CR>
+nnoremap <silent> <leader>sw :FSHere<cr>
+nnoremap <leader><space> :nohlsearch<cr>
+nnoremap <leader>u :GundoToggle<cr>
+nnoremap ,e :call NERDTreeToggleAndMap_b_()<cr>
+nnoremap ,q :call QuickfixToggle()<cr>
+nnoremap ,t :TagbarToggle<cr>
+nnoremap ,c :ColorExplorerToggle<cr>
+ 
+" easymotion {{{1
+" do not use nnoremap and others like this.
+nmap <space>s <Plug>(easymotion-s)
+vmap <space>s <Plug>(easymotion-s)
+nmap <space>w <Plug>(easymotion-bd-w)
+vmap <space>w <Plug>(easymotion-bd-w)
+nmap <space>f <Plug>(easymotion-overwin-f)
+vmap <space>f <Plug>(easymotion-overwin-f)
+nmap <space>g <Plug>(easymotion-jumptoanywhere)
+vmap <space>g <Plug>(easymotion-jumptoanywhere)
+    " {{{1解决编辑中文文档的输入法切换（暂未解决）
+    "inoremap jk <ESC><S>
+    "nnoremap i i<S>
+    "nnoremap I I<S>
+    "nnoremap a a<S>
+    "nnoremap A A<S>
+    "nnoremap C C<S>
+    " c的问题还没有解决办法，不过也没什么必要
+    "nnoremap o o<S>
+    "nnoremap O O<S>
+    "nnoremap s s<S>
+    "nnoremap S S<S>
+
+    " window move and manipulation{{{1
+nnoremap <c-k> :resize+3<cr>
+nnoremap <c-j> :resize-3<cr>
+nnoremap <c-h> :vertical resize-3<cr>
+nnoremap <c-l> :vertical resize+3<cr>
+nnoremap H <C-w>h
+nnoremap L <C-w>l
+nnoremap J <C-w>j
+nnoremap K <C-w>k
+
+" other {{{1
+    " Yank from the cursor to the end of the line, to be consistent with C and D.
+    nnoremap Y y$
+
+" grep (TODO) {{{1
+
+" grep the words in the path where the file is located.
+"nnoremap <leader>g g@
+"vnoremap <leader>g :<c-u>call MyGrepFunc(visualmode())<cr>
+" toggle quickfix window
+
+"set opfunc=MyGrepFunc
+"func! MyGrepFunc(type)
+"    let saved_unnamed_register = @@
+
+"    if a:type ==# 'v' || a:type ==# 'V' || a:type ==# ''
+"        normal! `<v`>y
+"    elseif a:type ==# 'char'
+"        normal! `[v`]sy
+"    else
+"        return
+"    endif
+
+" version1: find in the files that have the same extension
+"    silent! execute "vimgrep /" . expand(@@) . "/gj *." . expand("%:e")
+
+"    copen
+"execute "normal! \<c-w>p"
+
+"    let @@ = saved_unnamed_register
+"endfunc
+" }}} 

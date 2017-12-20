@@ -1,0 +1,47 @@
+
+syntax on
+" gui {{{1
+if WINDOWS()
+    colorscheme solarized
+    set guifont=Ubuntu_Mono_derivative_Powerlin:h12:cANSI
+    set guifontwide=幼圆:h12
+endif
+" 字体设置方法，windows系统要用windows的命令行安装字体
+" 然后set guifont=*
+" 选择字体
+" 然后set guifont?就可以看到字体的名字了
+set number
+set relativenumber
+
+" Toggle Menu and Toolbar
+set guioptions-=m
+set guioptions-=T
+set guioptions-=l " do not show vertical scrollbar
+set guioptions-=L
+set guioptions-=r
+set guioptions-=R
+set guioptions-=b
+" }}}
+
+" (linux) console appearance {{{1
+if LINUX()&&!has('gui_running')
+  color solarized
+  set t_Co=256
+  " good colors: solarized, Revolution
+  " monofur for powerline is a good font.
+endif
+"  }}}
+
+" airline {{{1
+"这个是安装字体后 必须设置此项" 
+let g:airline_theme="atomic"
+let g:airline_powerline_fonts = 1   
+
+ "打开tabline功能,方便查看Buffer和切换,省去了minibufexpl插件
+ let g:airline#extensions#tabline#enabled = 1
+ let g:airline#extensions#tabline#buffer_nr_show = 1
+
+ " 关闭状态显示空白符号计数
+let g:airline#extensions#whitespace#enabled = 0
+let g:airline#extensions#whitespace#symbol = '!'
+" }}}
