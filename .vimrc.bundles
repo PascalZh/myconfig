@@ -29,7 +29,7 @@ let g:NERDTreeMapPreviewVSplit="gv"
 " rainbow parentheses {{{1
 augroup RainbowAugroup
     au!
-    au VimEnter * RainbowParenthesesToggle
+    au FileType cpp,c RainbowParenthesesToggle
     au Syntax * RainbowParenthesesLoadRound
     au Syntax * RainbowParenthesesLoadSquare
     au Syntax * RainbowParenthesesLoadBraces
@@ -63,9 +63,8 @@ let g:cpp_class_decl_highlight = 1
 let g:cpp_experimental_simple_template_highlight = 1
 "}}}
 " autopair {{{1
-au FileType cpp,c,vimscript let g:AutoPairsFlyMode=1
 " works in the insert mode
-let g:AutoPairsShortcutBackInsert='<leader>b'
+let g:AutoPairsShortcutJump='<leader>j'
 " }}}
 " gundo {{{1
 set backup

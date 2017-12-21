@@ -1,15 +1,34 @@
 "
-" functions{{{
+" functions and commands{{{
+func! s:WipeOutBuffer()
+  " when editing vimrc files
+  if bufnr('vimrc') != -1
+    tabclose
+    wa
+    silent execute "bw " . bufnr('vimrc.mappings')
+          \." ".bufnr('vimrc')
+          \." ".bufnr('vimrc.appearance')
+          \." ".bufnr('vimrc.bundles')
+    nnoremap J <C-W>j
+    nnoremap K <C-W>k
+    nnoremap H <C-W>h
+    nnoremap L <C-W>l
+  else
+    bw
+  endif
+endfunc
 func! ManageMyVimrcFiles()
-  vsplit $MYVIMRC
-  wincmd p
-  wincmd q
+  tabedit $MYVIMRC
   vsplit ~/.vimrc.mappings
   wincmd h
   split ~/.vimrc.bundles
   wincmd l
   split ~/.vimrc.appearance
   1wincmd w
+  nnoremap J <C-W>j:resize 999<CR>
+  nnoremap K <C-W>k:resize 999<CR>
+  nnoremap H <C-W>h:resize 999<CR>
+  nnoremap L <C-W>l:resize 999<CR>
 endfunc
 " Allow to trigger background
     function! ToggleBG()
@@ -27,15 +46,37 @@ func! QuickfixToggle()
     if g:quickfix_is_open
         cclose
         let g:quickfix_is_open = 0
-        execute s:quickfix_return_to_window . "wincmd w"
     else
-        let s:quickfix_return_to_window=winnr()
-        copen
+        botright copen
         let g:quickfix_is_open = 1
     endif
 endfunc
 "}}}
-    
+    " Shell command {{{2
+    function! s:RunShellCommand(cmdline)
+        botright new
+
+        setlocal buftype=nofile
+        setlocal bufhidden=delete
+        setlocal nobuflisted
+        setlocal noswapfile
+        setlocal nowrap
+        setlocal filetype=shell
+        setlocal syntax=shell
+
+        call setline(1, a:cmdline)
+        call setline(2, substitute(a:cmdline, '.', '=', 'g'))
+        execute 'silent $read !' . escape(a:cmdline, '%#')
+        normal! gg
+        put! ='Press q to quit.'
+        setlocal nomodifiable
+        nmap <buffer> q :bd<cr>:wincmd p<cr>
+        1
+    endfunction
+
+    command! -complete=file -nargs=+ Shell call s:RunShellCommand(<q-args>)
+    " e.g. Grep current file for <search_term>: Shell grep -Hn <search_term> %
+    " }}}
 " }}}
     " basic {{{1
     nnoremap <tab> :bnext<cr>
@@ -45,14 +86,17 @@ endfunc
 
 " leader and , {{{1
 let mapleader=";"
+nnoremap <leader>a :Ack!<Space>
 nnoremap <leader>ev :call ManageMyVimrcFiles()<cr>
 nnoremap <leader>bg :call ToggleBG()<CR>
 " normal: <leader>c+...:NERDCommenter
-nnoremap <leader>gg :Ack!<Space>
-nnoremap <leader>sv :wa<cr>:so $MYVIMRC<CR>
-nnoremap <silent> <leader>sw :FSHere<cr>
+nnoremap <leader>sv :wa<CR>:so $MYVIMRC<CR>
+nnoremap <leader>sw :FSHere<cr>
+nnoremap <leader>sh :Shell<Space>
 nnoremap <leader><space> :nohlsearch<cr>
 nnoremap <leader>u :GundoToggle<cr>
+" wipeout the buffer, don't apply it in other special window.
+nnoremap <leader>q :call <SID>WipeOutBuffer()<cr>
 nnoremap ,e :call NERDTreeToggleAndMap_b_()<cr>
 nnoremap ,q :call QuickfixToggle()<cr>
 nnoremap ,t :TagbarToggle<cr>
@@ -64,10 +108,10 @@ nmap <space>s <Plug>(easymotion-s)
 vmap <space>s <Plug>(easymotion-s)
 nmap <space>w <Plug>(easymotion-bd-w)
 vmap <space>w <Plug>(easymotion-bd-w)
-nmap <space>f <Plug>(easymotion-overwin-f)
-vmap <space>f <Plug>(easymotion-overwin-f)
-nmap <space>g <Plug>(easymotion-jumptoanywhere)
-vmap <space>g <Plug>(easymotion-jumptoanywhere)
+nmap <space>g <Plug>(easymotion-overwin-f)
+vmap <space>g <Plug>(easymotion-overwin-f)
+nmap <space>j <Plug>(easymotion-jumptoanywhere)
+vmap <space>j <Plug>(easymotion-jumptoanywhere)
     " {{{1解决编辑中文文档的输入法切换（暂未解决）
     "inoremap jk <ESC><S>
     "nnoremap i i<S>

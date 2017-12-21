@@ -111,8 +111,9 @@ set cursorline
 set cursorcolumn
 set ruler
 
-"set cmdheight=2
+set cmdheight=2
 set showcmd
+set laststatus=2
 set more
 
 set backspace=indent,eol,start
