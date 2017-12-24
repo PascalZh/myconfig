@@ -23,8 +23,8 @@ set guioptions-=R
 set guioptions-=b
 " }}}
 
-" (linux) console appearance {{{1
-if LINUX()&&!has('gui_running')
+"  console appearance {{{1
+if !has('gui_running')
   color solarized
   set t_Co=256
   " good colors: solarized, Revolution

@@ -29,7 +29,7 @@ let g:NERDTreeMapPreviewVSplit="gv"
 " rainbow parentheses {{{1
 augroup RainbowAugroup
     au!
-    au FileType cpp,c RainbowParenthesesToggle
+    au FileType lisp RainbowParenthesesToggle
     au Syntax * RainbowParenthesesLoadRound
     au Syntax * RainbowParenthesesLoadSquare
     au Syntax * RainbowParenthesesLoadBraces
@@ -57,39 +57,43 @@ let g:rbpt_max = 16
 let g:rbpt_loadcmd_toggle = 0
 " }}}
 " cpp-enhanced-hl{{{1
+if LINUX()
 let g:cpp_class_scope_highlight = 1
 let g:cpp_member_variable_highlight = 1
 let g:cpp_class_decl_highlight = 1
 let g:cpp_experimental_simple_template_highlight = 1
+endif
 "}}}
 " autopair {{{1
 " works in the insert mode
 let g:AutoPairsShortcutJump='<leader>j'
+let g:AutoPairsShortcutBackInsert='<leader>b'
 " }}}
-" gundo {{{1
-set backup
-if has('persistent_undo')
-  set undodir='~/.undodir/'
-  set undofile
-  set undolevels=1000
-  set undoreload=10000
-endif
+" gundo(todo) {{{1
+"set backup
+"if has('persistent_undo')
+  "set undodir='~/.vimundodir/'
+  "set undofile
+  "set undolevels=1000
+  "set undoreload=10000
+"endif
 let g:gundo_width=78
 " }}}
-" indent-guides{{{1
-let g:indent_guides_guide_size=1
-let g:indent_guides_indent_levels=2
-let g:indent_guides_space_guides=1
-let g:indent_guides_exclude_filetypes=['help', 'nerdtree', 'undo']
-augroup indent_guides_my_group
-  au!
-  au FileType vimscript,c,cpp IndentGuidesEnable
-augroup END
-" }}}
+ "indent-guides{{{1
+"let g:indent_guides_guide_size=1
+"let g:indent_guides_space_guides=1
+"let g:indent_guides_exclude_filetypes=['help', 'nerdtree', 'undo','ColorExplorer']
+"let g:indent_guides_start_level=2
+"augroup indent_guides_my_group
+  "au!
+  "au FileType vimscript,c,cpp IndentGuidesEnable
+"augroup END
+ "}}}
 " multiple-cursors{{{1
 let g:multi_cursor_insert_maps={'j':1, ';':1}
 " }}}
 "  ack.vim {{{1
+if has('perl')
 let g:ack_mappings = {
       \"t":"<C-W><CR><C-W>T" ,
       \"gt":"<C-W><CR><C-W>TgT<C-W>j" ,
@@ -99,3 +103,4 @@ let g:ack_mappings = {
       \"gs":"<C-W><CR><C-W>K<C-W>b" ,
       \"v":"<C-W><CR><C-W>H<C-W>b<C-W>J<C-W>t" ,
       \"gv":"<C-W><CR><C-W>H<C-W>b<C-W>J" }
+endif

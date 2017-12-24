@@ -13,6 +13,8 @@ func! s:WipeOutBuffer()
     nnoremap K <C-W>k
     nnoremap H <C-W>h
     nnoremap L <C-W>l
+  elseif winnr('$')==1
+    quit
   else
     bw
   endif
@@ -82,11 +84,12 @@ endfunc
     nnoremap <tab> :bnext<cr>
     nnoremap <S-tab> :bprevious<CR>
     inoremap jk <ESC>
-    nnoremap <space> za
 
 " leader and , {{{1
 let mapleader=";"
+if has('perl')
 nnoremap <leader>a :Ack!<Space>
+endif
 nnoremap <leader>ev :call ManageMyVimrcFiles()<cr>
 nnoremap <leader>bg :call ToggleBG()<CR>
 " normal: <leader>c+...:NERDCommenter
@@ -97,9 +100,12 @@ nnoremap <leader><space> :nohlsearch<cr>
 nnoremap <leader>u :GundoToggle<cr>
 " wipeout the buffer, don't apply it in other special window.
 nnoremap <leader>q :call <SID>WipeOutBuffer()<cr>
+nnoremap <leader>f za
 nnoremap ,e :call NERDTreeToggleAndMap_b_()<cr>
 nnoremap ,q :call QuickfixToggle()<cr>
+if LINUX()
 nnoremap ,t :TagbarToggle<cr>
+endif
 nnoremap ,c :ColorExplorerToggle<cr>
  
 " easymotion {{{1

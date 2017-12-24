@@ -23,11 +23,15 @@ endif
 set encoding=utf-8
 set fileencoding=utf-8
 " tab will be converted to 4 spaces.
-set tabstop=2
-set softtabstop=2
-set shiftwidth=2
+set tabstop=4
+set softtabstop=4
+set shiftwidth=4
 set expandtab
 set smarttab
+au FileType vimscript set softtabstop=2 |
+						\set shiftwidth=2 |
+						\set expandtab |
+						\set smarttab
 
 " machine-special {{{1
 " I don't use NutStore for syncing my vimrc anymore.
@@ -36,7 +40,7 @@ set smarttab
 "command! ReadVIMRCFromNutStore call ReadVIMRCFromNutStore()
 if WINDOWS()
     " filetype: asm
-    au BufRead *.asm set filetype=masm
+    au BufRead *.asm setlocal filetype=masm
         " 上面那个等号不知道为啥两边加了空格后就出问题了
 
     autocmd VimEnter * cd $HOME\projects
@@ -108,7 +112,7 @@ set nowrap
 set textwidth=0
 
 set cursorline
-set cursorcolumn
+set nocursorcolumn
 set ruler
 
 set cmdheight=2
@@ -130,9 +134,7 @@ set smartcase
 
 " list mode
 set list
-set listchars=tab:>\ ,eol:$,trail:*,extends:#
-
-set noswapfile
+set listchars=tab:\ \ ,eol:$,trail:*,extends:#
 
 set scrolloff=5                 " Minimum lines to keep above and below cursor
 
@@ -156,7 +158,8 @@ Plug 'altercation/vim-colors-solarized'
 " Edit
 Plug 'easymotion/vim-easymotion'
 Plug 'scrooloose/nerdtree'
-Plug 'kshenoy/vim-signature'
+"好像并没有什么用
+"Plug 'kshenoy/vim-signature'
 Plug 'sjl/gundo.vim'
 Plug 'terryma/vim-multiple-cursors'
 
@@ -165,20 +168,26 @@ Plug 'terryma/vim-multiple-cursors'
 " Code
 Plug 'jiangmiao/auto-pairs'
 Plug 'kien/rainbow_parentheses.vim'
-Plug 'nathanaelkane/vim-indent-guides'
+" 这个插件效果太差已弃用
+"Plug 'nathanaelkane/vim-indent-guides'
 Plug 'scrooloose/nerdcommenter'
+if LINUX()
 Plug 'majutsushi/tagbar'
+endif
+if has('perl')
 Plug 'mileszs/ack.vim'
+endif
 
 " C/C++
-Plug 'octol/vim-cpp-enhanced-highlight'
 Plug 'derekwyatt/vim-fswitch'
 Plug 'Valloric/YouCompleteMe'
+Plug 'octol/vim-cpp-enhanced-highlight'
 
 " Game
 
 " My own plugin
 Plug 'PascalZh/vim-color-explorer'
+" Other
 
 call plug#end()
 source ~/.vimrc.bundles
