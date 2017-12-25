@@ -30,10 +30,10 @@ let g:NERDTreeMapPreviewVSplit="gv"
 augroup RainbowAugroup
     au!
     au FileType lisp RainbowParenthesesToggle
-    au Syntax * RainbowParenthesesLoadRound
-    au Syntax * RainbowParenthesesLoadSquare
-    au Syntax * RainbowParenthesesLoadBraces
-    au Syntax * RainbowParenthesesLoadChevrons
+    au FileType lisp RainbowParenthesesLoadRound
+    au FileType lisp RainbowParenthesesLoadSquare
+    au FileType lisp RainbowParenthesesLoadBraces
+    au FileType lisp RainbowParenthesesLoadChevrons
 augroup END
 let g:rbpt_colorpairs = [
     \ ['brown',       'RoyalBlue3'],
@@ -79,7 +79,7 @@ let g:AutoPairsShortcutBackInsert='<leader>b'
 "endif
 let g:gundo_width=78
 " }}}
- "indent-guides{{{1
+ "indent-guides(deleted){{{1
 "let g:indent_guides_guide_size=1
 "let g:indent_guides_space_guides=1
 "let g:indent_guides_exclude_filetypes=['help', 'nerdtree', 'undo','ColorExplorer']
@@ -93,7 +93,7 @@ let g:gundo_width=78
 let g:multi_cursor_insert_maps={'j':1, ';':1}
 " }}}
 "  ack.vim {{{1
-if has('perl')
+if LINUX()
 let g:ack_mappings = {
       \"t":"<C-W><CR><C-W>T" ,
       \"gt":"<C-W><CR><C-W>TgT<C-W>j" ,
@@ -104,3 +104,4 @@ let g:ack_mappings = {
       \"v":"<C-W><CR><C-W>H<C-W>b<C-W>J<C-W>t" ,
       \"gv":"<C-W><CR><C-W>H<C-W>b<C-W>J" }
 endif
+" Tabularize {{{1

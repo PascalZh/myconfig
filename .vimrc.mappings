@@ -1,101 +1,15 @@
-"
-" functions and commands{{{
-func! s:WipeOutBuffer()
-  " when editing vimrc files
-  if bufnr('vimrc') != -1
-    tabclose
-    wa
-    silent execute "bw " . bufnr('vimrc.mappings')
-          \." ".bufnr('vimrc')
-          \." ".bufnr('vimrc.appearance')
-          \." ".bufnr('vimrc.bundles')
-    nnoremap J <C-W>j
-    nnoremap K <C-W>k
-    nnoremap H <C-W>h
-    nnoremap L <C-W>l
-  elseif winnr('$')==1
-    quit
-  else
-    bw
-  endif
-endfunc
-func! ManageMyVimrcFiles()
-  tabedit $MYVIMRC
-  vsplit ~/.vimrc.mappings
-  wincmd h
-  split ~/.vimrc.bundles
-  wincmd l
-  split ~/.vimrc.appearance
-  1wincmd w
-  nnoremap J <C-W>j:resize 999<CR>
-  nnoremap K <C-W>k:resize 999<CR>
-  nnoremap H <C-W>h:resize 999<CR>
-  nnoremap L <C-W>l:resize 999<CR>
-endfunc
-" Allow to trigger background
-    function! ToggleBG()
-        let s:tbg = &background
-        " Inversion
-        if s:tbg == "dark"
-            set background=light
-        else
-            set background=dark
-        endif
-    endfunction
-" QuickfixToggle(){{{2
-let g:quickfix_is_open=0
-func! QuickfixToggle()
-    if g:quickfix_is_open
-        cclose
-        let g:quickfix_is_open = 0
-    else
-        botright copen
-        let g:quickfix_is_open = 1
-    endif
-endfunc
-"}}}
-    " Shell command {{{2
-    function! s:RunShellCommand(cmdline)
-        botright new
-
-        setlocal buftype=nofile
-        setlocal bufhidden=delete
-        setlocal nobuflisted
-        setlocal noswapfile
-        setlocal nowrap
-        setlocal filetype=shell
-        setlocal syntax=shell
-
-        call setline(1, a:cmdline)
-        call setline(2, substitute(a:cmdline, '.', '=', 'g'))
-        execute 'silent $read !' . escape(a:cmdline, '%#')
-        normal! gg
-        put! ='Press q to quit.'
-        setlocal nomodifiable
-        nmap <buffer> q :bd<cr>:wincmd p<cr>
-        1
-    endfunction
-
-    command! -complete=file -nargs=+ Shell call s:RunShellCommand(<q-args>)
-    " e.g. Grep current file for <search_term>: Shell grep -Hn <search_term> %
-    " }}}
-" }}}
-    " basic {{{1
-    nnoremap <tab> :bnext<cr>
-    nnoremap <S-tab> :bprevious<CR>
-    inoremap jk <ESC>
-
 " leader and , {{{1
 let mapleader=";"
-if has('perl')
-nnoremap <leader>a :Ack!<Space>
+if LINUX()
+  nnoremap <leader>a :Ack!<Space>
 endif
 nnoremap <leader>ev :call ManageMyVimrcFiles()<cr>
 nnoremap <leader>bg :call ToggleBG()<CR>
 " normal: <leader>c+...:NERDCommenter
 nnoremap <leader>sv :wa<CR>:so $MYVIMRC<CR>
 nnoremap <leader>sw :FSHere<cr>
-nnoremap <leader>sh :Shell<Space>
+nnoremap <leader>sh :terminal<cr>
+nnoremap <leader>t :Tabularize /
 nnoremap <leader><space> :nohlsearch<cr>
 nnoremap <leader>u :GundoToggle<cr>
 " wipeout the buffer, don't apply it in other special window.
@@ -104,10 +18,15 @@ nnoremap <leader>f za
 nnoremap ,e :call NERDTreeToggleAndMap_b_()<cr>
 nnoremap ,q :call QuickfixToggle()<cr>
 if LINUX()
-nnoremap ,t :TagbarToggle<cr>
+  nnoremap ,t :TagbarToggle<cr>
 endif
 nnoremap ,c :ColorExplorerToggle<cr>
- 
+
+" basic {{{1
+nnoremap <tab> :bnext<cr>
+nnoremap <S-tab> :bprevious<CR>
+inoremap jk <ESC>
+
 " easymotion {{{1
 " do not use nnoremap and others like this.
 nmap <space>s <Plug>(easymotion-s)
@@ -118,20 +37,20 @@ nmap <space>g <Plug>(easymotion-overwin-f)
 vmap <space>g <Plug>(easymotion-overwin-f)
 nmap <space>j <Plug>(easymotion-jumptoanywhere)
 vmap <space>j <Plug>(easymotion-jumptoanywhere)
-    " {{{1解决编辑中文文档的输入法切换（暂未解决）
-    "inoremap jk <ESC><S>
-    "nnoremap i i<S>
-    "nnoremap I I<S>
-    "nnoremap a a<S>
-    "nnoremap A A<S>
-    "nnoremap C C<S>
-    " c的问题还没有解决办法，不过也没什么必要
-    "nnoremap o o<S>
-    "nnoremap O O<S>
-    "nnoremap s s<S>
-    "nnoremap S S<S>
+" {{{1解决编辑中文文档的输入法切换（暂未解决）
+"inoremap jk <ESC><S>
+"nnoremap i i<S>
+"nnoremap I I<S>
+"nnoremap a a<S>
+"nnoremap A A<S>
+"nnoremap C C<S>
+" c的问题还没有解决办法，不过也没什么必要
+"nnoremap o o<S>
+"nnoremap O O<S>
+"nnoremap s s<S>
+"nnoremap S S<S>
 
-    " window move and manipulation{{{1
+" window move and manipulation{{{1
 nnoremap <c-k> :resize+3<cr>
 nnoremap <c-j> :resize-3<cr>
 nnoremap <c-h> :vertical resize-3<cr>
@@ -142,34 +61,141 @@ nnoremap J <C-w>j
 nnoremap K <C-w>k
 
 " other {{{1
-    " Yank from the cursor to the end of the line, to be consistent with C and D.
-    nnoremap Y y$
+" Yank from the cursor to the end of the line, to be consistent with C and D.
+nnoremap Y y$
 
 " grep (TODO) {{{1
 
 " grep the words in the path where the file is located.
-"nnoremap <leader>g g@
-"vnoremap <leader>g :<c-u>call MyGrepFunc(visualmode())<cr>
+nmap <leader>g g@
+vnoremap <leader>g :<c-u>call MyGrepFunc(visualmode())<cr>
 " toggle quickfix window
 
-"set opfunc=MyGrepFunc
-"func! MyGrepFunc(type)
-"    let saved_unnamed_register = @@
+set opfunc=MyGrepFunc
+func! MyGrepFunc(type)
+  if a:type ==# 'v' || a:type ==# 'V' || a:type ==# ''
+    normal! `<v`>"zy
+  elseif a:type ==# 'char'
+    normal! `[v`]"zy
+  else
+    return
+  endif
 
-"    if a:type ==# 'v' || a:type ==# 'V' || a:type ==# ''
-"        normal! `<v`>y
-"    elseif a:type ==# 'char'
-"        normal! `[v`]sy
-"    else
-"        return
-"    endif
-
-" version1: find in the files that have the same extension
-"    silent! execute "vimgrep /" . expand(@@) . "/gj *." . expand("%:e")
-
-"    copen
-"execute "normal! \<c-w>p"
-
-"    let @@ = saved_unnamed_register
-"endfunc
+  " version1: find in the files recursively
+  silent! execute "vimgrep /" . expand(@z) . "/gj **/*.*"
+  botright copen
+  "let g:quickfix_is_open=1
+  "map <buffer> q <C-W>q
+  "map <buffer> t <C-W><CR><C-W>T
+  "map <buffer> gt <C-W><CR><C-W>TgT<C-W>j
+  "map <buffer> o <CR>
+  "map <buffer> go <CR><C-W>j
+  "map <buffer> s <C-W><CR><C-W>K
+  "map <buffer> gs <C-W><CR><C-W>K<C-W>b
+  "map <buffer> v <C-W><CR><C-W>H<C-W>b<C-W>J<C-W>t
+  "map <buffer> gv <C-W><CR><C-W>H<C-W>b<C-W>J
+endfunc
 " }}} 
+" functions and commands{{{1
+" WipeOutBuffer(){{{2
+func! s:WipeOutBuffer()
+  " when editing vimrc files
+  if bufnr('vimrc') != -1
+    tabclose
+    wa
+    silent execute "bw " . bufnr('vimrc.mappings')
+          \." ".bufnr('vimrc')
+          \." ".bufnr('vimrc.appearance')
+          \." ".bufnr('vimrc.bundles')
+    "nnoremap J <C-W>j
+    "nnoremap K <C-W>k
+    "nnoremap H <C-W>h
+    "nnoremap L <C-W>l
+  elseif winnr('$')==1
+    quit
+  else
+    bw
+  endif
+endfunc
+" ManageMyVimrcFiles() {{{2
+func! ManageMyVimrcFiles()
+  tabedit $MYVIMRC
+  vsplit ~/.vimrc.mappings
+  wincmd h
+  split ~/.vimrc.bundles
+  wincmd l
+  split ~/.vimrc.appearance
+  1wincmd w
+  "nnoremap J <C-W>j:resize 999<CR>
+  "nnoremap K <C-W>k:resize 999<CR>
+  "nnoremap H <C-W>h:resize 999<CR>
+  "nnoremap L <C-W>l:resize 999<CR>
+endfunc
+" Allow to trigger background {{{2
+function! ToggleBG()
+  let s:tbg = &background
+  " Inversion
+  if s:tbg == "dark"
+    set background=light
+  else
+    set background=dark
+  endif
+endfunction
+" QuickfixToggle(){{{2
+au FileType qf map <buffer> q <C-W>q:let g:quickfix_is_open=0<cr>|
+      \  map <buffer> t <C-W><CR><C-W>T                    |
+      \  map <buffer> gt <C-W><CR><C-W>TgT<C-W>j           |
+      \  map <buffer> o <CR>                               |
+      \  map <buffer> go <CR><C-W>j                        |
+      \  map <buffer> s <C-W><CR><C-W>K                    |
+      \  map <buffer> gs <C-W><CR><C-W>K<C-W>b             |
+      \  map <buffer> v <C-W><CR><C-W>H<C-W>b<C-W>J<C-W>t  |
+      \  map <buffer> gv <C-W><CR><C-W>H<C-W>b<C-W>J       |
+      \let g:quickfix_is_open=1
+
+let g:quickfix_is_open=0
+func! QuickfixToggle()
+  if g:quickfix_is_open
+    cclose
+    let g:quickfix_is_open = 0
+  else
+    botright copen
+    "map <buffer> q <C-W>q
+    "map <buffer> t <C-W><CR><C-W>T
+    "map <buffer> gt <C-W><CR><C-W>TgT<C-W>j
+    "map <buffer> o <CR>
+    "map <buffer> go <CR><C-W>j
+    "map <buffer> s <C-W><CR><C-W>K
+    "map <buffer> gs <C-W><CR><C-W>K<C-W>b
+    "map <buffer> v <C-W><CR><C-W>H<C-W>b<C-W>J<C-W>t
+    "map <buffer> gv <C-W><CR><C-W>H<C-W>b<C-W>J
+    "let g:quickfix_is_open = 1
+  endif
+endfunc
+"}}}
+" Shell command {{{2
+"function! s:RunShellCommand(cmdline)
+"botright new
+
+"setlocal buftype=nofile
+"setlocal bufhidden=delete
+"setlocal nobuflisted
+"setlocal noswapfile
+"setlocal nowrap
+"setlocal filetype=shell
+"setlocal syntax=shell
+
+"call setline(1, a:cmdline)
+"call setline(2, substitute(a:cmdline, '.', '=', 'g'))
+"execute 'silent $read !' . escape(a:cmdline, '%#')
+"normal! gg
+"put! ='Press q to quit.'
+"setlocal nomodifiable
+"nmap <buffer> q :bd<cr>:wincmd p<cr>
+"1
+"endfunction
+
+"command! -complete=file -nargs=+ Shell call s:RunShellCommand(<q-args>)
+" e.g. Grep current file for <search_term>: Shell grep -Hn <search_term> %
+" }}}
+" }}}
