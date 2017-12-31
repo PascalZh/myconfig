@@ -15,6 +15,7 @@ nnoremap <leader>u :GundoToggle<cr>
 " wipeout the buffer, don't apply it in other special window.
 nnoremap <leader>q :call <SID>WipeOutBuffer()<cr>
 nnoremap <leader>f za
+nnoremap <leader>y :!ici <C-R><C-W><CR>
 nnoremap ,e :call NERDTreeToggleAndMap_b_()<cr>
 nnoremap ,q :call QuickfixToggle()<cr>
 if LINUX()
@@ -26,6 +27,8 @@ nnoremap ,c :ColorExplorerToggle<cr>
 nnoremap <tab> :bnext<cr>
 nnoremap <S-tab> :bprevious<CR>
 inoremap jk <ESC>
+vnoremap < <gv
+vnoremap > >gv
 
 " easymotion {{{1
 " do not use nnoremap and others like this.
@@ -33,8 +36,8 @@ nmap <space>s <Plug>(easymotion-s)
 vmap <space>s <Plug>(easymotion-s)
 nmap <space>w <Plug>(easymotion-bd-w)
 vmap <space>w <Plug>(easymotion-bd-w)
-nmap <space>g <Plug>(easymotion-overwin-f)
-vmap <space>g <Plug>(easymotion-overwin-f)
+nmap <space>of <Plug>(easymotion-overwin-f)
+vmap <space>of <Plug>(easymotion-overwin-f)
 nmap <space>j <Plug>(easymotion-jumptoanywhere)
 vmap <space>j <Plug>(easymotion-jumptoanywhere)
 " {{{1解决编辑中文文档的输入法切换（暂未解决）
@@ -73,6 +76,7 @@ vnoremap <leader>g :<c-u>call MyGrepFunc(visualmode())<cr>
 
 set opfunc=MyGrepFunc
 func! MyGrepFunc(type)
+  let s:store_temp_register=@z
   if a:type ==# 'v' || a:type ==# 'V' || a:type ==# ''
     normal! `<v`>"zy
   elseif a:type ==# 'char'
@@ -84,19 +88,12 @@ func! MyGrepFunc(type)
   " version1: find in the files recursively
   silent! execute "vimgrep /" . expand(@z) . "/gj **/*.*"
   botright copen
-  "let g:quickfix_is_open=1
-  "map <buffer> q <C-W>q
-  "map <buffer> t <C-W><CR><C-W>T
-  "map <buffer> gt <C-W><CR><C-W>TgT<C-W>j
-  "map <buffer> o <CR>
-  "map <buffer> go <CR><C-W>j
-  "map <buffer> s <C-W><CR><C-W>K
-  "map <buffer> gs <C-W><CR><C-W>K<C-W>b
-  "map <buffer> v <C-W><CR><C-W>H<C-W>b<C-W>J<C-W>t
-  "map <buffer> gv <C-W><CR><C-W>H<C-W>b<C-W>J
+  let @z=s:store_temp_register
 endfunc
 " }}} 
 " functions and commands{{{1
+command! Q q!
+command! Qa qa!
 " WipeOutBuffer(){{{2
 func! s:WipeOutBuffer()
   " when editing vimrc files
@@ -173,7 +170,7 @@ func! QuickfixToggle()
   endif
 endfunc
 "}}}
-" Shell command {{{2
+" Shell command(deleted) {{{2
 "function! s:RunShellCommand(cmdline)
 "botright new
 
