@@ -40,9 +40,9 @@ augroup END
 "command! ReadVIMRCFromNutStore call ReadVIMRCFromNutStore()
 if WINDOWS()
     " filetype: asm
-    au BufRead *.asm setlocal filetype=masm
     " 上面那个等号不知道为啥两边加了空格后就出问题了
 
+    au BufRead *.asm setlocal filetype=masm
     "autocmd VimEnter * cd $HOME\projects
     "set shell=git-bash.exe
     "set shellcmdflag=-c
@@ -54,7 +54,7 @@ if WINDOWS()
     "func! ReadVIMRCFromNutStore()
     "silent execute "!COPY " . shellescape("C:\\Users\\zsy\\Downloads\\我的坚果云\\.vimrc") . " " .  shellescape(expand($MYVIMRC))    
     "    endfunc
-    "}}} 
+    "}}}
 
 elseif LINUX()
     " sync vimrc file with nutstore(deleted) {{{3
@@ -176,24 +176,27 @@ endif
 
 " C/C++
 Plug 'derekwyatt/vim-fswitch'
-Plug 'Valloric/YouCompleteMe'
+if has('python3')
+    Plug 'Valloric/YouCompleteMe'
+endif
 Plug 'octol/vim-cpp-enhanced-highlight'
 
 " Game
 
 " My own plugin
 Plug 'PascalZh/vim-color-explorer'
+Plug 'PascalZh/my-syntax'
 " Other
 
 call plug#end()
-source ~/.vimrc.bundles
+source ~/.vimrc.bundle
 " }}}
 
 " Appearance
 so ~/.vimrc.appearance
 
 " Keys Mappings
-so ~/.vimrc.mappings
+so ~/.vimrc.mapping
 
 " Abbreviate {{{1
 iab @d <C-R>=strftime("20%y.%m.%d %X")<CR>
