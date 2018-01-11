@@ -1,0 +1,10 @@
+**/
+*
+!.vimrc
+!.vimrc.bundle
+!.vimrc.appearance
+!.vimrc.mapping
+!.gitignore
+!.gitconfig
+!.profile
+!.xmodmaprc
