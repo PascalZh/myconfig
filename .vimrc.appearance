@@ -2,9 +2,9 @@
 syntax on
 " gui {{{1
 if WINDOWS()
-  colorscheme solarized
-  set guifont=Ubuntu_Mono_derivative_Powerlin:h12:cANSI
-  set guifontwide=幼圆:h12
+    colorscheme solarized
+    set guifont=Ubuntu_Mono_derivative_Powerlin:h12:cANSI
+    set guifontwide=幼圆:h12
 endif
 " 字体设置方法，windows系统要用windows的命令行安装字体
 " 然后set guifont=*
@@ -25,10 +25,10 @@ set guioptions-=b
 
 "  console appearance {{{1
 if !has('gui_running')
-  color solarized
-  set t_Co=256
-  " good colors: solarized, Revolution
-  " monofur for powerline is a good font.
+    color solarized
+    set t_Co=256
+    " good colors: solarized, Revolution
+    " monofur for powerline is a good font.
 endif
 "  }}}
 

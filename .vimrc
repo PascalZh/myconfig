@@ -9,15 +9,15 @@ return has('macunix')
     endfunction
     silent function! LINUX()
     return has('unix') && !has('macunix') && !has('win32unix')
-  endfunction
-  silent function! WINDOWS()
-  return  (has('win32') || has('win64'))
+endfunction
+silent function! WINDOWS()
+return  (has('win32') || has('win64'))
 endfunction
 " format encoding and tab {{{1
 if LINUX()
-  set fileformat=unix
+    set fileformat=unix
 elseif WINDOWS()
-  set fileformat=dos
+    set fileformat=dos
 endif
 
 set encoding=utf-8
@@ -29,8 +29,8 @@ set shiftwidth=4
 set expandtab
 set smarttab
 augroup VariousTab
-  au!
-  au FileType masm set tabstop=8 softtabstop=8 shiftwidth=8
+    au!
+    au FileType masm set tabstop=8 softtabstop=8 shiftwidth=8
 augroup END
 
 " machine-special {{{1
@@ -39,34 +39,34 @@ augroup END
 "command! SaveVIMRCToNutStore call SaveVIMRCToNutStore()
 "command! ReadVIMRCFromNutStore call ReadVIMRCFromNutStore()
 if WINDOWS()
-  " filetype: asm
-  au BufRead *.asm setlocal filetype=masm
-  " 上面那个等号不知道为啥两边加了空格后就出问题了
+    " filetype: asm
+    au BufRead *.asm setlocal filetype=masm
+    " 上面那个等号不知道为啥两边加了空格后就出问题了
 
-  autocmd VimEnter * cd $HOME\projects
-  "set shell=git-bash.exe
-  "set shellcmdflag=-c
+    "autocmd VimEnter * cd $HOME\projects
+    "set shell=git-bash.exe
+    "set shellcmdflag=-c
 
-  " sync vimrc file with nutstore(deleted) {{{3
-  "    func! SaveVIMRCToNutStore()
-  "silent execute "!COPY " . shellescape(expand($MYVIMRC)) . " " . shellescape("C:\\Users\\zsy\\Downloads\\我的坚果云\\.vimrc")
-  "endfunc
-  "func! ReadVIMRCFromNutStore()
-  "silent execute "!COPY " . shellescape("C:\\Users\\zsy\\Downloads\\我的坚果云\\.vimrc") . " " .  shellescape(expand($MYVIMRC))    
-  "    endfunc
-  "}}} 
+    " sync vimrc file with nutstore(deleted) {{{3
+    "    func! SaveVIMRCToNutStore()
+    "silent execute "!COPY " . shellescape(expand($MYVIMRC)) . " " . shellescape("C:\\Users\\zsy\\Downloads\\我的坚果云\\.vimrc")
+    "endfunc
+    "func! ReadVIMRCFromNutStore()
+    "silent execute "!COPY " . shellescape("C:\\Users\\zsy\\Downloads\\我的坚果云\\.vimrc") . " " .  shellescape(expand($MYVIMRC))    
+    "    endfunc
+    "}}} 
 
 elseif LINUX()
-  " sync vimrc file with nutstore(deleted) {{{3
-  "   func! SaveVIMRCToNutStore()
-  "silent execute "!cp ~/.vimrc ~/Desktop/Nutstore/.vimrc"
-  "redraw!
-  "endfunc
-  "func! ReadVIMRCFromNutStore()
-  "silent execute "!cp ~/Desktop/Nutstore/.vimrc ~/.vimrc"
-  "redraw!
-  "   endfunc
-  " }}}
+    " sync vimrc file with nutstore(deleted) {{{3
+    "   func! SaveVIMRCToNutStore()
+    "silent execute "!cp ~/.vimrc ~/Desktop/Nutstore/.vimrc"
+    "redraw!
+    "endfunc
+    "func! ReadVIMRCFromNutStore()
+    "silent execute "!cp ~/Desktop/Nutstore/.vimrc ~/.vimrc"
+    "redraw!
+    "   endfunc
+    " }}}
 endif
 
 " other settings {{{1
@@ -79,11 +79,11 @@ set winminheight=0
 
 " always use yanking to paste in other place
 if has('clipboard')
-  if has('unnamedplus')  " When possible use + register for copy-paste
-    set clipboard=unnamed,unnamedplus
-  else         " On mac and Windows, use * register for copy-paste
-    set clipboard=unnamed
-  endif
+    if has('unnamedplus')  " When possible use + register for copy-paste
+        set clipboard=unnamed,unnamedplus
+    else         " On mac and Windows, use * register for copy-paste
+        set clipboard=unnamed
+    endif
 endif
 set viewoptions=folds,options,cursor,unix,slash
 set shortmess+=filmnrxoOtT          " Abbrev. of messages (avoids 'hit enter')
@@ -108,7 +108,7 @@ set smartindent
 
 " 设置了之后，vim就不会在一行文字超过一定长度后自动按Enter换行
 set whichwrap=b,s,h,l,<,>,[,]
-set nowrap
+set wrap
 set textwidth=0
 
 set cursorline
@@ -170,8 +170,8 @@ Plug 'godlygeek/tabular'
 " Integrations
 Plug 'scrooloose/nerdtree'
 if LINUX()
-  Plug 'majutsushi/tagbar'
-  Plug 'mileszs/ack.vim'
+    Plug 'majutsushi/tagbar'
+    Plug 'mileszs/ack.vim'
 endif
 
 " C/C++

@@ -6,21 +6,21 @@ autocmd BufEnter * if (winnr("$") == 1 && exists("b:NERDTreeType") &&b:NERDTreeT
 let NERDTreeShowBookmarks=1
 let NERDTreeShowHidden=1
 
-    "nnoremap <leader>e :call Map_b_ToMoveToBookmarks()<cr>
+"nnoremap <leader>e :call Map_b_ToMoveToBookmarks()<cr>
 
-    "func! Map_b_ToMoveToBookmarks()
-    "    NERDTreeFind
-    "    nmap <buffer> b gg:setlocal nohls<cr>/-Bookmarks-<cr>:normal! zu<cr>
-    "endfunc
+"func! Map_b_ToMoveToBookmarks()
+"    NERDTreeFind
+"    nmap <buffer> b gg:setlocal nohls<cr>/-Bookmarks-<cr>:normal! zu<cr>
+"endfunc
 
-    func! NERDTreeToggleAndMap_b_()
-        NERDTreeToggle
-        let str=expand('%')
-        if matchstr(str,'NERD_tree_') != ''
-            setlocal nocuc
-            nmap <buffer> b gg:setlocal nohls<cr>/-Bookmarks-<cr>:normal! ztj<cr>
-        endif
-    endfunc
+func! NERDTreeToggleAndMap_b_()
+    NERDTreeToggle
+    let str=expand('%')
+    if matchstr(str,'NERD_tree_') != ''
+        setlocal nocuc
+        nmap <buffer> b gg:setlocal nohls<cr>/-Bookmarks-<cr>:normal! ztj<cr>
+    endif
+endfunc
 let g:NERDTreeMapOpenSplit="s"
 let g:NERDTreeMapPreviewSplit="gs"
 let g:NERDTreeMapOpenVSplit="v"
@@ -36,32 +36,32 @@ augroup RainbowAugroup
     au FileType lisp RainbowParenthesesLoadChevrons
 augroup END
 let g:rbpt_colorpairs = [
-    \ ['brown',       'RoyalBlue3'],
-    \ ['Darkblue',    'SeaGreen3'],
-    \ ['darkgray',    'DarkOrchid3'],
-    \ ['darkgreen',   'firebrick3'],
-    \ ['darkcyan',    'RoyalBlue3'],
-    \ ['darkred',     'SeaGreen3'],
-    \ ['darkmagenta', 'DarkOrchid3'],
-    \ ['brown',       'firebrick3'],
-    \ ['gray',        'RoyalBlue3'],
-    \ ['black',       'SeaGreen3'],
-    \ ['darkmagenta', 'DarkOrchid3'],
-    \ ['Darkblue',    'firebrick3'],
-    \ ['darkgreen',   'RoyalBlue3'],
-    \ ['darkcyan',    'SeaGreen3'],
-    \ ['darkred',     'DarkOrchid3'],
-    \ ['red',         'firebrick3'],
-    \ ]
+            \ ['brown',       'RoyalBlue3'],
+            \ ['Darkblue',    'SeaGreen3'],
+            \ ['darkgray',    'DarkOrchid3'],
+            \ ['darkgreen',   'firebrick3'],
+            \ ['darkcyan',    'RoyalBlue3'],
+            \ ['darkred',     'SeaGreen3'],
+            \ ['darkmagenta', 'DarkOrchid3'],
+            \ ['brown',       'firebrick3'],
+            \ ['gray',        'RoyalBlue3'],
+            \ ['black',       'SeaGreen3'],
+            \ ['darkmagenta', 'DarkOrchid3'],
+            \ ['Darkblue',    'firebrick3'],
+            \ ['darkgreen',   'RoyalBlue3'],
+            \ ['darkcyan',    'SeaGreen3'],
+            \ ['darkred',     'DarkOrchid3'],
+            \ ['red',         'firebrick3'],
+            \ ]
 let g:rbpt_max = 16
 let g:rbpt_loadcmd_toggle = 0
 " }}}
 " cpp-enhanced-hl{{{1
 if LINUX()
-let g:cpp_class_scope_highlight = 1
-let g:cpp_member_variable_highlight = 1
-let g:cpp_class_decl_highlight = 1
-let g:cpp_experimental_simple_template_highlight = 1
+    let g:cpp_class_scope_highlight = 1
+    let g:cpp_member_variable_highlight = 1
+    let g:cpp_class_decl_highlight = 1
+    let g:cpp_experimental_simple_template_highlight = 1
 endif
 "}}}
 " autopair {{{1
@@ -72,36 +72,37 @@ let g:AutoPairsShortcutBackInsert='<leader>b'
 " gundo(todo) {{{1
 "set backup
 "if has('persistent_undo')
-  "set undodir='~/.vimundodir/'
-  "set undofile
-  "set undolevels=1000
-  "set undoreload=10000
+"set undodir='~/.vimundodir/'
+"set undofile
+"set undolevels=1000
+"set undoreload=10000
 "endif
 let g:gundo_width=78
 " }}}
- "indent-guides(deleted){{{1
+"indent-guides(deleted){{{1
 "let g:indent_guides_guide_size=1
 "let g:indent_guides_space_guides=1
 "let g:indent_guides_exclude_filetypes=['help', 'nerdtree', 'undo','ColorExplorer']
 "let g:indent_guides_start_level=2
 "augroup indent_guides_my_group
-  "au!
-  "au FileType vimscript,c,cpp IndentGuidesEnable
+"au!
+"au FileType vimscript,c,cpp IndentGuidesEnable
 "augroup END
- "}}}
+"}}}
 " multiple-cursors{{{1
 let g:multi_cursor_insert_maps={'j':1, ';':1}
 " }}}
 "  ack.vim {{{1
 if LINUX()
-let g:ack_mappings = {
-      \"t":"<C-W><CR><C-W>T" ,
-      \"gt":"<C-W><CR><C-W>TgT<C-W>j" ,
-      \"o":"<CR>" ,
-      \"go":"<CR><C-W>j" ,
-      \"s":"<C-W><CR><C-W>K" ,
-      \"gs":"<C-W><CR><C-W>K<C-W>b" ,
-      \"v":"<C-W><CR><C-W>H<C-W>b<C-W>J<C-W>t" ,
-      \"gv":"<C-W><CR><C-W>H<C-W>b<C-W>J" }
+    let g:ack_mappings = {
+                \"t":"<C-W><CR><C-W>T" ,
+                \"gt":"<C-W><CR><C-W>TgT<C-W>j" ,
+                \"o":"<CR>" ,
+                \"go":"<CR><C-W>j" ,
+                \"s":"<C-W><CR><C-W>K" ,
+                \"gs":"<C-W><CR><C-W>K<C-W>b" ,
+                \"v":"<C-W><CR><C-W>H<C-W>b<C-W>J<C-W>t" ,
+                \"gv":"<C-W><CR><C-W>H<C-W>b<C-W>J" }
+"    let g:ack_use_dispatch=1
 endif
 " Tabularize {{{1
