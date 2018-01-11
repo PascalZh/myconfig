@@ -4,7 +4,9 @@ syntax on
 if WINDOWS()
     colorscheme solarized
     set guifont=Ubuntu_Mono_derivative_Powerlin:h12:cANSI
-    set guifontwide=幼圆:h12
+    if exists('&guifontwide')
+        set guifontwide=幼圆:h12
+    endif
 endif
 " 字体设置方法，windows系统要用windows的命令行安装字体
 " 然后set guifont=*
