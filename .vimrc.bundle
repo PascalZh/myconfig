@@ -27,14 +27,16 @@ let g:NERDTreeMapOpenVSplit="v"
 let g:NERDTreeMapPreviewVSplit="gv"
 "}}}
 " rainbow parentheses {{{1
-augroup RainbowAugroup
-    au!
-    au FileType lisp RainbowParenthesesToggle
-    au FileType lisp RainbowParenthesesLoadRound
-    au FileType lisp RainbowParenthesesLoadSquare
-    au FileType lisp RainbowParenthesesLoadBraces
-    au FileType lisp RainbowParenthesesLoadChevrons
-augroup END
+"augroup RainbowAugroup
+    "au!
+    "au FileType lisp,scheme RainbowParenthesesToggle
+    "au FileType lisp,scheme RainbowParenthesesLoadRound
+    "au FileType lisp,scheme RainbowParenthesesLoadSquare
+    "au FileType lisp,scheme RainbowParenthesesLoadBraces
+    "au FileType lisp,scheme RainbowParenthesesLoadChevrons
+"augroup END
+au BufEnter * RainbowParenthesesToggleAll
+
 let g:rbpt_colorpairs = [
             \ ['brown',       'RoyalBlue3'],
             \ ['Darkblue',    'SeaGreen3'],
@@ -66,7 +68,7 @@ endif
 "}}}
 " autopair {{{1
 " works in the insert mode
-let g:AutoPairsShortcutJump='<leader>n'
+let g:AutoPairsShortcutJump='<leader>j'
 let g:AutoPairsShortcutBackInsert='<leader>b'
 " }}}
 " gundo(todo) {{{1

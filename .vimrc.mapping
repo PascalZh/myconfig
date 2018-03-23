@@ -10,10 +10,10 @@ nnoremap <leader>sw :FSHere<cr>
 nnoremap <leader>sh :terminal<cr>
 nnoremap <leader>t :Tabularize /
 nnoremap <leader><space> :nohlsearch<cr>
-nnoremap <leader>u :GundoToggle<cr>
 " wipeout the buffer, don't apply it in other special window.
 nnoremap <leader>q :call <SID>WipeOutBuffer()<cr>
 nnoremap <leader>f za
+nnoremap ,u :GundoToggle<cr>
 nnoremap ,e :call NERDTreeToggleAndMap_b_()<cr>
 nnoremap ,q :call QuickfixToggle()<cr>
 if LINUX()
@@ -31,17 +31,18 @@ vnoremap > >gv
 " easymotion(and space mappings) {{{1
 " do not use nnoremap and others like this.
 nnoremap <space><space> :
-nmap <space>f <Plug>(easymotion-s)
-xmap <space>f <Plug>(easymotion-s)
+"nmap <space>f <Plug>(easymotion-s)
+"xmap <space>f <Plug>(easymotion-s)
 
 nmap <space>w <Plug>(easymotion-bd-w)
 xmap <space>w <Plug>(easymotion-bd-w)
 
-nmap <space>of <Plug>(easymotion-overwin-f)
-xmap <space>of <Plug>(easymotion-overwin-f)
+nmap <space>f <Plug>(easymotion-overwin-f)
+xmap <space>f <Plug>(easymotion-overwin-f)
 
-nmap <space>j <Plug>(easymotion-jumptoanywhere)
-xmap <space>j <Plug>(easymotion-jumptoanywhere)
+"nmap <space>j <Plug>(easymotion-jumptoanywhere)
+"xmap <space>j <Plug>(easymotion-jumptoanywhere)
+
 
 " {{{1解决编辑中文文档的输入法切换（暂未解决）
 "inoremap jk <ESC><S>
@@ -85,10 +86,11 @@ func! MyGrepFunc(type)
         return
     endif
 
-    " find in the files recursively
-    silent! execute "vimgrep /" . expand(@z) . "/gj **/*.*"
     if LINUX()
         execute "Ack! " . expand(@z)
+    else if WINDOWS()
+        " find in the files recursively
+        silent! execute "vimgrep /" . expand(@z) . "/gj **/*.*"
     endif
 
     botright copen

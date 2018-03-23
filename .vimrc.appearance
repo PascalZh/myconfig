@@ -27,7 +27,7 @@ set guioptions-=b
 
 "  console appearance {{{1
 if !has('gui_running')
-    color solarized
+    colorscheme solarized
     set t_Co=256
     " good colors: solarized, Revolution
     " monofur for powerline is a good font.
@@ -36,7 +36,7 @@ endif
 
 " airline {{{1
 "这个是安装字体后 必须设置此项" 
-let g:airline_theme="atomic"
+let g:airline_theme="dark"
 let g:airline_powerline_fonts = 1   
 
 "打开tabline功能,方便查看Buffer和切换,省去了minibufexpl插件

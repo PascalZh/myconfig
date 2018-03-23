@@ -160,6 +160,7 @@ Plug 'kien/rainbow_parentheses.vim'
 
 
 " Edit
+Plug 'tpope/vim-surround'
 Plug 'easymotion/vim-easymotion'
 Plug 'sjl/gundo.vim'
 Plug 'terryma/vim-multiple-cursors'
