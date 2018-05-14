@@ -90,6 +90,7 @@ set shortmess+=filmnrxoOtT          " Abbrev. of messages (avoids 'hit enter')
 set timeoutlen=666
 set virtualedit=onemore
 set spell
+set spelllang=en,cjk
 set iskeyword-=.                    " '.' is an end of word designator
 set iskeyword-=#                    " '#' is an end of word designator
 set iskeyword-=-

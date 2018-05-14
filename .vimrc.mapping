@@ -24,7 +24,7 @@ nnoremap ,c :ColorExplorerToggle<cr>
 " basic {{{1
 nnoremap <tab> :bnext<cr>
 nnoremap <S-tab> :bprevious<CR>
-inoremap jk <ESC>
+inoremap kj <ESC>
 vnoremap < <gv
 vnoremap > >gv
 
@@ -40,8 +40,8 @@ xmap <space>w <Plug>(easymotion-bd-w)
 nmap <space>f <Plug>(easymotion-overwin-f)
 xmap <space>f <Plug>(easymotion-overwin-f)
 
-"nmap <space>j <Plug>(easymotion-jumptoanywhere)
-"xmap <space>j <Plug>(easymotion-jumptoanywhere)
+nmap <space>j <Plug>(easymotion-jumptoanywhere)
+xmap <space>j <Plug>(easymotion-jumptoanywhere)
 
 
 " {{{1解决编辑中文文档的输入法切换（暂未解决）
@@ -202,3 +202,9 @@ endfunc
 " e.g. Grep current file for <search_term>: Shell grep -Hn <search_term> %
 " }}}
 " }}}
+" for latex {{{1
+augroup  LaTeX
+    au!
+    au FileType latex imap ;a $
+    au FileType latex nmap <Space>c :w!<CR>!xelatex %<CR>
+augroup END
