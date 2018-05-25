@@ -23,11 +23,11 @@ endif
 set encoding=utf-8
 set fileencoding=utf-8
 " tab will be converted to 4 spaces.
-set tabstop=4
-set softtabstop=4
-set shiftwidth=4
+set tabstop=2
+"set softtabstop=2
+"set shiftwidth=2
 set expandtab
-set smarttab
+"set smarttab
 augroup VariousTab
     au!
     au FileType masm set tabstop=8 softtabstop=8 shiftwidth=8
