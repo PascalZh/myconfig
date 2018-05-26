@@ -1,0 +1,13 @@
+remove Control = Control_L
+remove Lock = Caps_Lock
+
+keysym Control_L = Caps_Lock NoSymbol Caps_Lock
+keysym Caps_Lock = Control_L
+
+add Control = Control_L
+add Lock = Caps_Lock
+
+keycode 34 = minus underscore
+keycode 35 = equal plus
+keycode 20 = bracketleft braceleft
+keycode 21 = bracketright braceright
