@@ -35,7 +35,10 @@ let g:NERDTreeMapPreviewVSplit="gv"
     "au FileType lisp,scheme RainbowParenthesesLoadBraces
     "au FileType lisp,scheme RainbowParenthesesLoadChevrons
 "augroup END
-au BufEnter * RainbowParenthesesToggleAll
+augroup RainbowParentheses_
+  au!
+  au BufEnter * RainbowParenthesesToggleAll
+augroup END
 
 let g:rbpt_colorpairs = [
             \ ['brown',       'RoyalBlue3'],
@@ -60,10 +63,10 @@ let g:rbpt_loadcmd_toggle = 0
 " }}}
 " cpp-enhanced-hl{{{1
 if LINUX()
-    let g:cpp_class_scope_highlight = 1
-    let g:cpp_member_variable_highlight = 1
-    let g:cpp_class_decl_highlight = 1
-    let g:cpp_experimental_simple_template_highlight = 1
+    "let g:cpp_class_scope_highlight = 1
+    "let g:cpp_member_variable_highlight = 1
+    "let g:cpp_class_decl_highlight = 1
+    "let g:cpp_experimental_simple_template_highlight = 1
 endif
 "}}}
 " autopair {{{1

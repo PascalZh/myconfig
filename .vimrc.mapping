@@ -5,6 +5,7 @@ nnoremap <leader>bg :call ToggleBG()<CR>
 " normal: <leader>c+...:NERDCommenter
 nmap <leader>g g@
 vnoremap <leader>g :<c-u>call MyGrepFunc(visualmode())<cr>
+nnoremap <leader>l :set list!<CR>
 nnoremap <leader>sv :wa<CR>:so $MYVIMRC<CR>
 nnoremap <leader>sw :FSHere<cr>
 nnoremap <leader>sh :terminal<cr>
@@ -20,11 +21,13 @@ if LINUX()
     nnoremap ,t :TagbarToggle<cr>
 endif
 nnoremap ,c :ColorExplorerToggle<cr>
+nnoremap ,r :RainbowParenthesesToggleAll<CR>
 
 " basic {{{1
 nnoremap <tab> :bnext<cr>
 nnoremap <S-tab> :bprevious<CR>
-inoremap kj <ESC>
+"inoremap kj <ESC>
+inoremap ;a <ESC>
 vnoremap < <gv
 vnoremap > >gv
 
@@ -43,6 +46,9 @@ xmap <space>f <Plug>(easymotion-overwin-f)
 nmap <space>j <Plug>(easymotion-jumptoanywhere)
 xmap <space>j <Plug>(easymotion-jumptoanywhere)
 
+nmap <space>mf :wa<cr>:!make flash<cr>
+nmap <space>mm :!make monitor<cr>
+
 
 " {{{1解决编辑中文文档的输入法切换（暂未解决）
 "inoremap jk <ESC><S>
@@ -58,10 +64,10 @@ xmap <space>j <Plug>(easymotion-jumptoanywhere)
 "nnoremap S S<S>
 
 " window move and manipulation{{{1
-nnoremap <c-k> :resize+3<cr>
-nnoremap <c-j> :resize-3<cr>
-nnoremap <c-h> :vertical resize-3<cr>
-nnoremap <c-l> :vertical resize+3<cr>
+nnoremap <c-k> :resize+1<cr>
+nnoremap <c-j> :resize-1<cr>
+nnoremap <c-h> :vertical resize-1<cr>
+nnoremap <c-l> :vertical resize+1<cr>
 nnoremap H <C-w>h
 nnoremap L <C-w>l
 nnoremap J <C-w>j
@@ -205,6 +211,7 @@ endfunc
 " for latex {{{1
 augroup  LaTeX
     au!
-    au FileType latex imap ;a $
+		"d means dollar.
+    au FileType latex imap ;d
     au FileType latex nmap <Space>c :w!<CR>!xelatex %<CR>
 augroup END

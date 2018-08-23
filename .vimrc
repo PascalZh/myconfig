@@ -22,11 +22,11 @@ endif
 
 set encoding=utf-8
 set fileencoding=utf-8
-" tab will be converted to 4 spaces.
+" tab will be converted to 2 spaces.
 set tabstop=2
 "set softtabstop=2
-"set shiftwidth=2
-set expandtab
+set shiftwidth=2
+"set expandtab
 "set smarttab
 augroup VariousTab
     au!
@@ -94,8 +94,12 @@ set spelllang=en,cjk
 set iskeyword-=.                    " '.' is an end of word designator
 set iskeyword-=#                    " '#' is an end of word designator
 set iskeyword-=-
+
 set foldmethod=marker
-set foldcolumn=0
+augroup FoldMethod_
+	au!
+	au FileType python set foldmethod=indent foldlevel=99
+augroup END
 
 set splitright
 set splitbelow
@@ -134,10 +138,10 @@ set ignorecase
 set smartcase
 
 " list mode
-set list
+set nolist
 set listchars=tab:\ \ ,eol:$,trail:*,extends:#
 
-set scrolloff=5                 " Minimum lines to keep above and below cursor
+set scrolloff=2                 " Minimum lines to keep above and below cursor
 
 " fuzzy find
 set noautochdir                       "Set the working directories to wherever the open file lives
@@ -173,27 +177,26 @@ Plug 'godlygeek/tabular'
 " Integrations
 Plug 'scrooloose/nerdtree'
 if LINUX()
-    Plug 'majutsushi/tagbar'
+    "Plug 'majutsushi/tagbar'
     Plug 'mileszs/ack.vim'
 endif
 
 " C/C++
 Plug 'derekwyatt/vim-fswitch'
 if has('python3')
-    Plug 'Valloric/YouCompleteMe'
+		Plug 'Valloric/YouCompleteMe'
 endif
-Plug 'octol/vim-cpp-enhanced-highlight'
+"Plug 'octol/vim-cpp-enhanced-highlight'
 
 " Game
 
 " My own plugin
 Plug 'PascalZh/vim-color-explorer'
-Plug 'PascalZh/my-syntax'
+"Plug 'PascalZh/my-syntax'
 " Other
 
 call plug#end()
-source ~/.vimrc.bundle
-" }}}
+so ~/.vimrc.bundle
 
 " Appearance
 so ~/.vimrc.appearance
