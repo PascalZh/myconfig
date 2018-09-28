@@ -1,10 +1,29 @@
-**/
-*
+# 要忽略某个文件夹则末尾需要/
+# **匹配任意多个中间目录
+
+/*
+
 !.vimrc
 !.vimrc.bundle
 !.vimrc.appearance
 !.vimrc.mapping
+
 !.gitignore
 !.gitconfig
+
 !myshrc.sh
+
 !.xmodmaprc
+
+!.tmux.conf.local.local
+
+# 这里应该在最前面加/，这样才表示项目根目录下的.vim目录
+# 不然可以表示任意某个文件夹下的.vim目录
+
+#!/.vim/suba_snippets/
+# 这里直接想创建suba_snippets这个反例，不过却失败了
+# 因为它的父目录已经被忽略了，应该使用下面的方法
+
+!/.vim/
+/.vim/*
+!/.vim/suba_snippets/*.snippets

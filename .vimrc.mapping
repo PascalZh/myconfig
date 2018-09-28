@@ -6,7 +6,7 @@ nnoremap <leader>bg :call ToggleBG()<CR>
 nmap <leader>g g@
 vnoremap <leader>g :<c-u>call MyGrepFunc(visualmode())<cr>
 nnoremap <leader>l :set list!<CR>
-nnoremap <leader>sv :wa<CR>:so $MYVIMRC<CR>
+"nnoremap <leader>sv :wa<CR>:so $MYVIMRC<CR>
 nnoremap <leader>sw :FSHere<cr>
 nnoremap <leader>sh :terminal<cr>
 nnoremap <leader>t :Tabularize /
@@ -14,11 +14,20 @@ nnoremap <leader><space> :nohlsearch<cr>
 " wipeout the buffer, don't apply it in other special window.
 nnoremap <leader>q :call <SID>WipeOutBuffer()<cr>
 nnoremap <leader>f za
+
+nnoremap <leader>n :ALENextWrap<cr>
+nnoremap <leader>p :ALEPreviousWrap<cr>
+nnoremap <leader>w :wa<cr>
+
+nnoremap <leader>u :Utl<cr>
+"nmap <Leader>uhs :let g:utl_cfg_hdl_scm_http=g:utl_cfg_hdl_scm_http_system<cr>
+"nmap <Leader>uhw :let g:utl_cfg_hdl_scm_http=g:utl_cfg_hdl_scm_http__wget<cr>
+
 nnoremap ,u :GundoToggle<cr>
 nnoremap ,e :call NERDTreeToggleAndMap_b_()<cr>
 nnoremap ,q :call QuickfixToggle()<cr>
 if LINUX()
-    nnoremap ,t :TagbarToggle<cr>
+  nnoremap ,t :TagbarToggle<cr>
 endif
 nnoremap ,c :ColorExplorerToggle<cr>
 nnoremap ,r :RainbowParenthesesToggleAll<CR>
@@ -30,7 +39,7 @@ nnoremap <S-tab> :bprevious<CR>
 inoremap ;a <ESC>
 vnoremap < <gv
 vnoremap > >gv
-
+" }}}
 " easymotion(and space mappings) {{{1
 " do not use nnoremap and others like this.
 nnoremap <space><space> :
@@ -40,6 +49,7 @@ nnoremap <space><space> :
 nmap <space>w <Plug>(easymotion-bd-w)
 xmap <space>w <Plug>(easymotion-bd-w)
 
+
 nmap <space>f <Plug>(easymotion-overwin-f)
 xmap <space>f <Plug>(easymotion-overwin-f)
 
@@ -48,6 +58,7 @@ xmap <space>j <Plug>(easymotion-jumptoanywhere)
 
 nmap <space>mf :wa<cr>:!make flash<cr>
 nmap <space>mm :!make monitor<cr>
+
 
 
 " {{{1解决编辑中文文档的输入法切换（暂未解决）
@@ -64,10 +75,10 @@ nmap <space>mm :!make monitor<cr>
 "nnoremap S S<S>
 
 " window move and manipulation{{{1
-nnoremap <c-k> :resize+1<cr>
-nnoremap <c-j> :resize-1<cr>
-nnoremap <c-h> :vertical resize-1<cr>
-nnoremap <c-l> :vertical resize+1<cr>
+nnoremap <C-k> :resize+1<cr>
+nnoremap <C-j> :resize-1<cr>
+nnoremap <C-h> :vertical resize-1<cr>
+nnoremap <C-l> :vertical resize+1<cr>
 nnoremap H <C-w>h
 nnoremap L <C-w>l
 nnoremap J <C-w>j
@@ -83,24 +94,24 @@ nnoremap Y y$
 
 set opfunc=MyGrepFunc
 func! MyGrepFunc(type)
-    let s:store_temp_register=@z
-    if a:type ==# 'v' || a:type ==# 'V' || a:type ==# ''
-        normal! `<v`>"zy
-    elseif a:type ==# 'char'
-        normal! `[v`]"zy
-    else
-        return
-    endif
+  let s:store_temp_register=@z
+  if a:type ==# 'v' || a:type ==# 'V' || a:type ==# ''
+    normal! `<v`>"zy
+  elseif a:type ==# 'char'
+    normal! `[v`]"zy
+  else
+    return
+  endif
 
-    if LINUX()
-        execute "Ack! " . expand(@z)
-    else if WINDOWS()
-        " find in the files recursively
-        silent! execute "vimgrep /" . expand(@z) . "/gj **/*.*"
-    endif
+  if LINUX()
+    execute "Ack! " . expand(@z)
+  else if WINDOWS()
+    " find in the files recursively
+    silent! execute "vimgrep /" . expand(@z) . "/gj **/*.*"
+  endif
 
-    botright copen
-    let @z=s:store_temp_register
+  botright copen
+  let @z=s:store_temp_register
 endfunc
 " }}}
 " functions and commands{{{1
@@ -108,78 +119,81 @@ command! Q q!
 command! Qa qa!
 " WipeOutBuffer(){{{2
 func! s:WipeOutBuffer()
-    " when editing vimrc files
-    if bufnr('vimrc') != -1
-        tabclose
-        wa
-        silent execute "bw " . bufnr('vimrc.mapping')
-                    \." ".bufnr('vimrc')
-                    \." ".bufnr('vimrc.appearance')
-                    \." ".bufnr('vimrc.bundle')
-        "nnoremap J <C-W>j
-        "nnoremap K <C-W>k
-        "nnoremap H <C-W>h
-        "nnoremap L <C-W>l
-    elseif winnr('$')==1
-        quit
-    else
-        bw
-    endif
+  " when editing vimrc files
+  if winnr('$')==1
+    quit
+  elseif bufnr('vimrc') != -1 && bufnr('vimrc.mapping') != -1 &&
+        \bufnr('vimrc.appearance') != -1 && bufnr('vimrc.bundle') != -1
+    wq
+    wq
+    wq
+    wq
+    silent execute "bw " . bufnr('vimrc.mapping')
+          \." ".bufnr('vimrc')
+          \." ".bufnr('vimrc.appearance')
+          \." ".bufnr('vimrc.bundle')
+    "nnoremap J <C-W>j
+    "nnoremap K <C-W>k
+    "nnoremap H <C-W>h
+    "nnoremap L <C-W>l
+  else
+    bw
+  endif
 endfunc
 " ManageMyVimrcFiles() {{{2
 func! ManageMyVimrcFiles()
-    tabedit $MYVIMRC
-    vsplit ~/.vimrc.mapping
-    wincmd h
-    split ~/.vimrc.bundle
-    wincmd l
-    split ~/.vimrc.appearance
-    1wincmd w
-    "nnoremap J <C-W>j:resize 999<CR>
-    "nnoremap K <C-W>k:resize 999<CR>
-    "nnoremap H <C-W>h:resize 999<CR>
-    "nnoremap L <C-W>l:resize 999<CR>
+  tabedit $MYVIMRC
+  vsplit ~/.vimrc.mapping
+  wincmd h
+  split ~/.vimrc.bundle
+  wincmd l
+  split ~/.vimrc.appearance
+  1wincmd w
+  "nnoremap J <C-W>j:resize 999<CR>
+  "nnoremap K <C-W>k:resize 999<CR>
+  "nnoremap H <C-W>h:resize 999<CR>
+  "nnoremap L <C-W>l:resize 999<CR>
 endfunc
 " Allow to trigger background {{{2
 function! ToggleBG()
-    let s:tbg = &background
-    " Inversion
-    if s:tbg == "dark"
-        set background=light
-    else
-        set background=dark
-    endif
+  let s:tbg = &background
+  " Inversion
+  if s:tbg == "dark"
+    set background=light
+  else
+    set background=dark
+  endif
 endfunction
 " QuickfixToggle(){{{2
 au FileType qf map <buffer> q <C-W>q:let g:quickfix_is_open=0<cr>|
-            \  map <buffer> t <C-W><CR><C-W>T                    |
-            \  map <buffer> gt <C-W><CR><C-W>TgT<C-W>j           |
-            \  map <buffer> o <CR>                               |
-            \  map <buffer> go <CR><C-W>j                        |
-            \  map <buffer> s <C-W><CR><C-W>K                    |
-            \  map <buffer> gs <C-W><CR><C-W>K<C-W>b             |
-            \  map <buffer> v <C-W><CR><C-W>H<C-W>b<C-W>J<C-W>t  |
-            \  map <buffer> gv <C-W><CR><C-W>H<C-W>b<C-W>J       |
-            \let g:quickfix_is_open=1
+      \  map <buffer> t <C-W><CR><C-W>T                    |
+      \  map <buffer> gt <C-W><CR><C-W>TgT<C-W>j           |
+      \  map <buffer> o <CR>                               |
+      \  map <buffer> go <CR><C-W>j                        |
+      \  map <buffer> s <C-W><CR><C-W>K                    |
+      \  map <buffer> gs <C-W><CR><C-W>K<C-W>b             |
+      \  map <buffer> v <C-W><CR><C-W>H<C-W>b<C-W>J<C-W>t  |
+      \  map <buffer> gv <C-W><CR><C-W>H<C-W>b<C-W>J       |
+      \let g:quickfix_is_open=1
 
 let g:quickfix_is_open=0
 func! QuickfixToggle()
-    if g:quickfix_is_open
-        cclose
-        let g:quickfix_is_open = 0
-    else
-        botright copen
-        "map <buffer> q <C-W>q
-        "map <buffer> t <C-W><CR><C-W>T
-        "map <buffer> gt <C-W><CR><C-W>TgT<C-W>j
-        "map <buffer> o <CR>
-        "map <buffer> go <CR><C-W>j
-        "map <buffer> s <C-W><CR><C-W>K
-        "map <buffer> gs <C-W><CR><C-W>K<C-W>b
-        "map <buffer> v <C-W><CR><C-W>H<C-W>b<C-W>J<C-W>t
-        "map <buffer> gv <C-W><CR><C-W>H<C-W>b<C-W>J
-        "let g:quickfix_is_open = 1
-    endif
+  if g:quickfix_is_open
+    cclose
+    let g:quickfix_is_open = 0
+  else
+    botright copen
+    "map <buffer> q <C-W>q
+    "map <buffer> t <C-W><CR><C-W>T
+    "map <buffer> gt <C-W><CR><C-W>TgT<C-W>j
+    "map <buffer> o <CR>
+    "map <buffer> go <CR><C-W>j
+    "map <buffer> s <C-W><CR><C-W>K
+    "map <buffer> gs <C-W><CR><C-W>K<C-W>b
+    "map <buffer> v <C-W><CR><C-W>H<C-W>b<C-W>J<C-W>t
+    "map <buffer> gv <C-W><CR><C-W>H<C-W>b<C-W>J
+    "let g:quickfix_is_open = 1
+  endif
 endfunc
 "}}}
 " Shell command(deleted) {{{2
@@ -210,8 +224,7 @@ endfunc
 " }}}
 " for latex {{{1
 augroup  LaTeX
-    au!
-		"d means dollar.
-    au FileType latex imap ;d
-    au FileType latex nmap <Space>c :w!<CR>!xelatex %<CR>
+  au!
+  "d means dollar.
+  au FileType latex imap ;d
 augroup END

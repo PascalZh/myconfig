@@ -7,6 +7,10 @@ if WINDOWS()
         set guifontwide=幼圆:h12
     endif
 endif
+
+set guifont=monofur\ for\ Powerline\ 12
+colorscheme dracula
+set background=light
 " 字体设置方法，windows系统要用windows的命令行安装字体
 " 然后set guifont=*
 " 选择字体
@@ -26,8 +30,8 @@ set guioptions-=b
 
 "  console appearance {{{1
 if !has('gui_running')
-    colorscheme solarized
-    set background=dark
+    colorscheme dracula
+    set background=light
 		"set t_Co=256
     " good colors: solarized, Revolution
     " monofur for powerline is a good font.

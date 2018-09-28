@@ -6,18 +6,18 @@ set nocompatible
 " identify platform {{{1
 silent function! OSX()
 return has('macunix')
-    endfunction
-    silent function! LINUX()
-    return has('unix') && !has('macunix') && !has('win32unix')
-endfunction
-silent function! WINDOWS()
-return  (has('win32') || has('win64'))
+		endfunction
+		silent function! LINUX()
+		return has('unix') && !has('macunix') && !has('win32unix')
+	endfunction
+	silent function! WINDOWS()
+	return  (has('win32') || has('win64'))
 endfunction
 " format encoding and tab {{{1
 if LINUX()
-    set fileformat=unix
+	set fileformat=unix
 elseif WINDOWS()
-    set fileformat=dos
+	set fileformat=dos
 endif
 
 set encoding=utf-8
@@ -26,11 +26,11 @@ set fileencoding=utf-8
 set tabstop=2
 "set softtabstop=2
 set shiftwidth=2
-"set expandtab
-"set smarttab
+set expandtab
+set smarttab
 augroup VariousTab
-    au!
-    au FileType masm set tabstop=8 softtabstop=8 shiftwidth=8
+	au!
+	au FileType masm set tabstop=8 softtabstop=8 shiftwidth=8
 augroup END
 
 " machine-special {{{1
@@ -38,35 +38,43 @@ augroup END
 " Instead, I use github to do it
 "command! SaveVIMRCToNutStore call SaveVIMRCToNutStore()
 "command! ReadVIMRCFromNutStore call ReadVIMRCFromNutStore()
+" WINDOWS {{{2
 if WINDOWS()
-    " filetype: asm
-    " 上面那个等号不知道为啥两边加了空格后就出问题了
+	" filetype: asm
+	" 上面那个等号不知道为啥两边加了空格后就出问题了
 
-    au BufRead *.asm setlocal filetype=masm
-    "autocmd VimEnter * cd $HOME\projects
-    "set shell=git-bash.exe
-    "set shellcmdflag=-c
+	au BufRead *.asm setlocal filetype=masm
+	"autocmd VimEnter * cd $HOME\projects
+	"set shell=git-bash.exe
+	"set shellcmdflag=-c
 
-    " sync vimrc file with nutstore(deleted) {{{3
-    "    func! SaveVIMRCToNutStore()
-    "silent execute "!COPY " . shellescape(expand($MYVIMRC)) . " " . shellescape("C:\\Users\\zsy\\Downloads\\我的坚果云\\.vimrc")
-    "endfunc
-    "func! ReadVIMRCFromNutStore()
-    "silent execute "!COPY " . shellescape("C:\\Users\\zsy\\Downloads\\我的坚果云\\.vimrc") . " " .  shellescape(expand($MYVIMRC))    
-    "    endfunc
-    "}}}
+	" sync vimrc file with nutstore(deleted) {{{3
+	"    func! SaveVIMRCToNutStore()
+	"silent execute "!COPY " . shellescape(expand($MYVIMRC)) . " " . shellescape("C:\\Users\\zsy\\Downloads\\我的坚果云\\.vimrc")
+	"endfunc
+	"func! ReadVIMRCFromNutStore()
+	"silent execute "!COPY " . shellescape("C:\\Users\\zsy\\Downloads\\我的坚果云\\.vimrc") . " " .  shellescape(expand($MYVIMRC))    
+	"    endfunc
+	"}}}
 
+" LINUX {{{2
 elseif LINUX()
-    " sync vimrc file with nutstore(deleted) {{{3
-    "   func! SaveVIMRCToNutStore()
-    "silent execute "!cp ~/.vimrc ~/Desktop/Nutstore/.vimrc"
-    "redraw!
-    "endfunc
-    "func! ReadVIMRCFromNutStore()
-    "silent execute "!cp ~/Desktop/Nutstore/.vimrc ~/.vimrc"
-    "redraw!
-    "   endfunc
-    " }}}
+	" sync vimrc file with nutstore(deleted) {{{3
+	"   func! SaveVIMRCToNutStore()
+	"silent execute "!cp ~/.vimrc ~/Desktop/Nutstore/.vimrc"
+	"redraw!
+	"endfunc
+	"func! ReadVIMRCFromNutStore()
+	"silent execute "!cp ~/Desktop/Nutstore/.vimrc ~/.vimrc"
+	"redraw!
+	"   endfunc
+  " Here are some bug-fixing things
+
+  " filetype of special file {{{3
+  augroup MY_GROUP_FILETYPE
+    au!
+    au BufRead .myshrc.local set ft=sh
+    au BufRead .tmux.conf* set ft=tmux
 endif
 
 " other settings {{{1
@@ -79,26 +87,26 @@ set winminheight=0
 
 " always use yanking to paste in other place
 if has('clipboard')
-    if has('unnamedplus')  " When possible use + register for copy-paste
-        set clipboard=unnamed,unnamedplus
-    else         " On mac and Windows, use * register for copy-paste
-        set clipboard=unnamed
-    endif
+	if has('unnamedplus')  " When possible use + register for copy-paste
+		set clipboard=unnamed,unnamedplus
+	else         " On mac and Windows, use * register for copy-paste
+		set clipboard=unnamed
+	endif
 endif
 set viewoptions=folds,options,cursor,unix,slash
 set shortmess+=filmnrxoOtT          " Abbrev. of messages (avoids 'hit enter')
 set timeoutlen=666
 set virtualedit=onemore
-set spell
+set nospell
 set spelllang=en,cjk
 set iskeyword-=.                    " '.' is an end of word designator
 set iskeyword-=#                    " '#' is an end of word designator
 set iskeyword-=-
 
 set foldmethod=marker
-augroup FoldMethod_
+augroup FoldMethod_MY_GROUP
 	au!
-	au FileType python set foldmethod=indent foldlevel=99
+	au FileType python setlocal foldmethod=indent foldlevel=99
 augroup END
 
 set splitright
@@ -153,15 +161,13 @@ set wildmode=list:longest,full
 
 call plug#begin('~/.vim/bundle')
 
-" There are my plugins: ########################
-
 " Outlooking
 "Plug 'flazz/vim-colorschemes'
-Plug 'vim-airline/vim-airline'
-Plug 'vim-airline/vim-airline-themes'
+Plug 'vim-airline/vim-airline' | Plug 'vim-airline/vim-airline-themes'
 Plug 'powerline/fonts'
 "Plug 'rakr/vim-one'
 Plug 'altercation/vim-colors-solarized'
+Plug 'dracula/vim', { 'as': 'dracula' }
 Plug 'kien/rainbow_parentheses.vim'
 
 
@@ -173,20 +179,23 @@ Plug 'terryma/vim-multiple-cursors'
 Plug 'jiangmiao/auto-pairs'
 Plug 'scrooloose/nerdcommenter'
 Plug 'godlygeek/tabular'
+Plug 'SirVer/ultisnips'
 
-" Integrations
+" Others
+Plug 'vim-scripts/utl.vim'
 Plug 'scrooloose/nerdtree'
+Plug 'mbbill/fencview'
 if LINUX()
-    "Plug 'majutsushi/tagbar'
-    Plug 'mileszs/ack.vim'
+	"Plug 'majutsushi/tagbar'
+	Plug 'mileszs/ack.vim'
 endif
 
-" C/C++
+" Code
 Plug 'derekwyatt/vim-fswitch'
-if has('python3')
-		Plug 'Valloric/YouCompleteMe'
-endif
+Plug 'Valloric/YouCompleteMe'
+Plug 'rdnetto/YCM-Generator', { 'branch': 'stable' }
 "Plug 'octol/vim-cpp-enhanced-highlight'
+Plug 'w0rp/ale'
 
 " Game
 
@@ -205,7 +214,7 @@ so ~/.vimrc.appearance
 so ~/.vimrc.mapping
 
 " Abbreviate {{{1
-iab @d <C-R>=strftime("20%y.%m.%d %X")<CR>
+"iab #date <C-R>=strftime("20%y.%m.%d %X")<CR>
 " in the Vim, abbreviations are divided into tree species
 " 1: #abc
 " 2: #$%a

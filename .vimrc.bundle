@@ -61,28 +61,36 @@ let g:rbpt_colorpairs = [
 let g:rbpt_max = 16
 let g:rbpt_loadcmd_toggle = 0
 " }}}
-" cpp-enhanced-hl{{{1
-if LINUX()
+" cpp-enhanced-hl(deleted){{{1
+"if LINUX()
     "let g:cpp_class_scope_highlight = 1
     "let g:cpp_member_variable_highlight = 1
     "let g:cpp_class_decl_highlight = 1
     "let g:cpp_experimental_simple_template_highlight = 1
-endif
+"endif
 "}}}
 " autopair {{{1
 " works in the insert mode
 let g:AutoPairsShortcutJump='<leader>j'
 let g:AutoPairsShortcutBackInsert='<leader>b'
 " }}}
-" gundo(todo) {{{1
-"set backup
-"if has('persistent_undo')
-"set undodir='~/.vimundodir/'
-"set undofile
-"set undolevels=1000
-"set undoreload=10000
-"endif
-let g:gundo_width=78
+" gundo and backup{{{1
+set backup
+if finddir('.vim/undo', $HOME) == ''
+  call mkdir($HOME . "/.vim/undo", "p")
+endif
+if finddir('.vim/backup', $HOME) == ''
+  call mkdir($HOME . "/.vim/backup", "p")
+endif
+set backupdir=~/.vim/backup
+if has('persistent_undo')
+	set undodir=~/.vim/undo
+	set undofile
+	set undolevels=1000
+	set undoreload=10000
+endif
+let g:gundo_width=50
+let g:gundo_prefer_python3=1
 " }}}
 "indent-guides(deleted){{{1
 "let g:indent_guides_guide_size=1
@@ -110,4 +118,48 @@ if LINUX()
                 \"gv":"<C-W><CR><C-W>H<C-W>b<C-W>J" }
 "    let g:ack_use_dispatch=1
 endif
-" Tabularize {{{1
+" ycm {{{1
+let g:ycm_global_ycm_extra_conf='~/.ycm_extra_conf.py'
+let g:ycm_key_list_select_completion   = ['<C-j>', '<C-n>', '<Down>']
+let g:ycm_key_list_previous_completion = ['<C-k>', '<C-p>', '<Up>']
+
+" ale {{{1
+let g:ale_fixers={
+			\	'*':['remove_trailing_lines', 'trim_whitespace'],
+      \ 'python':['autopep8', 'yapf'],
+			\}
+let g:ale_linters={
+			\	'c++':['clang'],
+			\	'c':['clang'],
+      \ 'python':['flake8', 'pylint'],
+			\}
+"let g:ale_completion_enabled=1
+let g:airline#extensions#ale#enabled=1
+let g:ale_open_list=1
+let g:ale_list_window_size=5
+let g:ale_sign_column_always=1
+let g:ale_set_highlights=0
+let g:ale_sign_error = '✗'
+let g:ale_sign_warning = '⚡'
+
+let g:ale_lint_on_text_changed = 'never'
+let g:ale_lint_on_enter = 0
+
+"augroup ALE_MY_GROUP
+	"au!
+	"au FileType python let b:ale_linters=['flake8', 'pylint']
+	"au FileType python let b:ale_fixers=['autopep3', 'yapf']
+	"au FileType python let b:ale_warn_about_trailing_whitespace=0
+"augroup END
+
+" ultisnips {{{1
+let g:UltiSnipsUsePythonVersion=3
+let g:UltiSnipsEditSplit='vertical'
+
+" you need manually copy snippets into ~/.vim/suba_snippets (subalashii)
+let g:UltiSnipsSnippetsDir=$HOME . "/.vim/suba_snippets"
+let g:UltiSnipsSnippetDirectories=[$HOME . "/.vim/suba_snippets"]
+
+let g:UltiSnipsExpandTrigger           = '<tab>'
+let g:UltiSnipsJumpForwardTrigger      = '<tab>'
+let g:UltiSnipsJumpBackwardTrigger     = '<s-tab>'
