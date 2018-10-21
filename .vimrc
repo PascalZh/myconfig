@@ -202,6 +202,7 @@ Plug 'w0rp/ale'
 " My own plugin
 Plug 'PascalZh/vim-color-explorer'
 "Plug 'PascalZh/my-syntax'
+Plug 'PascalZh/vim-badapple'
 " Other
 
 call plug#end()

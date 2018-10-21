@@ -1,8 +1,10 @@
 # This is Git's per-user configuration file.
 [user]
-    name = PascalZh
-    email = 1315521905@qq.com
+  name = PascalZh
+  email = 1315521905@qq.com
 [core]
-    editor = vim
+  editor = vim
 [alias]
-    lslog = log --oneline --decorate --graph
+  lslog = log --oneline --decorate --graph
+[push]
+	default = simple

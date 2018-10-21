@@ -120,8 +120,8 @@ if LINUX()
 endif
 " ycm {{{1
 let g:ycm_global_ycm_extra_conf='~/.ycm_extra_conf.py'
-let g:ycm_key_list_select_completion   = ['<C-j>', '<C-n>', '<Down>']
-let g:ycm_key_list_previous_completion = ['<C-k>', '<C-p>', '<Up>']
+let g:ycm_key_list_select_completion   = ['<Tab>', '<C-n>', '<Down>']
+let g:ycm_key_list_previous_completion = ['<S-Tab>', '<C-p>', '<Up>']
 
 " ale {{{1
 let g:ale_fixers={
@@ -160,6 +160,6 @@ let g:UltiSnipsEditSplit='vertical'
 let g:UltiSnipsSnippetsDir=$HOME . "/.vim/suba_snippets"
 let g:UltiSnipsSnippetDirectories=[$HOME . "/.vim/suba_snippets"]
 
-let g:UltiSnipsExpandTrigger           = '<tab>'
-let g:UltiSnipsJumpForwardTrigger      = '<tab>'
-let g:UltiSnipsJumpBackwardTrigger     = '<s-tab>'
+let g:UltiSnipsExpandTrigger           = '<c-j>'
+let g:UltiSnipsJumpForwardTrigger      = '<c-j>'
+let g:UltiSnipsJumpBackwardTrigger     = '<c-b>'

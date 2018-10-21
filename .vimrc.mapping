@@ -39,6 +39,8 @@ nnoremap <S-tab> :bprevious<CR>
 inoremap ;a <ESC>
 vnoremap < <gv
 vnoremap > >gv
+map <F4> :BadApple restoregui<CR>
+map <F7> :BadApple<CR>
 " }}}
 " easymotion(and space mappings) {{{1
 " do not use nnoremap and others like this.

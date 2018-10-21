@@ -32,11 +32,12 @@ alias __create_esp_project='source ~/bin/_E_create_esp_project_E_'
 
 # cmatrix
 
-#And here are some recommandations of some useful softwares.
+#And here are some recommendations of some useful software.
 
 #tilda
 
 # redshift
 # it protects your eyes.
 
-
+# Glyphr
+# design your font
