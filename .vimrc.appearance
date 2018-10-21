@@ -1,15 +1,16 @@
 
-" WINDOWS {{{1
 if WINDOWS()
-    colorscheme desert
+    colorscheme dracula
     set guifont=Ubuntu_Mono_derivative_Powerlin:h12:cANSI
     if exists('&guifontwide')
-        set guifontwide=幼圆:h12
+        "set guifontwide=幼圆:h12
     endif
 endif
 
-" gui {{{1
-set guifont=monofur\ for\ Powerline\ 12
+if LINUX()
+  set guifont=monofur\ for\ Powerline\ 12
+endif
+
 colorscheme dracula
 set background=dark
 " 字体设置方法，windows系统要用windows的命令行安装字体
@@ -29,15 +30,14 @@ set guioptions-=R
 set guioptions-=b
 " }}}
 
-"  console appearance {{{1
+"  console appearance
 if !has('gui_running')
-    colorscheme dracula
-    set background=dark
-		"set t_Co=256
-    " good colors: solarized, Revolution
-    " monofur for powerline is a good font.
+  colorscheme dracula
+  set background=dark
+  "set t_Co=256
+  " good colors: solarized, Revolution
+  " monofur for powerline is a good font.
 endif
-"  }}}
 
 " airline {{{1
 "这个是安装字体后 必须设置此项"

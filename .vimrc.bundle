@@ -153,7 +153,7 @@ let g:ale_lint_on_enter = 0
 "augroup END
 
 " ultisnips {{{1
-let g:UltiSnipsUsePythonVersion=3
+"let g:UltiSnipsUsePythonVersion=3
 let g:UltiSnipsEditSplit='vertical'
 
 " you need manually copy snippets into ~/.vim/suba_snippets (subalashii)

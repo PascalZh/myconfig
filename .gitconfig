@@ -8,3 +8,7 @@
   lslog = log --oneline --decorate --graph
 [push]
 	default = simple
+[http]
+	proxy = http://127.0.0.1:8065
+[https]
+	proxy = https://127.0.0.1:8065

@@ -165,6 +165,7 @@ call plug#begin('~/.vim/bundle')
 "Plug 'flazz/vim-colorschemes'
 Plug 'vim-airline/vim-airline' | Plug 'vim-airline/vim-airline-themes'
 Plug 'powerline/fonts'
+Plug 'ryanoasis/vim-devicons'
 "Plug 'rakr/vim-one'
 Plug 'altercation/vim-colors-solarized'
 Plug 'dracula/vim', { 'as': 'dracula' }
