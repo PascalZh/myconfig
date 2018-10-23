@@ -8,11 +8,12 @@
 !.vimrc.bundle
 !.vimrc.appearance
 !.vimrc.mapping
+!.vimrc.syntax
 
 !.gitignore
 !.gitconfig
 
-!myshrc.sh
+!.myshrc.sh
 
 !.xmodmaprc
 

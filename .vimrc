@@ -103,10 +103,11 @@ set iskeyword-=.                    " '.' is an end of word designator
 set iskeyword-=#                    " '#' is an end of word designator
 set iskeyword-=-
 
-set foldmethod=marker
+set foldmethod=syntax
 augroup FoldMethod_MY_GROUP
 	au!
-	au FileType python setlocal foldmethod=indent foldlevel=99
+	"au FileType python setlocal foldmethod=indent foldlevel=99
+  au FileType vim setlocal foldmethod=marker foldlevel=99 | normal zM
 augroup END
 
 set splitright
@@ -121,11 +122,11 @@ set smartindent
 
 " 设置了之后，vim就不会在一行文字超过一定长度后自动按Enter换行
 set whichwrap=b,s,h,l,<,>,[,]
-set wrap
+set nowrap
 set textwidth=0
 
 set cursorline
-set nocursorcolumn
+set cursorcolumn
 set ruler
 
 set cmdheight=2
@@ -155,6 +156,11 @@ set scrolloff=2                 " Minimum lines to keep above and below cursor
 set noautochdir                       "Set the working directories to wherever the open file lives
 set wildmenu
 set wildmode=list:longest,full
+
+if exists('+inccommand')
+  set inccommand=split
+endif
+
 " }}}
 
 " Vim-plug
@@ -182,6 +188,9 @@ Plug 'scrooloose/nerdcommenter'
 Plug 'godlygeek/tabular'
 Plug 'SirVer/ultisnips'
 
+Plug 'haya14busa/vim-edgemotion'
+Plug 'terryma/vim-expand-region'
+
 " Others
 Plug 'vim-scripts/utl.vim'
 Plug 'scrooloose/nerdtree'
@@ -190,6 +199,11 @@ if LINUX()
 	"Plug 'majutsushi/tagbar'
 	Plug 'mileszs/ack.vim'
 endif
+" 韩国人写的两个插件
+Plug 'junegunn/goyo.vim'
+Plug 'junegunn/limelight.vim'
+
+Plug 'terryma/vim-smooth-scroll'
 
 " Code
 Plug 'derekwyatt/vim-fswitch'
@@ -197,23 +211,26 @@ Plug 'Valloric/YouCompleteMe'
 Plug 'rdnetto/YCM-Generator', { 'branch': 'stable' }
 "Plug 'octol/vim-cpp-enhanced-highlight'
 Plug 'w0rp/ale'
+Plug 'mhinz/vim-startify'
 
 " Game
+Plug 'johngrib/vim-game-code-break'
+Plug 'vim-scripts/Nibble'
+" Nibble has a dependency
+Plug 'vim-scripts/genutils'
+Plug 'mattn/flappyvird-vim'
 
 " My own plugin
 Plug 'PascalZh/vim-color-explorer'
-"Plug 'PascalZh/my-syntax'
+Plug 'PascalZh/vim-racket'
 Plug 'PascalZh/vim-badapple'
-" Other
 
 call plug#end()
+
 so ~/.vimrc.bundle
-
-" Appearance
 so ~/.vimrc.appearance
-
-" Keys Mappings
 so ~/.vimrc.mapping
+so ~/.vimrc.syntax
 
 " Abbreviate {{{1
 "iab #date <C-R>=strftime("20%y.%m.%d %X")<CR>

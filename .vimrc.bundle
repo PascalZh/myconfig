@@ -73,6 +73,8 @@ let g:rbpt_loadcmd_toggle = 0
 " works in the insert mode
 let g:AutoPairsShortcutJump='<leader>j'
 let g:AutoPairsShortcutBackInsert='<leader>b'
+au FileType racket let b:AutoPairs = {'(':')', '[':']', '{':'}','"':'"', '`':'`'}
+
 " }}}
 " gundo and backup{{{1
 set backup
@@ -163,3 +165,33 @@ let g:UltiSnipsSnippetDirectories=[$HOME . "/.vim/suba_snippets"]
 let g:UltiSnipsExpandTrigger           = '<c-j>'
 let g:UltiSnipsJumpForwardTrigger      = '<c-j>'
 let g:UltiSnipsJumpBackwardTrigger     = '<c-b>'
+" goyo {{{1
+autocmd! User GoyoEnter Limelight
+autocmd! User GoyoLeave Limelight!
+" terryma/vim-smooth-scroll {{{1
+noremap <silent> <c-u> :call smooth_scroll#up(&scroll, 0, 2)<CR>
+noremap <silent> <c-d> :call smooth_scroll#down(&scroll, 0, 2)<CR>
+noremap <silent> <c-b> :call smooth_scroll#up(&scroll*2, 0, 4)<CR>
+noremap <silent> <c-f> :call smooth_scroll#down(&scroll*2, 0, 4)<CR>
+
+" haya14busa/vim-edgemotion {{{1
+nnoremap <M-j> <Plug>(edgemotion-j)
+nnoremap <M-k> <Plug>(edgemotion-k)
+" vim games {{{1
+command! GameCodeBreak VimGameCodeBreak
+command! GameNibble Nibble
+command! GameFlappyVird FlappyVird
+
+" mhinz/vim-startify {{{1
+let g:startify_fortune_use_unicode = 1
+autocmd User Startified nmap <buffer> o <plug>(startify-open-buffers)
+let g:startify_change_to_vcs_root = 1
+let g:startify_enable_unsafe = 1
+let g:startify_custom_indices = ['F', 'f', 'G', 'H', 'W', 'R', 'g', 'h', 'w', 'r', 'p', 'l', 'm']
+autocmd User Startified highlight StartifyBracket ctermfg=240 |
+      \highlight StartifyFooter  ctermfg=242                  |
+      \highlight StartifyHeader  ctermfg=50                   |
+      \highlight StartifyNumber  ctermfg=215                  |
+      \highlight StartifyPath    ctermfg=160                  |
+      \highlight StartifySlash   ctermfg=215                  |
+      \highlight StartifySpecial ctermfg=240

@@ -12,7 +12,7 @@ nnoremap <leader>sh :terminal<cr>
 nnoremap <leader>t :Tabularize /
 nnoremap <leader><space> :nohlsearch<cr>
 " wipeout the buffer, don't apply it in other special window.
-nnoremap <leader>q :call <SID>WipeOutBuffer()<cr>
+nnoremap <leader>q :call PascalQuit()<cr>
 nnoremap <leader>f za
 
 nnoremap <leader>n :ALENextWrap<cr>
@@ -77,10 +77,10 @@ nmap <space>mm :!make monitor<cr>
 "nnoremap S S<S>
 
 " window move and manipulation{{{1
-nnoremap <C-k> :resize+1<cr>
-nnoremap <C-j> :resize-1<cr>
-nnoremap <C-h> :vertical resize-1<cr>
-nnoremap <C-l> :vertical resize+1<cr>
+nnoremap <C-k> :resize+3<cr>
+nnoremap <C-j> :resize-3<cr>
+nnoremap <C-h> :vertical resize-3<cr>
+nnoremap <C-l> :vertical resize+3<cr>
 nnoremap H <C-w>h
 nnoremap L <C-w>l
 nnoremap J <C-w>j
@@ -107,8 +107,7 @@ func! MyGrepFunc(type)
 
   if LINUX()
     execute "Ack! " . expand(@z)
-  else if WINDOWS()
-    " find in the files recursively
+  elseif WINDOWS()
     silent! execute "vimgrep /" . expand(@z) . "/gj **/*.*"
   endif
 
@@ -119,37 +118,41 @@ endfunc
 " functions and commands{{{1
 command! Q q!
 command! Qa qa!
-" WipeOutBuffer(){{{2
-func! s:WipeOutBuffer()
+" PascalQuit(){{{2
+func! PascalQuit()
   " when editing vimrc files
-  if winnr('$')==1
-    quit
-  elseif bufnr('vimrc') != -1 && bufnr('vimrc.mapping') != -1 &&
-        \bufnr('vimrc.appearance') != -1 && bufnr('vimrc.bundle') != -1
-    wq
-    wq
-    wq
-    wq
-    silent execute "bw " . bufnr('vimrc.mapping')
-          \." ".bufnr('vimrc')
-          \." ".bufnr('vimrc.appearance')
-          \." ".bufnr('vimrc.bundle')
-    "nnoremap J <C-W>j
-    "nnoremap K <C-W>k
-    "nnoremap H <C-W>h
-    "nnoremap L <C-W>l
+  if bufnr('.vimrc') != -1 || bufnr('.vimrc.mapping') != -1 ||
+        \bufnr('.vimrc.appearance') != -1 || bufnr('.vimrc.bundle') != -1 ||
+        \bufnr('.vimrc.syntax') != -1
+    if bufnr('.vimrc.mapping') != -1
+      silent execute "bw " . bufnr('.vimrc.mapping')
+    endif
+    if bufnr('.vimrc') != -1
+      silent execute "bw " . bufnr('.vimrc')
+    endif
+    if bufnr('.vimrc.appearance') != -1
+      silent execute "bw " . bufnr('.vimrc.appearance')
+    endif
+    if bufnr('.vimrc.bundle') != -1
+      silent execute "bw " . bufnr('.vimrc.bundle')
+    endif
+    if bufnr('.vimrc.syntax') != -1
+      silent execute "bw " . bufnr('.vimrc.syntax')
+    endif
+
   else
-    bw
+    q
   endif
 endfunc
 " ManageMyVimrcFiles() {{{2
 func! ManageMyVimrcFiles()
-  tabedit $MYVIMRC
+  tabedit ~/.vimrc
   vsplit ~/.vimrc.mapping
   wincmd h
   split ~/.vimrc.bundle
   wincmd l
   split ~/.vimrc.appearance
+  split ~/.vimrc.syntax
   1wincmd w
   "nnoremap J <C-W>j:resize 999<CR>
   "nnoremap K <C-W>k:resize 999<CR>
@@ -168,14 +171,14 @@ function! ToggleBG()
 endfunction
 " QuickfixToggle(){{{2
 au FileType qf map <buffer> q <C-W>q:let g:quickfix_is_open=0<cr>|
-      \  map <buffer> t <C-W><CR><C-W>T                    |
-      \  map <buffer> gt <C-W><CR><C-W>TgT<C-W>j           |
-      \  map <buffer> o <CR>                               |
-      \  map <buffer> go <CR><C-W>j                        |
-      \  map <buffer> s <C-W><CR><C-W>K                    |
-      \  map <buffer> gs <C-W><CR><C-W>K<C-W>b             |
-      \  map <buffer> v <C-W><CR><C-W>H<C-W>b<C-W>J<C-W>t  |
-      \  map <buffer> gv <C-W><CR><C-W>H<C-W>b<C-W>J       |
+      \  map <buffer> t <C-W><CR><C-W>T|
+      \  map <buffer> gt <C-W><CR><C-W>TgT<C-W>j|
+      \  map <buffer> o <CR>|
+      \  map <buffer> go <CR><C-W>j|
+      \  map <buffer> s <C-W><CR><C-W>K|
+      \  map <buffer> gs <C-W><CR><C-W>K<C-W>b|
+      \  map <buffer> v <C-W><CR><C-W>H<C-W>b<C-W>J<C-W>t|
+      \  map <buffer> gv <C-W><CR><C-W>H<C-W>b<C-W>J|
       \let g:quickfix_is_open=1
 
 let g:quickfix_is_open=0
@@ -230,3 +233,24 @@ augroup  LaTeX
   "d means dollar.
   au FileType latex imap ;d
 augroup END
+" M and help {{{1
+
+nnoremap M K
+vnoremap M K
+au BufEnter *.rkt,*.rktl nnoremap <buffer> M :silent !raco docs <cword><cr>:redraw!<cr>
+au BufEnter *.rkt,*.rktl vnoremap <buffer> M :call <SID>Racket_visual_doc()<cr>
+au BufEnter *.rkt,*.rktl nnoremap <buffer> <space>r :!racket -t %<cr>
+
+" For the visual mode M mapping, it's slightly more convoluted to get the 
+" selected text:
+function! s:Racket_visual_doc()
+  try
+    let l:old_a = @a
+    normal! gv"ay
+    call system("raco docs '". @a . "'")
+    redraw!
+    return @a
+  finally
+    let @a = l:old_a
+  endtry
+endfunction

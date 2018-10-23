@@ -10,7 +10,8 @@ alias fortune='fortune | lolcat'
 alias rm='rm -i'
 alias __create_esp_project='source ~/bin/_E_create_esp_project_E_'
 
-# Here are some interesting commands.
+# ------------------------------------------------
+### Here are some interesting command tools.
 
 # w3m
 # sudo apt install w3m w3m-img
@@ -32,7 +33,13 @@ alias __create_esp_project='source ~/bin/_E_create_esp_project_E_'
 
 # cmatrix
 
-#And here are some recommendations of some useful software.
+# ack
+# run perl -MCPAN -e shell
+# run install App::Ack in the perl
+
+# ------------------------------------------------
+
+### And here are some recommendations of some useful software.
 
 #tilda
 

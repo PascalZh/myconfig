@@ -8,11 +8,12 @@ if WINDOWS()
 endif
 
 if LINUX()
-  set guifont=monofur\ for\ Powerline\ 12
+  colorscheme dracula
+  "set guifont=monofur\ for\ Powerline\ 11
+  set guifont=FuraCode\ Nerd\ Font\ 10
+  set background=dark
 endif
 
-colorscheme dracula
-set background=dark
 " 字体设置方法，windows系统要用windows的命令行安装字体
 " 然后set guifont=*
 " 选择字体
@@ -32,7 +33,7 @@ set guioptions-=b
 
 "  console appearance
 if !has('gui_running')
-  colorscheme dracula
+  colorscheme solarized
   set background=dark
   "set t_Co=256
   " good colors: solarized, Revolution
