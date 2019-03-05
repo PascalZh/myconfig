@@ -1,0 +1,26 @@
+" This file is used to fix syntax bugs, and some language special
+" settings.
+" And highlight my own syntax.
+
+au FileType racket syn keyword racketSyntax def syntax-rules contract-out println include-template syntax syntax-case
+au FileType racket syn keyword racketSyntax LOGI LOGW LOGE
+au FileType racket setl lispwords+=def,λ,with-handlers,query-exec
+au FileType racket setl iskeyword=@,48-57,192-255,$,_,?,-,+,>,<,!
+au FileType racket iab <buffer> lm λ
+au FileType racket syn match racketFunc /def \(.*\)/hs=s+3,he=e
+digr lm 955
+au FileType racket syn keyword racketFunc newline len case-> any any/c eval thread sqlite3-connect table-exists? query-exec system listof any/c natural-number/c query-rows query-row query-value query-maybe-value query-list
+au FileType racket syn keyword racketFunc response/xexpr page make-cdata
+
+augroup MY_GROUP_FILETYPE
+  au!
+  au BufRead *.asm setlocal filetype=masm
+  au BufRead .myshrc* set ft=sh
+  au BufRead .tmux.conf* set ft=tmux
+augroup END
+
+augroup FoldMethod_MY_GROUP
+  au!
+  "au FileType python setlocal foldmethod=indent foldlevel=99
+  au FileType vim,racket,javascript setlocal foldmethod=marker foldlevel=99 | normal zM
+augroup END

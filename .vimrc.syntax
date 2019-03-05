@@ -1,4 +1,0 @@
-" This file is used to fix syntax bugs.
-" And highlight my own syntax.
-
-au FileType racket syn keyword racketSyntax def

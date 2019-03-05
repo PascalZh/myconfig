@@ -20,6 +20,12 @@ ${VISUAL}$0
 #endif
 endsnippet
 
+snippet #ifdef "#ifdef #undef #define"
+#ifdef ${1}
+$0
+#endif /* #ifdef $1 */
+endsnippet
+
 snippet mark "#pragma mark (mark)"
 #if 0
 ${1:#pragma mark -

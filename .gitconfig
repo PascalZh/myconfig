@@ -3,7 +3,7 @@
   name = PascalZh
   email = 1315521905@qq.com
 [core]
-  editor = vim
+  editor = nvim
 [alias]
   lslog = log --oneline --decorate --graph
 [push]

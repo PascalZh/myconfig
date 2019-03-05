@@ -1,23 +1,19 @@
-" When you are using this vimrc in the unix,
-" :setlocal fileformat=unix :w
-" :e
-" Then it works
 set nocompatible
 " identify platform {{{1
 silent function! OSX()
-return has('macunix')
-		endfunction
-		silent function! LINUX()
-		return has('unix') && !has('macunix') && !has('win32unix')
-	endfunction
-	silent function! WINDOWS()
-	return  (has('win32') || has('win64'))
+  return has('macunix')
+endfunction
+silent function! LINUX()
+  return has('unix') && !has('macunix') && !has('win32unix')
+endfunction
+silent function! WINDOWS()
+  return  (has('win32') || has('win64'))
 endfunction
 " format encoding and tab {{{1
 if LINUX()
-	set fileformat=unix
+  set fileformat=unix
 elseif WINDOWS()
-	set fileformat=dos
+  set fileformat=dos
 endif
 
 set encoding=utf-8
@@ -29,86 +25,37 @@ set shiftwidth=2
 set expandtab
 set smarttab
 augroup VariousTab
-	au!
-	au FileType masm set tabstop=8 softtabstop=8 shiftwidth=8
+  au!
+  au FileType masm set tabstop=8 softtabstop=8 shiftwidth=8
 augroup END
-
-" machine-special {{{1
-" I don't use NutStore for syncing my vimrc anymore.
-" Instead, I use github to do it
-"command! SaveVIMRCToNutStore call SaveVIMRCToNutStore()
-"command! ReadVIMRCFromNutStore call ReadVIMRCFromNutStore()
-" WINDOWS {{{2
-if WINDOWS()
-	" filetype: asm
-	" 上面那个等号不知道为啥两边加了空格后就出问题了
-
-	au BufRead *.asm setlocal filetype=masm
-	"autocmd VimEnter * cd $HOME\projects
-	"set shell=git-bash.exe
-	"set shellcmdflag=-c
-
-	" sync vimrc file with nutstore(deleted) {{{3
-	"    func! SaveVIMRCToNutStore()
-	"silent execute "!COPY " . shellescape(expand($MYVIMRC)) . " " . shellescape("C:\\Users\\zsy\\Downloads\\我的坚果云\\.vimrc")
-	"endfunc
-	"func! ReadVIMRCFromNutStore()
-	"silent execute "!COPY " . shellescape("C:\\Users\\zsy\\Downloads\\我的坚果云\\.vimrc") . " " .  shellescape(expand($MYVIMRC))    
-	"    endfunc
-	"}}}
-
-" LINUX {{{2
-elseif LINUX()
-	" sync vimrc file with nutstore(deleted) {{{3
-	"   func! SaveVIMRCToNutStore()
-	"silent execute "!cp ~/.vimrc ~/Desktop/Nutstore/.vimrc"
-	"redraw!
-	"endfunc
-	"func! ReadVIMRCFromNutStore()
-	"silent execute "!cp ~/Desktop/Nutstore/.vimrc ~/.vimrc"
-	"redraw!
-	"   endfunc
-  " Here are some bug-fixing things
-
-  " filetype of special file {{{3
-  augroup MY_GROUP_FILETYPE
-    au!
-    au BufRead .myshrc.local set ft=sh
-    au BufRead .tmux.conf* set ft=tmux
-endif
-
+" }}}
 " other settings {{{1
+
+if has('nvim')
+  autocmd TermOpen * startinsert
+endif
 set belloff=all
 
 " enable hide the buffer
 set hidden
 set linespace=0
-set winminheight=0
 
 " always use yanking to paste in other place
 if has('clipboard')
-	if has('unnamedplus')  " When possible use + register for copy-paste
-		set clipboard=unnamed,unnamedplus
-	else         " On mac and Windows, use * register for copy-paste
-		set clipboard=unnamed
-	endif
+  if has('unnamedplus')  " When possible use + register for copy-paste
+    set clipboard=unnamed,unnamedplus
+  else         " On mac and Windows, use * register for copy-paste
+    set clipboard=unnamed
+  endif
 endif
-set viewoptions=folds,options,cursor,unix,slash
-set shortmess+=filmnrxoOtT          " Abbrev. of messages (avoids 'hit enter')
 set timeoutlen=666
 set virtualedit=onemore
 set nospell
+au FileType markdown setlocal spell
 set spelllang=en,cjk
 set iskeyword-=.                    " '.' is an end of word designator
 set iskeyword-=#                    " '#' is an end of word designator
 set iskeyword-=-
-
-set foldmethod=syntax
-augroup FoldMethod_MY_GROUP
-	au!
-	"au FileType python setlocal foldmethod=indent foldlevel=99
-  au FileType vim setlocal foldmethod=marker foldlevel=99 | normal zM
-augroup END
 
 set splitright
 set splitbelow
@@ -119,20 +66,6 @@ set langmenu=en
 " indentation and syntax
 syntax on
 set smartindent
-
-" 设置了之后，vim就不会在一行文字超过一定长度后自动按Enter换行
-set whichwrap=b,s,h,l,<,>,[,]
-set nowrap
-set textwidth=0
-
-set cursorline
-set cursorcolumn
-set ruler
-
-set cmdheight=2
-set showcmd
-set laststatus=2
-set more
 
 set backspace=indent,eol,start
 set mouse=a
@@ -146,12 +79,6 @@ set incsearch
 set ignorecase
 set smartcase
 
-" list mode
-set nolist
-set listchars=tab:\ \ ,eol:$,trail:*,extends:#
-
-set scrolloff=2                 " Minimum lines to keep above and below cursor
-
 " fuzzy find
 set noautochdir                       "Set the working directories to wherever the open file lives
 set wildmenu
@@ -161,78 +88,109 @@ if exists('+inccommand')
   set inccommand=split
 endif
 
+
+
 " }}}
 
 " Vim-plug
-
 call plug#begin('~/.vim/bundle')
 
-" Outlooking
+" Outlooking {{{
 "Plug 'flazz/vim-colorschemes'
 Plug 'vim-airline/vim-airline' | Plug 'vim-airline/vim-airline-themes'
-Plug 'powerline/fonts'
+Plug 'powerline/fonts', { 'do': './install.sh' }
 Plug 'ryanoasis/vim-devicons'
 "Plug 'rakr/vim-one'
 Plug 'altercation/vim-colors-solarized'
 Plug 'dracula/vim', { 'as': 'dracula' }
-Plug 'kien/rainbow_parentheses.vim'
-
-
-" Edit
+Plug 'kien/rainbow_parentheses.vim', { 'for': 'racket,scheme,lisp'}
+" }}}
+" Edit {{{
 Plug 'tpope/vim-surround'
 Plug 'easymotion/vim-easymotion'
 Plug 'sjl/gundo.vim'
-Plug 'terryma/vim-multiple-cursors'
 Plug 'jiangmiao/auto-pairs'
 Plug 'scrooloose/nerdcommenter'
 Plug 'godlygeek/tabular'
-Plug 'SirVer/ultisnips'
+Plug 'zhou13/vim-easyescape'
 
 Plug 'haya14busa/vim-edgemotion'
-Plug 'terryma/vim-expand-region'
 
-" Others
-Plug 'vim-scripts/utl.vim'
-Plug 'scrooloose/nerdtree'
-Plug 'mbbill/fencview'
-if LINUX()
-	"Plug 'majutsushi/tagbar'
-	Plug 'mileszs/ack.vim'
-endif
 " 韩国人写的两个插件
 Plug 'junegunn/goyo.vim'
 Plug 'junegunn/limelight.vim'
 
+Plug 'terryma/vim-multiple-cursors'
+Plug 'terryma/vim-expand-region'
 Plug 'terryma/vim-smooth-scroll'
-
-" Code
+" }}}
+" Other {{{
+Plug 'vim-scripts/utl.vim'
+Plug 'scrooloose/nerdtree', { 'on':  'NERDTreeToggle' }
+Plug 'mbbill/fencview'
+Plug 'christoomey/vim-tmux-navigator'
+if LINUX()
+  "Plug 'majutsushi/tagbar'
+  Plug 'mileszs/ack.vim'
+endif
+" }}}
+" Code {{{
 Plug 'derekwyatt/vim-fswitch'
-Plug 'Valloric/YouCompleteMe'
-Plug 'rdnetto/YCM-Generator', { 'branch': 'stable' }
+"Plug 'Valloric/YouCompleteMe'
+"Plug 'rdnetto/YCM-Generator', { 'branch': 'stable' }
 "Plug 'octol/vim-cpp-enhanced-highlight'
-Plug 'w0rp/ale'
+"Plug 'w0rp/ale'
+
 Plug 'mhinz/vim-startify'
 
-" Game
+if has('nvim')
+  " assuming you're using vim-plug: https://github.com/junegunn/vim-plug
+  Plug 'ncm2/ncm2'
+  Plug 'roxma/nvim-yarp'
+
+  " enable ncm2 for all buffers
+  autocmd BufEnter * call ncm2#enable_for_buffer()
+
+  " IMPORTANTE: :help Ncm2PopupOpen for more information
+  set completeopt=noinsert,menuone,noselect
+
+  " NOTE: you need to install completion sources to get completions. Check
+  " our wiki page for a list of sources: https://github.com/ncm2/ncm2/wiki
+  Plug 'ncm2/ncm2-bufword'
+  Plug 'ncm2/ncm2-tmux'
+  Plug 'ncm2/ncm2-path'
+
+  Plug 'neomake/neomake'
+
+  Plug 'ncm2/ncm2-ultisnips'
+endif
+Plug 'SirVer/ultisnips'
+Plug 'airblade/vim-gitgutter'
+" }}}
+" Game {{{
 Plug 'johngrib/vim-game-code-break'
 Plug 'vim-scripts/Nibble'
 " Nibble has a dependency
-Plug 'vim-scripts/genutils'
+Plug 'vim-scripts/genutils', { 'on': 'GameFlappyVird' }
 Plug 'mattn/flappyvird-vim'
+
+Plug 'rbtnn/game_engine.vim'
+Plug 'rbtnn/mario.vim'
+Plug 'rbtnn/puyo.vim'
+" }}}
 
 " My own plugin
 Plug 'PascalZh/vim-color-explorer'
 Plug 'PascalZh/vim-racket'
-Plug 'PascalZh/vim-badapple'
-
+Plug 'PascalZh/vim-badapple', { 'on': 'BadApple', 'do': './install.sh' } 
 call plug#end()
 
 so ~/.vimrc.bundle
 so ~/.vimrc.appearance
 so ~/.vimrc.mapping
-so ~/.vimrc.syntax
+so ~/.vimrc.language
 
-" Abbreviate {{{1
+" Abbreviate (deleted) {{{1
 "iab #date <C-R>=strftime("20%y.%m.%d %X")<CR>
 " in the Vim, abbreviations are divided into tree species
 " 1: #abc

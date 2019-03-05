@@ -7,9 +7,12 @@ alias la='ls -A'
 alias l='ls -CF'
 alias pls='sudo'
 alias fortune='fortune | lolcat'
-alias rm='rm -i'
+#alias rm='rm -i'
 alias __create_esp_project='source ~/bin/_E_create_esp_project_E_'
-
+alias gogh='wget -O gogh https://git.io/vQgMr && chmod +x gogh && ./gogh && rm gogh'
+alias _matlab="matlab -nodesktop -nojvm"
+alias leelaz='~/program_files/leela-zero/build/leelaz'
+alias leelaz_='~/program_files/leela-zero/build/leelaz -w ~/program_files/leela-zero/build/best-network --cpu-only --gtp --noponder -t 4 -p 1'
 # ------------------------------------------------
 ### Here are some interesting command tools.
 
@@ -48,3 +51,7 @@ alias __create_esp_project='source ~/bin/_E_create_esp_project_E_'
 
 # Glyphr
 # design your font
+
+
+# -----------------FUNCTION-----------------------
+
