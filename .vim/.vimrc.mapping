@@ -7,14 +7,11 @@ let mapleader=";"
 nnoremap <leader><space> :nohlsearch<cr>
 nnoremap <leader>bg :call ToggleBG()<CR>
 nnoremap <leader>ev :call ManageMyVimrcFiles()<cr>
-nnoremap <leader>f za
 vnoremap <leader>g :<c-u>call MyGrepFunc(visualmode())<cr>
 nmap <leader>g g@
 "<leader>hp              Preview the hunk under the cursor.
 "<leader>hs              Stage the hunk under the cursor.
 "<leader>hu              Undo the hunk under the cursor.
-nnoremap <leader>l :set list!<CR>
-nnoremap <leader>q :call PascalQuit()<cr>
 nnoremap <leader>sh :terminal<cr>
 "nnoremap <leader>sv :wa<CR>:so $MYVIMRC<CR>
 nnoremap <leader>sw :FSHere<cr>
@@ -22,7 +19,7 @@ nnoremap <leader>t :Tabularize /
 nnoremap <leader>u :Utl<cr>
 "nmap <leader>uhs :let g:utl_cfg_hdl_scm_http=g:utl_cfg_hdl_scm_http_system<cr>
 "nmap <leader>uhw :let g:utl_cfg_hdl_scm_http=g:utl_cfg_hdl_scm_http__wget<cr>
-nnoremap <leader>w :wa<cr>
+"nnoremap <leader>w :wa<cr>
 
 nnoremap ,u :GundoToggle<cr>
 nnoremap ,e :call NERDTreeToggleAndMap_b_()<cr>
@@ -38,8 +35,12 @@ nnoremap ,r :RainbowParenthesesToggleAll<CR>
 nnoremap Y y$
 nnoremap <Tab> :bnext<cr>
 nnoremap <S-Tab> :bprevious<CR>
+inoremap <C-l> <C-g>u<Esc>[s1z=`]i<C-g>u
+nnoremap <C-l> i<C-g>u<Esc>[s1z=`]a<C-g>u<Esc>
+nnoremap <C-s> :wa<cr>
+inoremap <C-s> <Esc>:wa<cr>a
 " jk kj in insert mode are mapped to <esc> by vim-easyescape
-inoremap ;k ;<ESC>
+"inoremap ;k ;<ESC>
 
 vnoremap < <gv
 vnoremap > >gv
@@ -47,24 +48,22 @@ nnoremap H <C-w>h
 nnoremap L <C-w>l
 nnoremap J <C-w>j
 nnoremap K <C-w>k
-" }}}
+nmap <C-k> <Plug>NERDCommenterToggle
+xmap <C-k> <Plug>NERDCommenterToggle
 
-" space mappings {{{1
-nmap <space>ef <Plug>(easymotion-overwin-f)
-xmap <space>ef <Plug>(easymotion-overwin-f)
-nmap <space>ej <Plug>(easymotion-jumptoanywhere)
-xmap <space>ej <Plug>(easymotion-jumptoanywhere)
-nmap <space>ew <Plug>(easymotion-overwin-w)
-xmap <space>ew <Plug>(easymotion-overwin-w)
-nmap <space>ee <Plug>(easymotion-overwin-e)
-xmap <space>ee <Plug>(easymotion-overwin-e)
-nmap <space>c <Plug>NERDCommenterToggle
-xmap <space>c <Plug>NERDCommenterToggle
-nnoremap <space>mf :wa<cr>:!make flash<cr>
-nnoremap <space>mm :!make monitor<cr>
+nnoremap \\ za
+nmap \f <Plug>(easymotion-overwin-f)
+xmap \f <Plug>(easymotion-overwin-f)
+nmap \j <Plug>(easymotion-jumptoanywhere)
+xmap \j <Plug>(easymotion-jumptoanywhere)
+nmap \w <Plug>(easymotion-overwin-w)
+xmap \w <Plug>(easymotion-overwin-w)
+nmap \e <Plug>(easymotion-overwin-e)
+xmap \e <Plug>(easymotion-overwin-e)
+"nnoremap mf :wa<cr>:!make flash<cr>
+"nnoremap mm :!make monitor<cr>
 
-nnoremap <space>f za
-au BufEnter *.rkt,*.rktl nnoremap <buffer> <space>r :!racket -t %<cr>
+au BufEnter *.rkt,*.rktl nnoremap <buffer> <F5> :!racket -t %<cr>
 " }}}
 
 " grep or ack {{{1
@@ -92,44 +91,16 @@ func! MyGrepFunc(type)
   let @z=s:store_temp_register
 endfunc
 " }}}
-" PascalQuit() {{{
-func! PascalQuit()
-  " when editing vimrc files
-  if bufnr('.vimrc')                == winbufnr(0) ||
-        \bufnr('.vimrc.mapping')    == winbufnr(0) ||
-        \bufnr('.vimrc.appearance') == winbufnr(0) ||
-        \bufnr('.vimrc.bundle')     == winbufnr(0) ||
-        \bufnr('.vimrc.language')   == winbufnr(0)
-
-    if bufnr('.vimrc.mapping')
-      silent! bw .vimrc.mapping
-    endif
-    if bufnr('.vimrc')
-      silent! bw .vimrc
-    endif
-    if bufnr('.vimrc.appearance')
-      silent! bw .vimrc.appearance
-    endif
-    if bufnr('.vimrc.bundle')
-      silent! bw .vimrc.bundle
-    endif
-    if bufnr('.vimrc.language')
-      silent! bw .vimrc.language
-    endif
-  else
-    quit
-  endif
-endfunc
 " }}}
 " ManageMyVimrcFiles() {{{
 func! ManageMyVimrcFiles()
-  tabedit ~/.vimrc
-  vsplit ~/.vimrc.mapping
+  tabedit ~/.vim/.vimrc
+  vsplit ~/.vim/.vimrc.mapping
   wincmd h
-  split ~/.vimrc.bundle
+  split ~/.vim/.vimrc.bundle
   wincmd l
-  split ~/.vimrc.appearance
-  split ~/.vimrc.language
+  split ~/.vim/.vimrc.appearance
+  split ~/.vim/.vimrc.language
   1wincmd w
 endfunc
 " }}}
@@ -175,7 +146,6 @@ func! QuickfixToggle(flag)
   endif
 endfunc
 "}}}
-
 " Shell command(deleted) {{{
 "function! s:RunShellCommand(cmdline)
 "botright new

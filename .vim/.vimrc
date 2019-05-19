@@ -52,6 +52,7 @@ set timeoutlen=666
 set virtualedit=onemore
 set nospell
 au FileType markdown setlocal spell
+au FileType tex setlocal spell
 set spelllang=en,cjk
 set iskeyword-=.                    " '.' is an end of word designator
 set iskeyword-=#                    " '#' is an end of word designator
@@ -114,7 +115,7 @@ Plug 'scrooloose/nerdcommenter'
 Plug 'godlygeek/tabular'
 Plug 'zhou13/vim-easyescape'
 
-Plug 'haya14busa/vim-edgemotion'
+"Plug 'haya14busa/vim-edgemotion'
 
 " 韩国人写的两个插件
 Plug 'junegunn/goyo.vim'
@@ -128,7 +129,8 @@ Plug 'terryma/vim-smooth-scroll'
 Plug 'vim-scripts/utl.vim'
 Plug 'scrooloose/nerdtree', { 'on':  'NERDTreeToggle' }
 Plug 'mbbill/fencview'
-Plug 'christoomey/vim-tmux-navigator'
+Plug 'lervag/vimtex', { 'for': 'tex' }
+"Plug 'christoomey/vim-tmux-navigator'
 if LINUX()
   "Plug 'majutsushi/tagbar'
   Plug 'mileszs/ack.vim'
@@ -136,33 +138,33 @@ endif
 " }}}
 " Code {{{
 Plug 'derekwyatt/vim-fswitch'
+Plug 'w0rp/ale'
 "Plug 'Valloric/YouCompleteMe'
 "Plug 'rdnetto/YCM-Generator', { 'branch': 'stable' }
 "Plug 'octol/vim-cpp-enhanced-highlight'
-"Plug 'w0rp/ale'
 
 Plug 'mhinz/vim-startify'
 
 if has('nvim')
   " assuming you're using vim-plug: https://github.com/junegunn/vim-plug
-  Plug 'ncm2/ncm2'
-  Plug 'roxma/nvim-yarp'
+  "Plug 'ncm2/ncm2'
+  "Plug 'roxma/nvim-yarp'
 
   " enable ncm2 for all buffers
-  autocmd BufEnter * call ncm2#enable_for_buffer()
+  "autocmd BufEnter * call ncm2#enable_for_buffer()
 
   " IMPORTANTE: :help Ncm2PopupOpen for more information
-  set completeopt=noinsert,menuone,noselect
+  "set completeopt=noinsert,menuone,noselect
 
   " NOTE: you need to install completion sources to get completions. Check
   " our wiki page for a list of sources: https://github.com/ncm2/ncm2/wiki
-  Plug 'ncm2/ncm2-bufword'
-  Plug 'ncm2/ncm2-tmux'
-  Plug 'ncm2/ncm2-path'
+  "Plug 'ncm2/ncm2-bufword'
+  "Plug 'ncm2/ncm2-tmux'
+  "Plug 'ncm2/ncm2-path'
 
-  Plug 'neomake/neomake'
+  "Plug 'neomake/neomake'
 
-  Plug 'ncm2/ncm2-ultisnips'
+  "Plug 'ncm2/ncm2-ultisnips'
 endif
 Plug 'SirVer/ultisnips'
 Plug 'airblade/vim-gitgutter'
@@ -185,10 +187,10 @@ Plug 'PascalZh/vim-racket'
 Plug 'PascalZh/vim-badapple', { 'on': 'BadApple', 'do': './install.sh' } 
 call plug#end()
 
-so ~/.vimrc.bundle
-so ~/.vimrc.appearance
-so ~/.vimrc.mapping
-so ~/.vimrc.language
+so ~/.vim/.vimrc.bundle
+so ~/.vim/.vimrc.appearance
+so ~/.vim/.vimrc.mapping
+so ~/.vim/.vimrc.language
 
 " Abbreviate (deleted) {{{1
 "iab #date <C-R>=strftime("20%y.%m.%d %X")<CR>

@@ -29,3 +29,11 @@
 !/.vim/
 /.vim/*
 !/.vim/suba_snippets/*.snippets
+!/.vim/.vimrc*
+
+!/.config
+/.config/*
+!.config/bspwm
+!.config/sxhkd
+
+!compton.conf

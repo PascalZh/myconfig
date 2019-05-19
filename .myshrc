@@ -2,6 +2,9 @@ if [ ! -f '$HOME/myshrc.local.sh' ];then
   touch $HOME/.myshrc.local
 fi
 source $HOME/.myshrc.local
+export PATH=$PATH:~/anaconda3/bin
+
+# -----------alias-----------
 alias ll='ls -alF'
 alias la='ls -A'
 alias l='ls -CF'
@@ -13,6 +16,9 @@ alias gogh='wget -O gogh https://git.io/vQgMr && chmod +x gogh && ./gogh && rm g
 alias _matlab="matlab -nodesktop -nojvm"
 alias leelaz='~/program_files/leela-zero/build/leelaz'
 alias leelaz_='~/program_files/leela-zero/build/leelaz -w ~/program_files/leela-zero/build/best-network --cpu-only --gtp --noponder -t 4 -p 1'
+
+alias __install_my_tools=InstallMyTools
+
 # ------------------------------------------------
 ### Here are some interesting command tools.
 
@@ -54,4 +60,44 @@ alias leelaz_='~/program_files/leela-zero/build/leelaz -w ~/program_files/leela-
 
 
 # -----------------FUNCTION-----------------------
+function InstallMyTools() {
 
+  CheckInstalled dialog
+  CheckInstalled curl
+
+  #┌───────────────────────────────────┐
+  #│ download nvim and install plugins │
+  #└───────────────────────────────────┘
+  ## download with the following commands
+  #curl -fLo ~/nvim.appimage https://github.com/neovim/neovim/releases/download/nightly/nvim.appimage
+  #chmod u+x ~/nvim.appimage
+
+  if [ ! -f ~/.config/nvim/init.vim ];then
+    if [ ! -d ~/.config/nvim ];then
+      mkdir ~/.config/nvim
+    fi
+    echo "set runtimepath^=~/.vim runtimepath+=~/.vim/after\n\
+      let &packpath = &runtimepath\nsource ~/.vim/.vimrc" > ~/.config/nvim/init.vim
+    echo "~/.config/nvim/init.vim created"
+    curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
+      https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+    vim +PlugInstall +q +q
+    echo "\033[33mplug.vim\033[0m installed"
+  fi
+
+  # Appearance
+  CheckInstalled redshift ; CheckInstalled feh
+  CheckInstalled zathura  ; CheckInstalled rofi
+  CheckInstalled bspwm    ; CheckInstalled sxhkd
+  CheckInstalled compton
+
+  # C++
+
+
+}
+
+function CheckInstalled() {
+  if [ ! -n "$(dpkg -s $1 2> /dev/null)" ];then
+    sudo apt install $1
+  fi
+}
