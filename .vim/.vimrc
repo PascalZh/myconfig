@@ -65,7 +65,6 @@ let $LANG='en' " set message language
 set langmenu=en
 
 " indentation and syntax
-syntax on
 set smartindent
 
 set backspace=indent,eol,start
@@ -187,10 +186,10 @@ Plug 'PascalZh/vim-racket'
 Plug 'PascalZh/vim-badapple', { 'on': 'BadApple', 'do': './install.sh' } 
 call plug#end()
 
-so ~/.vim/.vimrc.bundle
-so ~/.vim/.vimrc.appearance
-so ~/.vim/.vimrc.mapping
-so ~/.vim/.vimrc.language
+source ~/.vim/.vimrc.bundle
+source ~/.vim/.vimrc.appearance
+source ~/.vim/.vimrc.mapping
+source ~/.vim/.vimrc.language
 
 " Abbreviate (deleted) {{{1
 "iab #date <C-R>=strftime("20%y.%m.%d %X")<CR>

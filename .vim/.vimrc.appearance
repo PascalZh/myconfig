@@ -16,8 +16,8 @@ endif
 " 然后set guifont=*
 " 选择字体
 " 然后set guifont?就可以看到字体的名字了
-set cursorline
-set cursorcolumn
+"set cursorline
+"set cursorcolumn
 set ruler
 
 set viewoptions=folds,options,cursor,unix,slash
@@ -63,7 +63,7 @@ if !has('gui_running')
 endif
 " airline {{{1
 "这个是安装字体后 必须设置此项"
-let g:airline_theme="papercolor"
+let g:airline_theme="badwolf"
 let g:airline_powerline_fonts = 1
 
 "打开tabline功能,方便查看Buffer和切换,省去了minibufexpl插件

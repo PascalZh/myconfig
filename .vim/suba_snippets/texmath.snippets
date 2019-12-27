@@ -106,7 +106,7 @@ snippet SI "SI-Unit" w
 \SI{${1:${VISUAL}}}{${2}}
 endsnippet
 
-snippet mi "Math: inline mode" wA
+snippet mk "Math: inline mode" wA
 $${1}$`!p
 if t[2] and t[2][0] not in [',', '.', '?', '-', ' ']:
     snip.rv = ' '
@@ -115,7 +115,7 @@ else:
 `$2
 endsnippet
 
-snippet md "Math: display mode" wA
+snippet dm "Math: display mode" wA
 \[
 $1
 .\] $0

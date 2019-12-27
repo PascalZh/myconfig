@@ -73,6 +73,8 @@ endsnippet
 snippet table "Table environment" b
 \begin{table}[${1:htpb}]
 	\centering
+	\setlength{\tabcolsep}{2.5mm}{}
+	\renewcommand\arraystretch{1.8}
 	\caption{${2:caption}}
 	\label{tab:${3:label}}
 	\begin{${4:t}${4/(t)$|(a)$|(.*)/(?1:abular)(?2:rray)/}}{${5:c}}

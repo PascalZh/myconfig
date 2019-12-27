@@ -1,5 +1,6 @@
 command! Q q!
 command! Qa qa!
+command! Zenmode execute "Goyo" | "Limelight"
 
 " leader and , {{{1
 let mapleader=";"
@@ -21,7 +22,7 @@ nnoremap <leader>u :Utl<cr>
 "nmap <leader>uhw :let g:utl_cfg_hdl_scm_http=g:utl_cfg_hdl_scm_http__wget<cr>
 "nnoremap <leader>w :wa<cr>
 
-nnoremap ,u :GundoToggle<cr>
+nnoremap ,g :GundoToggle<cr>
 nnoremap ,e :call NERDTreeToggleAndMap_b_()<cr>
 nnoremap ,q :call QuickfixToggle("qf")<cr>
 nnoremap ,l :call QuickfixToggle("ll")<cr>
@@ -32,6 +33,7 @@ nnoremap ,r :RainbowParenthesesToggleAll<CR>
 " }}}
 
 " basic {{{1
+nnoremap <space><space> :
 nnoremap Y y$
 nnoremap <Tab> :bnext<cr>
 nnoremap <S-Tab> :bprevious<CR>

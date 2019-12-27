@@ -35,5 +35,6 @@
 /.config/*
 !.config/bspwm
 !.config/sxhkd
+!.config/zathura
 
 !compton.conf
