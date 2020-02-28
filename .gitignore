@@ -37,4 +37,9 @@
 !.config/sxhkd
 !.config/zathura
 
-!compton.conf
+!/.config/fish
+/.config/fish/*
+!/.config/fish/config.fish
+!/.config/fish/functions/*
+
+!.compton.conf

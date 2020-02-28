@@ -1,5 +1,4 @@
-set nocompatible
-" identify platform {{{1
+set nocompatible " identify platform {{{1
 silent function! OSX()
   return has('macunix')
 endfunction
@@ -18,10 +17,10 @@ endif
 
 set encoding=utf-8
 set fileencoding=utf-8
-" tab will be converted to 2 spaces.
-set tabstop=2
-"set softtabstop=2
-set shiftwidth=2
+" tab will be converted to 4 spaces.
+set tabstop=4
+"set softtabstop=4
+set shiftwidth=4
 set expandtab
 set smarttab
 augroup VariousTab
@@ -31,14 +30,10 @@ augroup END
 " }}}
 " other settings {{{1
 
-if has('nvim')
-  autocmd TermOpen * startinsert
-endif
-set belloff=all
+autocmd TermOpen * startinsert
 
 " enable hide the buffer
 set hidden
-set linespace=0
 
 " always use yanking to paste in other place
 if has('clipboard')
@@ -50,10 +45,12 @@ if has('clipboard')
 endif
 set timeoutlen=666
 set virtualedit=onemore
+
 set nospell
 au FileType markdown setlocal spell
 au FileType tex setlocal spell
 set spelllang=en,cjk
+
 set iskeyword-=.                    " '.' is an end of word designator
 set iskeyword-=#                    " '#' is an end of word designator
 set iskeyword-=-
@@ -88,7 +85,10 @@ if exists('+inccommand')
   set inccommand=split
 endif
 
-
+if finddir('.vim/tmp', $HOME) == ''
+  call mkdir($HOME . "/.vim/tmp", "p")
+endif
+set directory=$HOME/.vim/tmp
 
 " }}}
 
@@ -103,7 +103,10 @@ Plug 'ryanoasis/vim-devicons'
 "Plug 'rakr/vim-one'
 Plug 'altercation/vim-colors-solarized'
 Plug 'dracula/vim', { 'as': 'dracula' }
+
 Plug 'kien/rainbow_parentheses.vim', { 'for': 'racket,scheme,lisp'}
+
+Plug 'camspiers/animate.vim' | Plug 'camspiers/lens.vim'
 " }}}
 " Edit {{{
 Plug 'tpope/vim-surround'
@@ -112,23 +115,21 @@ Plug 'sjl/gundo.vim'
 Plug 'jiangmiao/auto-pairs'
 Plug 'scrooloose/nerdcommenter'
 Plug 'godlygeek/tabular'
-Plug 'zhou13/vim-easyescape'
 
 "Plug 'haya14busa/vim-edgemotion'
 
 " 韩国人写的两个插件
-Plug 'junegunn/goyo.vim'
-Plug 'junegunn/limelight.vim'
+Plug 'junegunn/goyo.vim' | Plug 'junegunn/limelight.vim'
 
-Plug 'terryma/vim-multiple-cursors'
-Plug 'terryma/vim-expand-region'
-Plug 'terryma/vim-smooth-scroll'
+Plug 'terryma/vim-multiple-cursors' | Plug 'terryma/vim-expand-region'
+Plug 'yuttie/comfortable-motion.vim'
 " }}}
 " Other {{{
 Plug 'vim-scripts/utl.vim'
 Plug 'scrooloose/nerdtree', { 'on':  'NERDTreeToggle' }
 Plug 'mbbill/fencview'
 Plug 'lervag/vimtex', { 'for': 'tex' }
+Plug 'dstein64/vim-startuptime'
 "Plug 'christoomey/vim-tmux-navigator'
 if LINUX()
   "Plug 'majutsushi/tagbar'
@@ -138,33 +139,14 @@ endif
 " Code {{{
 Plug 'derekwyatt/vim-fswitch'
 Plug 'w0rp/ale'
-"Plug 'Valloric/YouCompleteMe'
-"Plug 'rdnetto/YCM-Generator', { 'branch': 'stable' }
 "Plug 'octol/vim-cpp-enhanced-highlight'
 
+Plug 'enomsg/vim-haskellConcealPlus'
+Plug 'neovimhaskell/haskell-vim'
 Plug 'mhinz/vim-startify'
+Plug 'dag/vim-fish'
 
-if has('nvim')
-  " assuming you're using vim-plug: https://github.com/junegunn/vim-plug
-  "Plug 'ncm2/ncm2'
-  "Plug 'roxma/nvim-yarp'
-
-  " enable ncm2 for all buffers
-  "autocmd BufEnter * call ncm2#enable_for_buffer()
-
-  " IMPORTANTE: :help Ncm2PopupOpen for more information
-  "set completeopt=noinsert,menuone,noselect
-
-  " NOTE: you need to install completion sources to get completions. Check
-  " our wiki page for a list of sources: https://github.com/ncm2/ncm2/wiki
-  "Plug 'ncm2/ncm2-bufword'
-  "Plug 'ncm2/ncm2-tmux'
-  "Plug 'ncm2/ncm2-path'
-
-  "Plug 'neomake/neomake'
-
-  "Plug 'ncm2/ncm2-ultisnips'
-endif
+Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'SirVer/ultisnips'
 Plug 'airblade/vim-gitgutter'
 " }}}
@@ -175,34 +157,16 @@ Plug 'vim-scripts/Nibble'
 Plug 'vim-scripts/genutils', { 'on': 'GameFlappyVird' }
 Plug 'mattn/flappyvird-vim'
 
-Plug 'rbtnn/game_engine.vim'
-Plug 'rbtnn/mario.vim'
-Plug 'rbtnn/puyo.vim'
+Plug 'rbtnn/game_engine.vim' | Plug 'rbtnn/mario.vim' | Plug 'rbtnn/puyo.vim'
 " }}}
 
 " My own plugin
-Plug 'PascalZh/vim-color-explorer'
-Plug 'PascalZh/vim-racket'
+Plug 'PascalZh/vim-color-explorer' | Plug 'PascalZh/vim-racket'
 Plug 'PascalZh/vim-badapple', { 'on': 'BadApple', 'do': './install.sh' } 
+Plug '~/.vim/bundle/omniwindow.nvim'
 call plug#end()
 
 source ~/.vim/.vimrc.bundle
-source ~/.vim/.vimrc.appearance
 source ~/.vim/.vimrc.mapping
+source ~/.vim/.vimrc.appearance
 source ~/.vim/.vimrc.language
-
-" Abbreviate (deleted) {{{1
-"iab #date <C-R>=strftime("20%y.%m.%d %X")<CR>
-" in the Vim, abbreviations are divided into tree species
-" 1: #abc
-" 2: #$%a
-" 3: abc
-" 1: The first place have one special character at the beginning and others are simple
-" letter.
-" 2: The last cahracter is a simple letter, and others are special characters.
-" 3: All characters are simple letters.
-" 
-" <C-R>register can input the value in the register.
-" for example: <C-R>
-" This will return the content in the register(this is default clipboard register).
-" }}}

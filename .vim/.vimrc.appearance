@@ -1,3 +1,4 @@
+let &colorcolumn=join(range(81,999),",")
 if WINDOWS()
     colorscheme dracula
     set guifont=Ubuntu_Mono_derivative_Powerlin:h12:cANSI
@@ -9,15 +10,16 @@ if LINUX()
   colorscheme dracula
   "set guifont=monofur\ for\ Powerline\ 11
   set guifont=FuraCode\ Nerd\ Font\ 10
-  set background=light
 endif
-" common {{{
+
+" common
 " 字体设置方法，windows系统要用windows的命令行安装字体
 " 然后set guifont=*
 " 选择字体
 " 然后set guifont?就可以看到字体的名字了
 "set cursorline
 "set cursorcolumn
+set noequalalways
 set ruler
 
 set viewoptions=folds,options,cursor,unix,slash
@@ -34,7 +36,7 @@ set listchars=tab:\ \ ,eol:$,trail:*,extends:#
 set scrolloff=2                 " Minimum lines to keep above and below cursor
 
 set winminheight=0
-set cmdheight=2
+set cmdheight=1
 set showcmd
 set laststatus=2
 set more
@@ -52,25 +54,24 @@ set guioptions-=L
 set guioptions-=r
 set guioptions-=R
 set guioptions-=b
-" }}}
+
 "  console appearance
 if !has('gui_running')
   colorscheme dracula
-  set background=dark
   "set t_Co=256
   " good colors: solarized, Revolution
   " monofur for powerline is a good font.
 endif
-" airline {{{1
+
+" airline
+"let g:airline_disable_statusline = 1
 "这个是安装字体后 必须设置此项"
 let g:airline_theme="badwolf"
 let g:airline_powerline_fonts = 1
 
 "打开tabline功能,方便查看Buffer和切换,省去了minibufexpl插件
-let g:airline#extensions#tabline#enabled = 1
-let g:airline#extensions#tabline#buffer_nr_show = 1
+"let g:airline#extensions#tabline#enabled = 1
+"let g:airline#extensions#tabline#buffer_nr_show = 1
 
 " 关闭状态显示空白符号计数
 let g:airline#extensions#whitespace#enabled = 0
-let g:airline#extensions#whitespace#symbol = '!'
-" }}}

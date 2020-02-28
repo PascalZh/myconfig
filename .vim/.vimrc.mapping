@@ -5,68 +5,74 @@ command! Zenmode execute "Goyo" | "Limelight"
 " leader and , {{{1
 let mapleader=";"
 
-nnoremap <leader><space> :nohlsearch<cr>
-nnoremap <leader>bg :call ToggleBG()<CR>
-nnoremap <leader>ev :call ManageMyVimrcFiles()<cr>
-vnoremap <leader>g :<c-u>call MyGrepFunc(visualmode())<cr>
+nmap <leader><space> :nohlsearch<cr>
+nmap <leader>bg :call ToggleBG()<CR>
+nmap <leader>ev :call ManageMyVimrcFiles()<cr>
+vmap <leader>g :<c-u>call MyGrepFunc(visualmode())<cr>
 nmap <leader>g g@
 "<leader>hp              Preview the hunk under the cursor.
 "<leader>hs              Stage the hunk under the cursor.
 "<leader>hu              Undo the hunk under the cursor.
-nnoremap <leader>sh :terminal<cr>
-"nnoremap <leader>sv :wa<CR>:so $MYVIMRC<CR>
-nnoremap <leader>sw :FSHere<cr>
-nnoremap <leader>t :Tabularize /
-nnoremap <leader>u :Utl<cr>
+
+nmap <expr> ;r ":split term://ghci ".expand('%')."\n"
+nmap <leader>sh :terminal<cr>
+"nmap <leader>sv :wa<CR>:so $MYVIMRC<CR>
+nmap <leader>sw :FSHere<cr>
+nmap <leader>t :Tabularize /
+vmap <leader>t :Tabularize /
+nmap <leader>u :Utl<cr>
 "nmap <leader>uhs :let g:utl_cfg_hdl_scm_http=g:utl_cfg_hdl_scm_http_system<cr>
 "nmap <leader>uhw :let g:utl_cfg_hdl_scm_http=g:utl_cfg_hdl_scm_http__wget<cr>
 "nnoremap <leader>w :wa<cr>
 
-nnoremap ,g :GundoToggle<cr>
-nnoremap ,e :call NERDTreeToggleAndMap_b_()<cr>
-nnoremap ,q :call QuickfixToggle("qf")<cr>
-nnoremap ,l :call QuickfixToggle("ll")<cr>
-"nnoremap ,t :TagbarToggle<cr>
-nnoremap ,c :ColorExplorerToggle<cr>
-nnoremap ,r :RainbowParenthesesToggleAll<CR>
+nmap ,g :GundoToggle<cr>
+nmap ,e :call NERDTreeToggleAndMap_b_()<cr>
+nmap ,q :call QuickfixToggle("qf")<cr>
+nmap ,l :call QuickfixToggle("ll")<cr>
+nmap ,c :ColorExplorerToggle<cr>
+nmap ,r :RainbowParenthesesToggleAll<CR>
 
 " }}}
 
-" basic {{{1
-nnoremap <space><space> :
+" basic
+
+" my own plugin
+nnoremap <F1> :ZOmniwindowToggle<enter>
+inoremap <F1> <esc>:ZOmniwindowToggle<enter>
+inoremap <expr> j easy_jk#map_j()|inoremap <expr> k easy_jk#map_k()
+cnoremap <expr> j easy_jk#map_j()|cnoremap <expr> k easy_jk#map_k()
+imap ;im <C-O>:call blitz#input_method_open()<CR>
+imap ;ic <C-O>:call blitz#input_method_close()<CR>
+
+nnoremap <space> 2gj
 nnoremap Y y$
 nnoremap <Tab> :bnext<cr>
 nnoremap <S-Tab> :bprevious<CR>
-inoremap <C-l> <C-g>u<Esc>[s1z=`]i<C-g>u
-nnoremap <C-l> i<C-g>u<Esc>[s1z=`]a<C-g>u<Esc>
-nnoremap <C-s> :wa<cr>
-inoremap <C-s> <Esc>:wa<cr>a
+inoremap <C-l> <C-g>u<Esc>[s1z=`]i<C-g>u| nnoremap <C-l> i<C-g>u<Esc>[s1z=`]a<C-g>u<Esc>
+nnoremap <C-s> :wa<cr>|inoremap <C-s> <Esc>:wa<cr>a
 " jk kj in insert mode are mapped to <esc> by vim-easyescape
 "inoremap ;k ;<ESC>
 
-vnoremap < <gv
-vnoremap > >gv
-nnoremap H <C-w>h
-nnoremap L <C-w>l
-nnoremap J <C-w>j
-nnoremap K <C-w>k
-nmap <C-k> <Plug>NERDCommenterToggle
-xmap <C-k> <Plug>NERDCommenterToggle
+vnoremap < <gv|vnoremap > >gv
+
+tnoremap <A-h> <C-\><C-N><C-w>h|tnoremap <A-j> <C-\><C-N><C-w>j|tnoremap <A-k> <C-\><C-N><C-w>k|tnoremap <A-l> <C-\><C-N><C-w>l
+inoremap <A-h> <C-\><C-N><C-w>h|inoremap <A-j> <C-\><C-N><C-w>j|inoremap <A-k> <C-\><C-N><C-w>k|inoremap <A-l> <C-\><C-N><C-w>l
+nnoremap <A-h> <C-w>h|nnoremap <A-j> <C-w>j|nnoremap <A-k> <C-w>k|nnoremap <A-l> <C-w>l
+
+nnoremap <silent> H :call animate#window_delta_width(-10)<CR>
+nnoremap <silent> L :call animate#window_delta_width(10)<CR>
+nnoremap <silent> J :call animate#window_delta_height(-5)<CR>
+nnoremap <silent> K :call animate#window_delta_height(5)<CR>
+
+nmap <C-k> <Plug>NERDCommenterToggle|xmap <C-k> <Plug>NERDCommenterToggle
 
 nnoremap \\ za
-nmap \f <Plug>(easymotion-overwin-f)
-xmap \f <Plug>(easymotion-overwin-f)
-nmap \j <Plug>(easymotion-jumptoanywhere)
-xmap \j <Plug>(easymotion-jumptoanywhere)
-nmap \w <Plug>(easymotion-overwin-w)
-xmap \w <Plug>(easymotion-overwin-w)
-nmap \e <Plug>(easymotion-overwin-e)
-xmap \e <Plug>(easymotion-overwin-e)
+nmap \f <Plug>(easymotion-overwin-f)|xmap \f <Plug>(easymotion-overwin-f)
+nmap \j <Plug>(easymotion-jumptoanywhere)|xmap \j <Plug>(easymotion-jumptoanywhere)
+nmap \w <Plug>(easymotion-overwin-w)|xmap \w <Plug>(easymotion-overwin-w)
+nmap \e <Plug>(easymotion-overwin-e)|xmap \e <Plug>(easymotion-overwin-e)
 "nnoremap mf :wa<cr>:!make flash<cr>
 "nnoremap mm :!make monitor<cr>
-
-au BufEnter *.rkt,*.rktl nnoremap <buffer> <F5> :!racket -t %<cr>
-" }}}
 
 " grep or ack {{{1
 
@@ -93,17 +99,52 @@ func! MyGrepFunc(type)
   let @z=s:store_temp_register
 endfunc
 " }}}
-" }}}
 " ManageMyVimrcFiles() {{{
 func! ManageMyVimrcFiles()
+  AirlineToggle
+  let g:lens#disabled_tmp = g:lens#disabled
+  let g:animate#duration_tmp = g:animate#duration
+  let g:animate#duration = 200.0
+  let g:lens#disabled = 1
+
   tabedit ~/.vim/.vimrc
-  vsplit ~/.vim/.vimrc.mapping
-  wincmd h
-  split ~/.vim/.vimrc.bundle
-  wincmd l
-  split ~/.vim/.vimrc.appearance
-  split ~/.vim/.vimrc.language
-  1wincmd w
+
+  vsplit ~/.vim/.vimrc.mapping | vertical resize 1
+  redraw
+  call animate#window_percent_width(0.4)
+
+  func! Fun1(id)
+      wincmd h | split ~/.vim/.vimrc.bundle | resize 1
+      redraw
+      call animate#window_percent_height(0.5)
+  endfunc
+
+  func! Fun2(id)
+      wincmd l | split ~/.vim/.vimrc.appearance | resize 1
+      redraw
+      call animate#window_percent_height(0.5)
+  endfunc
+
+  func! Fun3(id)
+      vsplit ~/.vim/.vimrc.language | vertical resize 1
+      redraw
+      call animate#window_percent_width(0.2)
+  endfunc
+
+  func! Fun4(id)
+      wincmd t
+      let g:lens#disabled = g:lens#disabled_tmp
+      let g:animate#duration = g:animate#duration_tmp
+      AirlineToggle
+  endfunc
+
+  let tick = float2nr(g:animate#duration)
+  call timer_start(tick*1, function("Fun1"))
+  call timer_start(tick*2, function("Fun2"))
+  call timer_start(tick*3+float2nr(tick * 0.5), function("Fun3"))
+  call timer_start(tick*4+tick, function("Fun4"))
+
+  echo
 endfunc
 " }}}
 " Toggle background {{{
@@ -148,44 +189,7 @@ func! QuickfixToggle(flag)
   endif
 endfunc
 "}}}
-" Shell command(deleted) {{{
-"function! s:RunShellCommand(cmdline)
-"botright new
 
-"setlocal buftype=nofile
-"setlocal bufhidden=delete
-"setlocal nobuflisted
-"setlocal noswapfile
-"setlocal nowrap
-"setlocal filetype=shell
-"setlocal syntax=shell
-
-"call setline(1, a:cmdline)
-"call setline(2, substitute(a:cmdline, '.', '=', 'g'))
-"execute 'silent $read !' . escape(a:cmdline, '%#')
-"normal! gg
-"put! ='Press q to quit.'
-"setlocal nomodifiable
-"nmap <buffer> q :bd<cr>:wincmd p<cr>
-"1
-"endfunction
-
-"command! -complete=file -nargs=+ Shell call s:RunShellCommand(<q-args>)
-" e.g. Grep current file for <search_term>: Shell grep -Hn <search_term> %
-" }}}
-" {{{1解决编辑中文文档的输入法切换（暂未解决）
-"inoremap jk <ESC><S>
-"nnoremap i i<S>
-"nnoremap I I<S>
-"nnoremap a a<S>
-"nnoremap A A<S>
-"nnoremap C C<S>
-" c的问题还没有解决办法，不过也没什么必要
-"nnoremap o o<S>
-"nnoremap O O<S>
-"nnoremap s s<S>
-"nnoremap S S<S>
-" }}}
 
 " M (man): get helped {{{
 
@@ -194,13 +198,13 @@ vnoremap M K
 au BufEnter *.rkt,*.rktl nnoremap <buffer> M :silent !raco docs <cword><cr>:redraw!<cr>
 au BufEnter *.rkt,*.rktl vnoremap <buffer> M :call <SID>Racket_visual_doc()<cr>
 
-" For the visual mode M mapping, it's slightly more convoluted to get the 
+" For the visual mode M mapping, it's slightly more convoluted to get the
 " selected text:
 function! s:Racket_visual_doc()
   try
     let l:old_a = @a
     normal! gv"ay
-    call system("raco docs '". @a . "'")
+    call system("rack docs '". @a . "'")
     redraw!
     return @a
   finally
@@ -208,11 +212,23 @@ function! s:Racket_visual_doc()
   endtry
 endfunction
 " }}}
+" {{{ Debug
+" run <url:vimscript:packadd termdebug> to add Termdebug
 
-" for latex {{{
-augroup  LaTeX
-  au!
-  "d means dollar.
-  au FileType tex imap ;d $
-augroup END
+nnoremap <F5>    :Run<cr>
+nnoremap <S-F5>  :Continue
+" set breakpoint
+nnoremap <F9>    :Break<cr>
+" step over
+nnoremap <F10>   :Over<cr>
+" step into
+nnoremap <F11>   :Step<cr>
+" step out
+"nnoremap <S-F11> :Finish<cr>
+
+"au BufEnter *.rkt,*.rktl nnoremap <buffer> <F5> :!racket -t %<cr>
+"function! s:start_debug(ft)
+    "if ft == 'haskell'
+    "endif
+"endfunction
 " }}}

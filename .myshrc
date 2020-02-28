@@ -1,26 +1,93 @@
-if [ ! -f '$HOME/myshrc.local.sh' ];then
-  touch $HOME/.myshrc.local
-fi
-source $HOME/.myshrc.local
 #export PATH=$PATH:~/anaconda3/bin
-
-# oh-my-zsh plugins
-plugins=(git)
-
 # --------------------alias-----------------------
 alias ll='ls -alF'
 alias la='ls -A'
 alias l='ls -CF'
-alias pls='sudo'
+alias pls='sudo apt'
 alias fortune='fortune | lolcat'
-#alias rm='rm -i'
+alias rm='rm -i'
 alias __create_esp_project='source ~/bin/_E_create_esp_project_E_'
 alias gogh='wget -O gogh https://git.io/vQgMr && chmod +x gogh && ./gogh'
-alias _matlab="matlab -nodesktop -nojvm"
+alias __matlab="matlab -nodesktop -nojvm"
 alias leelaz='~/program_files/leela-zero/build/leelaz'
 alias leelaz_='~/program_files/leela-zero/build/leelaz -w ~/program_files/leela-zero/build/best-network --cpu-only --gtp --noponder -t 4 -p 1'
 
-alias vim='~/bin/nvim.appimage'
+alias __edit_myshrc='vim ~/.myshrc'
+alias __source_myshrc='source ~/.myshrc'
+alias __mount_windows_shared_folder='sudo mount -t cifs -o username=PascalZh,password=zhang19980918,uid=pascal //192.168.31.82/biyesheji ~/Share'
+
+__git_clone() {
+  if [ $# -eq 1 ]; then
+    git clone https://github.com/PascalZh/$1.git
+  elif [ $# -eq 2 ]; then
+    git clone https://github.com/$1/$2.git
+  else
+    echo arguments are more than 2!
+  fi
+}
+
+
+# -----------------FUNCTION-----------------------
+function __install_my_tools() {
+
+  CheckInstalled dialog
+  CheckInstalled curl
+
+  dialog --checklist "Install some common softwares" 0 0 5 \
+    "nvim" "get newest NVIM nightly(unstable) and put it in ~/bin" off \
+    "setup_nvim" "create init.vim; get the plug.vim installed; get all plugins installed" off \
+    2> /tmp/dialogtmp
+  if [ $? -eq 0 ];then
+
+    if [ -n "$(grep -w "nvim" /tmp/dialogtmp)" ];then
+      #┌───────────────────────────────────┐
+      #│ download nvim and install plugins │
+      #└───────────────────────────────────┘
+      curl -fLo ~/nvim.appimage https://github.com/neovim/neovim/releases/download/nightly/nvim.appimage
+      if [ ! -d ~/bin ];then
+        mkdir ~/bin
+      fi
+      chmod u+x ~/nvim.appimage && mv ~/nvim.appimage ~/bin
+    fi
+
+    if [ -n "$(grep -w "setup_nvim" /tmp/dialogtmp)" ];then
+      if [ ! -f ~/.config/nvim/init.vim ];then
+        if [ ! -d ~/.config/nvim ];then
+          mkdir ~/.config/nvim
+        fi
+        if [ ! -d ~/.vim ];then
+          mkdir -p ~/.vim/autoload
+        fi
+        echo "set runtimepath^=~/.vim runtimepath+=~/.vim/after\n\
+          let &packpath = &runtimepath\nsource ~/.vim/.vimrc" > ~/.config/nvim/init.vim
+        echo "~/.config/nvim/init.vim created"
+        curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
+          https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+        vim +PlugInstall +q +q
+        echo "\033[33mplug.vim\033[0m installed"
+      else
+        echo "\033[33mplug.vim\033[0m already installed; you can install plugins manually"
+      fi
+    fi
+
+  fi
+
+
+  # Appearance
+  CheckInstalled redshift ; CheckInstalled feh
+  CheckInstalled zathura  ; CheckInstalled rofi
+  CheckInstalled bspwm    ; CheckInstalled sxhkd
+  CheckInstalled compton
+
+  # C++
+
+}
+
+CheckInstalled() {
+  if [ -z "$(dpkg -s $1 2> /dev/null)" ];then
+    sudo apt install $1
+  fi
+}
 
 
 # ------------------------------------------------
@@ -54,67 +121,10 @@ alias vim='~/bin/nvim.appimage'
 
 ### And here are some recommendations of some useful software.
 
-#tilda
+# tilda
 
 # redshift
-# it protects your eyes.
+ it protects your eyes.
 
 # Glyphr
 # design your font
-
-
-# -----------------FUNCTION-----------------------
-function __install_my_tools() {
-
-  CheckInstalled dialog
-  CheckInstalled curl
-
-  dialog --checklist "Install some common softwares" 0 0 5 \
-    "nvim" "get newest NVIM nightly(unstable) and put it in ~/bin" off \
-    "setup_nvim" "create init.vim; get the plug.vim installed; get all plugins installed" off \
-    2> /tmp/dialogtmp
-  if [ $? -eq 0 ];then
-    if [ -n "$(grep -w "nvim" /tmp/dialogtmp)" ];then
-      #┌───────────────────────────────────┐
-      #│ download nvim and install plugins │
-      #└───────────────────────────────────┘
-      curl -fLo ~/nvim.appimage https://github.com/neovim/neovim/releases/download/nightly/nvim.appimage
-      chmod u+x ~/nvim.appimage && mv ~/nvim.appimage ~/bin
-    fi
-    if [ -n "$(grep -w "setup_nvim" /tmp/dialogtmp)" ];then
-      if [ ! -f ~/.config/nvim/init.vim ];then
-        if [ ! -d ~/.config/nvim ];then
-          mkdir ~/.config/nvim
-        fi
-        if [ ! -d ~/.vim ];then
-          mkdir -p ~/.vim/autoload
-        fi
-        echo "set runtimepath^=~/.vim runtimepath+=~/.vim/after\n\
-          let &packpath = &runtimepath\nsource ~/.vim/.vimrc" > ~/.config/nvim/init.vim
-        echo "~/.config/nvim/init.vim created"
-        curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
-          https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
-        vim +PlugInstall +q +q
-        echo "\033[33mplug.vim\033[0m installed"
-      else
-        echo "\033[33mplug.vim\033[0m already installed; you can install plugins manually"
-      fi
-    fi
-  fi
-
-
-  # Appearance
-  CheckInstalled redshift ; CheckInstalled feh
-  CheckInstalled zathura  ; CheckInstalled rofi
-  CheckInstalled bspwm    ; CheckInstalled sxhkd
-  CheckInstalled compton
-
-  # C++
-
-}
-
-CheckInstalled() {
-  if [ -z "$(dpkg -s $1 2> /dev/null)" ];then
-    sudo apt install $1
-  fi
-}

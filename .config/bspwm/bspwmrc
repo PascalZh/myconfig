@@ -2,19 +2,22 @@
 
 sxhkd &
 
-bspc monitor -d web term chat code music 6 7 
+bspc config normal_border_color "#10151b"
+bspc config focused_border_color "#98d1ce"
 
-bspc config border_width         0 
+bspc monitor -d term media web chat code help show_off
+
+bspc config border_width         1 
 bspc config window_gap           37 
 
-bspc config split_ratio          0.52
+bspc config split_ratio          0.618
 bspc config borderless_monocle   true
 bspc config gapless_monocle      true
 
-#bspc desktop ^1 -l monocle
-bspc desktop ^1 -l normal
+bspc desktop term -l normal
+bspc desktop web -l monocle
 
-bspc rule -a "*" split_dir=left
+#bspc rule -a "*" split_dir=left
 bspc rule -a Zathura split_dir=right focus=off state=tiled
 #bspc rule -a Gimp desktop=^8 state=floating follow=on
 #bspc rule -a Google-chrome desktop=^1
@@ -38,18 +41,28 @@ bspc config pointer_action1 move
 bspc config pointer_action2 none
 bspc config pointer_action3 resize_corner
 bspc config click_to_focus true
-#bspc config focus_follows_pointer true
+#bspc config ignore_ewmh_focus true
 
 bspc config presel_feedback_color \#aaaaaa
 
 xsetroot -cursor_name left_ptr
  
-feh --randomize --bg-fill ~/Pictures/background/ubuntu_blue.png
-compton --config ~/compton.conf -b
+#┌───────────┐
+#│ autostart │
+#└───────────┘
 xrdb -merge ~/.Xdefaults
-redshift &
 
-lantern
+feh --randomize --bg-fill ~/Pictures/wallpaper
 
-#panel &
-polybar top &
+pgrep -u "$USER" compton >/dev/null || \
+    compton --config ~/.compton.conf -b
+
+pgrep -u "$USER" redshift >/dev/null || \
+    redshift &
+
+#lantern
+
+gnome-terminal --hide-menubar -e fish
+
+# set `wm-restack = bspwm` to avoid visible polybar on fullscreen
+. ~/.config/polybar/launch.sh &
