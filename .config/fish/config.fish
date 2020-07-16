@@ -1,20 +1,23 @@
 # daily use
-set -a -x PATH /usr/local/lib/nodejs/node-v12.16.0-linux-x64/bin
+#set -a -x PATH /usr/local/lib/nodejs/node-v12.16.0-linux-x64/bin
 if status --is-interactive
-    alias ll 'ls -alF'
+    alias ll 'ls -alhF'
     alias la 'ls -A'
     alias l 'ls -CF'
     # -a: --add; -g: --global
     abbr -a -g pls 'sudo'
     abbr -a -g rm 'rm -i'
     abbr -a -g vim nvim
+    abbr -a -g t tree -h
 
     abbr -a -g gs 'git status'
     abbr -a -g ga 'git add'
+    abbr -a -g gco 'git checkout --cached'
+    abbr -a -g gcm 'git commit -m'
     abbr -a -g gl 'git lslog'
-    abbr -a -g gc 'git checkout'
     abbr -a -g gd 'git diff'
 
+    abbr -a -g m 'make -j2'
     abbr -a -g sai sudo apt install
     abbr -a -g sar sudo apt remove
 
@@ -142,7 +145,10 @@ function my_install_my_tools
     my_check_installed bspwm    ; my_check_installed sxhkd
     my_check_installed compton
 
+    # Some useful command
     my_check_installed neofetch
+    my_check_installed ack-grep
+    my_check_installed ncdu
 
     # C++
 end
@@ -157,7 +163,7 @@ end
 function my_show_cheatsheet
     echo "########
 disable bold font in gnome-terminal, try tab to complete the long code below
-> conf write /org/gnome/terminal/legacy/profiles:/:a372873d-7fcd-4f50-9566-6aa3c0870ea8/allow-bold  false
+> dconf write /org/gnome/terminal/legacy/profiles:/:a372873d-7fcd-4f50-9566-6aa3c0870ea8/allow-bold  false
 
 ########"
 end

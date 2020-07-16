@@ -10,14 +10,18 @@ nmap <leader>bg :call ToggleBG()<CR>
 nmap <leader>ev :call ManageMyVimrcFiles()<cr>
 vmap <leader>g :<c-u>call MyGrepFunc(visualmode())<cr>
 nmap <leader>g g@
-"<leader>hp              Preview the hunk under the cursor.
-"<leader>hs              Stage the hunk under the cursor.
-"<leader>hu              Undo the hunk under the cursor.
 
-nmap <expr> ;r ":split term://ghci ".expand('%')."\n"
+"imap <leader>im <C-O>:call blitz#input_method_open()<CR>|imap <leader>ic <C-O>:call blitz#input_method_close()<CR>
+nmap <expr> <leader>r ":split term://ghci ".expand('%')."\n"
 nmap <leader>sh :terminal<cr>
 "nmap <leader>sv :wa<CR>:so $MYVIMRC<CR>
 nmap <leader>sw :FSHere<cr>
+
+nmap <silent> <leader>wh :call animate#window_delta_width(-10)<CR>
+nmap <silent> <leader>wl :call animate#window_delta_width(10)<CR>
+nmap <silent> <leader>wj :call animate#window_delta_height(-5)<CR>
+nmap <silent> <leader>wk :call animate#window_delta_height(5)<CR>
+
 nmap <leader>t :Tabularize /
 vmap <leader>t :Tabularize /
 nmap <leader>u :Utl<cr>
@@ -25,44 +29,42 @@ nmap <leader>u :Utl<cr>
 "nmap <leader>uhw :let g:utl_cfg_hdl_scm_http=g:utl_cfg_hdl_scm_http__wget<cr>
 "nnoremap <leader>w :wa<cr>
 
-nmap ,g :GundoToggle<cr>
-nmap ,e :call NERDTreeToggleAndMap_b_()<cr>
-nmap ,q :call QuickfixToggle("qf")<cr>
-nmap ,l :call QuickfixToggle("ll")<cr>
 nmap ,c :ColorExplorerToggle<cr>
-nmap ,r :RainbowParenthesesToggleAll<CR>
+nmap ,e :call NERDTreeToggleAndMap_b_()<cr>
+nmap ,g :GundoToggle<cr>
+nmap ,l :call QuickfixToggle("ll")<cr>
+nmap ,q :call QuickfixToggle("qf")<cr>
+nmap ,s :set spell!<cr>
 
 " }}}
 
 " basic
 
 " my own plugin
-nnoremap <F1> :ZOmniwindowToggle<enter>
-inoremap <F1> <esc>:ZOmniwindowToggle<enter>
-inoremap <expr> j easy_jk#map_j()|inoremap <expr> k easy_jk#map_k()
+nmap <F1> :ZOmniwindowToggle<enter>
+imap <F1> <esc>:ZOmniwindowToggle<enter>
+" pear-tree plugin will remap <Esc>, in order to use this
+" plugin, don't use noremap
+imap <expr> j easy_jk#map_j()|imap <expr> k easy_jk#map_k()
 cnoremap <expr> j easy_jk#map_j()|cnoremap <expr> k easy_jk#map_k()
-imap ;im <C-O>:call blitz#input_method_open()<CR>
-imap ;ic <C-O>:call blitz#input_method_close()<CR>
 
+vmap X y/<C-R>"<CR>
 nnoremap <space> 2gj
 nnoremap Y y$
-nnoremap <Tab> :bnext<cr>
-nnoremap <S-Tab> :bprevious<CR>
-inoremap <C-l> <C-g>u<Esc>[s1z=`]i<C-g>u| nnoremap <C-l> i<C-g>u<Esc>[s1z=`]a<C-g>u<Esc>
+nnoremap <Tab> :bn<cr>|nnoremap <S-Tab> :bN<CR>
+nnoremap <C-p> :<C-p>
+nnoremap <C-q> <C-w>q
+inoremap <C-l> <C-g>u<Esc>[s1z=`]i<C-g>u|nnoremap <C-l> i<C-g>u<Esc>[s1z=`]a<C-g>u<Esc>
 nnoremap <C-s> :wa<cr>|inoremap <C-s> <Esc>:wa<cr>a
 " jk kj in insert mode are mapped to <esc> by vim-easyescape
 "inoremap ;k ;<ESC>
 
 vnoremap < <gv|vnoremap > >gv
 
-tnoremap <A-h> <C-\><C-N><C-w>h|tnoremap <A-j> <C-\><C-N><C-w>j|tnoremap <A-k> <C-\><C-N><C-w>k|tnoremap <A-l> <C-\><C-N><C-w>l
-inoremap <A-h> <C-\><C-N><C-w>h|inoremap <A-j> <C-\><C-N><C-w>j|inoremap <A-k> <C-\><C-N><C-w>k|inoremap <A-l> <C-\><C-N><C-w>l
-nnoremap <A-h> <C-w>h|nnoremap <A-j> <C-w>j|nnoremap <A-k> <C-w>k|nnoremap <A-l> <C-w>l
+"tnoremap <A-h> <C-\><C-N><C-w>h|tnoremap <A-j> <C-\><C-N><C-w>j|tnoremap <A-k> <C-\><C-N><C-w>k|tnoremap <A-l> <C-\><C-N><C-w>l
+"inoremap <A-h> <C-\><C-N><C-w>h|inoremap <A-j> <C-\><C-N><C-w>j|inoremap <A-k> <C-\><C-N><C-w>k|inoremap <A-l> <C-\><C-N><C-w>l
 
-nnoremap <silent> H :call animate#window_delta_width(-10)<CR>
-nnoremap <silent> L :call animate#window_delta_width(10)<CR>
-nnoremap <silent> J :call animate#window_delta_height(-5)<CR>
-nnoremap <silent> K :call animate#window_delta_height(5)<CR>
+nnoremap H <C-w>h|nnoremap J <C-w>j|nnoremap K <C-w>k|nnoremap L <C-w>l
 
 nmap <C-k> <Plug>NERDCommenterToggle|xmap <C-k> <Plug>NERDCommenterToggle
 
@@ -101,10 +103,10 @@ endfunc
 " }}}
 " ManageMyVimrcFiles() {{{
 func! ManageMyVimrcFiles()
-  AirlineToggle
-  let g:lens#disabled_tmp = g:lens#disabled
-  let g:animate#duration_tmp = g:animate#duration
-  let g:animate#duration = 200.0
+  "AirlineToggle
+  let s:disabled_tmp = g:lens#disabled
+  let s:duration_tmp = g:animate#duration
+  let g:animate#duration = 400.0
   let g:lens#disabled = 1
 
   tabedit ~/.vim/.vimrc
@@ -133,16 +135,17 @@ func! ManageMyVimrcFiles()
 
   func! Fun4(id)
       wincmd t
-      let g:lens#disabled = g:lens#disabled_tmp
-      let g:animate#duration = g:animate#duration_tmp
-      AirlineToggle
+      "let g:lens#disabled = s:disabled_tmp
+      let g:lens#disabled = 0
+      let g:animate#duration = s:duration_tmp
+      "AirlineToggle
   endfunc
 
   let tick = float2nr(g:animate#duration)
   call timer_start(tick*1, function("Fun1"))
   call timer_start(tick*2, function("Fun2"))
-  call timer_start(tick*3+float2nr(tick * 0.5), function("Fun3"))
-  call timer_start(tick*4+tick, function("Fun4"))
+  call timer_start(tick*3, function("Fun3"))
+  call timer_start(tick*4, function("Fun4"))
 
   echo
 endfunc
@@ -153,8 +156,10 @@ function! ToggleBG()
   " Inversion
   if s:tbg == "dark"
     set background=light
+    echo "set background=light"
   else
     set background=dark
+    echo "set background=dark"
   endif
 endfunction
 " }}}

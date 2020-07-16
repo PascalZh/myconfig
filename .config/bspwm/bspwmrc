@@ -10,7 +10,7 @@ bspc monitor -d term media web chat code help show_off
 bspc config border_width         1 
 bspc config window_gap           37 
 
-bspc config split_ratio          0.618
+bspc config split_ratio          0.52
 bspc config borderless_monocle   true
 bspc config gapless_monocle      true
 
@@ -65,4 +65,4 @@ pgrep -u "$USER" redshift >/dev/null || \
 gnome-terminal --hide-menubar -e fish
 
 # set `wm-restack = bspwm` to avoid visible polybar on fullscreen
-. ~/.config/polybar/launch.sh &
+#. ~/.config/polybar/launch.sh &

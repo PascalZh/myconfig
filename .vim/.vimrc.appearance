@@ -1,16 +1,11 @@
-let &colorcolumn=join(range(81,999),",")
-if WINDOWS()
-    colorscheme dracula
-    set guifont=Ubuntu_Mono_derivative_Powerlin:h12:cANSI
-    if exists('&guifontwide')
-        "set guifontwide=幼圆:h12
-    endif
-endif
-if LINUX()
-  colorscheme dracula
-  "set guifont=monofur\ for\ Powerline\ 11
-  set guifont=FuraCode\ Nerd\ Font\ 10
-endif
+augroup Z_APPEARANCE
+    au!
+    au FileType haskell,python,vim,cpp,c,javascript,markdown setlocal colorcolumn=81 |
+                \ hi ColorColumn ctermbg=DarkMagenta guibg=DarkMagenta
+augroup END
+
+set termguicolors
+colorscheme NeoSolarized
 
 " common
 " 字体设置方法，windows系统要用windows的命令行安装字体
@@ -43,7 +38,7 @@ set more
 
 " 设置了之后，vim就不会在一行文字超过一定长度后自动按Enter换行
 set whichwrap=b,s,h,l,<,>,[,]
-set wrap
+set nowrap
 set textwidth=0
 
 " Toggle Menu and Toolbar
@@ -55,23 +50,32 @@ set guioptions-=r
 set guioptions-=R
 set guioptions-=b
 
-"  console appearance
-if !has('gui_running')
-  colorscheme dracula
-  "set t_Co=256
-  " good colors: solarized, Revolution
-  " monofur for powerline is a good font.
-endif
-
 " airline
 "let g:airline_disable_statusline = 1
 "这个是安装字体后 必须设置此项"
-let g:airline_theme="badwolf"
-let g:airline_powerline_fonts = 1
+"let g:airline_theme="qwq"
+"let g:airline_powerline_fonts = 1
 
 "打开tabline功能,方便查看Buffer和切换,省去了minibufexpl插件
 "let g:airline#extensions#tabline#enabled = 1
 "let g:airline#extensions#tabline#buffer_nr_show = 1
 
 " 关闭状态显示空白符号计数
-let g:airline#extensions#whitespace#enabled = 0
+"let g:airline#extensions#whitespace#enabled = 0
+
+" lightline
+function! CocCurrentFunction()
+    return get(b:, 'coc_current_function', '')
+endfunction
+
+let g:lightline = {
+      \ 'colorscheme': 'wombat',
+      \ 'active': {
+      \   'left': [ [ 'mode', 'paste' ],
+      \             [ 'cocstatus', 'currentfunction', 'readonly', 'filename', 'modified' ] ]
+      \ },
+      \ 'component_function': {
+      \   'cocstatus': 'coc#status',
+      \   'currentfunction': 'CocCurrentFunction'
+      \ },
+      \ }
