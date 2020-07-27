@@ -1,4 +1,6 @@
 # daily use
+#set -x http_proxy http://192.168.31.88:8889
+#set -x https_proxy https://192.168.31.88:8888
 #set -a -x PATH /usr/local/lib/nodejs/node-v12.16.0-linux-x64/bin
 if status --is-interactive
     alias ll 'ls -alhF'
@@ -87,7 +89,7 @@ function my_install_my_tools
     my_check_installed curl
 
     dialog --checklist "Install some common softwares" 0 0 5 \
-    "nvim"            "get newest NVIM nightly(unstable) and put it in ~/bin"                  off \
+    "nvim"            "get newest NVIM nightly(unstable) and put it in /usr/local/bin"         off \
     "setup_nvim"      "create init.vim; get the plug.vim installed; get all plugins installed" off \
     "z_lua_for_fish"  "clone z.lua in ~/.local/share and install z.lua for fish"               off \
     "nodejs"          "show how to install nodejs"                                             off \

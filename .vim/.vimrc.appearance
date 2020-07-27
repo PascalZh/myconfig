@@ -1,11 +1,11 @@
 augroup Z_APPEARANCE
-    au!
-    au FileType haskell,python,vim,cpp,c,javascript,markdown setlocal colorcolumn=81 |
-                \ hi ColorColumn ctermbg=DarkMagenta guibg=DarkMagenta
+  au!
+  au FileType haskell,python,vim,cpp,c,javascript,markdown setlocal colorcolumn=81 |
+        \ hi ColorColumn ctermbg=Green guibg=Green
 augroup END
 
 set termguicolors
-colorscheme NeoSolarized
+colorscheme one
 
 " common
 " 字体设置方法，windows系统要用windows的命令行安装字体
@@ -15,7 +15,6 @@ colorscheme NeoSolarized
 "set cursorline
 "set cursorcolumn
 set noequalalways
-set ruler
 
 set viewoptions=folds,options,cursor,unix,slash
 set shortmess+=filmnrxoOtT          " Abbrev. of messages (avoids 'hit enter')
@@ -63,19 +62,38 @@ set guioptions-=b
 " 关闭状态显示空白符号计数
 "let g:airline#extensions#whitespace#enabled = 0
 
-" lightline
+" light line
 function! CocCurrentFunction()
-    return get(b:, 'coc_current_function', '')
+  return get(b:, 'coc_current_function', '')
 endfunction
 
 let g:lightline = {
-      \ 'colorscheme': 'wombat',
+      \ 'colorscheme': 'PaperColor',
       \ 'active': {
       \   'left': [ [ 'mode', 'paste' ],
       \             [ 'cocstatus', 'currentfunction', 'readonly', 'filename', 'modified' ] ]
       \ },
-      \ 'component_function': {
-      \   'cocstatus': 'coc#status',
-      \   'currentfunction': 'CocCurrentFunction'
+      \ 'component': {
+      \   'lineinfo': ' %3l:%-2v',
       \ },
+      \ 'component_function': {
+      \   'readonly': 'LightlineReadonly',
+      \   'cocstatus': 'coc#status',
+      \   'currentfunction': 'CocCurrentFunction',
+      \   'filetype': 'MyFiletype',
+      \   'fileformat': 'MyFileformat',
+      \ },
+      \ 'separator': { 'left': '', 'right': '' },
+      \ 'subseparator': { 'left': '│', 'right': '│' },
       \ }
+function! LightlineReadonly()
+  return &readonly ? '' : ''
+endfunction
+function! MyFiletype()
+  return winwidth(0) > 70 ? (strlen(&filetype) ? WebDevIconsGetFileTypeSymbol() : 'no ft') : ''
+endfunction
+
+function! MyFileformat()
+  return winwidth(0) > 70 ? (WebDevIconsGetFileFormatSymbol()) : ''
+endfunction
+

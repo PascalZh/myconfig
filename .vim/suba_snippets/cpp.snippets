@@ -28,6 +28,21 @@ def write_docstring_args(arglist, snip):
 endglobal
 
 ###########################################################################
+#                            My Own Snippets                              #
+###########################################################################
+snippet inc "#include <...> (include)" b
+#include <$1>$0
+endsnippet
+
+snippet incl "include *.hpp file (include)" b
+#include "$1.hpp"$0
+endsnippet
+
+snippet vec "vector (vector)"
+vector<${1:char}> $0
+endsnippet
+
+###########################################################################
 #                            TextMate Snippets                            #
 ###########################################################################
 snippet beginend "$1.begin(), $1.end() (beginend)"
@@ -67,31 +82,9 @@ snippet map "std::map (map)"
 std::map<${1:key}, ${2:value}> map$0;
 endsnippet
 
-snippet vector "std::vector (v)"
-std::vector<${1:char}> v$0;
-endsnippet
-
 snippet tp "template <typename ..> (template)"
 template <typename ${1:_InputIter}>
 endsnippet
-
-snippet cla "An entire .h generator" b
-#ifndef ${2:`!v substitute(vim_snippets#Filename('$1_H','ClassName'),'.*','\U&\E','')`}
-#define $2
-
-class ${1:`!v substitute(substitute(vim_snippets#Filename('$1','ClassName'),'^.','\u&',''), '_\(\w\)', '\u\1', 'g')`}
-{
-private:
-	$3
-
-public:
-	$1();
-	virtual ~$1();
-};
-
-#endif /* $2 */
-endsnippet
-
 
 snippet fnc "Basic c++ doxygen function template" b
 /**
@@ -106,4 +99,5 @@ ${1:ReturnType} ${2:FunctionName}(${3:param})
 	${0:FunctionBody}
 }
 endsnippet
+
 # vim:ft=snippets:

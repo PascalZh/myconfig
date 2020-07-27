@@ -1,3 +1,10 @@
+" vim games {{{1
+command! GameCodeBreak VimGameCodeBreak
+command! GameNibble Nibble
+command! GameFlappyVird FlappyVird
+command! GameMario Mario
+command! GamePuyo Puyo
+" }}}
 command! Q q!
 command! Qa qa!
 command! Zenmode execute "Goyo" | "Limelight"
@@ -27,52 +34,78 @@ vmap <leader>t :Tabularize /
 nmap <leader>u :Utl<cr>
 "nmap <leader>uhs :let g:utl_cfg_hdl_scm_http=g:utl_cfg_hdl_scm_http_system<cr>
 "nmap <leader>uhw :let g:utl_cfg_hdl_scm_http=g:utl_cfg_hdl_scm_http__wget<cr>
-"nnoremap <leader>w :wa<cr>
 
 nmap ,c :ColorExplorerToggle<cr>
-nmap ,e :call NERDTreeToggleAndMap_b_()<cr>
-nmap ,g :GundoToggle<cr>
-nmap ,l :call QuickfixToggle("ll")<cr>
-nmap ,q :call QuickfixToggle("qf")<cr>
-nmap ,s :set spell!<cr>
+nmap <silent> ,e :call NERDTreeToggleAndMap_b_()<cr>
+nmap ,m :GundoToggle<cr>
+nmap <silent> ,l :call QuickfixToggle("ll")<cr>
+nmap <silent> ,q :call QuickfixToggle("qf")<cr>
+nmap ,s :Startify<cr>
 
 " }}}
 
-" basic
+" Basic
 
-" my own plugin
+" My own plugin
+
+if system("pgrep -f Practice/Shell/record_keyboard.py") == ""
+  call jobstart(["python3", expand("~/Practice/Shell/record_keyboard.py")
+        \, expand("~/Practice/Shell/kb_record.db")]
+        \, {'detach':1})
+endif
+au VimLeave * call system("pgrep -f Practice/Shell/record_keyboard.py | xargs -r kill")
+
 nmap <F1> :ZOmniwindowToggle<enter>
 imap <F1> <esc>:ZOmniwindowToggle<enter>
-" pear-tree plugin will remap <Esc>, in order to use this
-" plugin, don't use noremap
-imap <expr> j easy_jk#map_j()|imap <expr> k easy_jk#map_k()
-cnoremap <expr> j easy_jk#map_j()|cnoremap <expr> k easy_jk#map_k()
+tmap <F1> <C-\><C-n>:ZOmniwindowToggle<enter>
+
+" In order to use pear-tree, don't use noremap
+imap <expr> j easy_jk#map_j()
+imap <expr> k easy_jk#map_k()
+cnoremap <expr> j easy_jk#map_j()
+cnoremap <expr> k easy_jk#map_k()
 
 vmap X y/<C-R>"<CR>
 nnoremap <space> 2gj
 nnoremap Y y$
-nnoremap <Tab> :bn<cr>|nnoremap <S-Tab> :bN<CR>
+
+nnoremap <silent> <Tab> :bn<cr>
+nnoremap <silent> <S-Tab> :bN<CR>
+
 nnoremap <C-p> :<C-p>
 nnoremap <C-q> <C-w>q
-inoremap <C-l> <C-g>u<Esc>[s1z=`]i<C-g>u|nnoremap <C-l> i<C-g>u<Esc>[s1z=`]a<C-g>u<Esc>
-nnoremap <C-s> :wa<cr>|inoremap <C-s> <Esc>:wa<cr>a
+
+inoremap <C-l> <C-g>u<Esc>$[s1z=`]i<C-g>u
+nnoremap <C-l> i<C-g>u<Esc>$[s1z=`]a<C-g>u<Esc>
+
+nnoremap <C-s> :wa<cr>
+inoremap <C-s> <Esc>:wa<cr>a
 " jk kj in insert mode are mapped to <esc> by vim-easyescape
 "inoremap ;k ;<ESC>
 
-vnoremap < <gv|vnoremap > >gv
+vnoremap < <gv
+vnoremap > >gv
 
 "tnoremap <A-h> <C-\><C-N><C-w>h|tnoremap <A-j> <C-\><C-N><C-w>j|tnoremap <A-k> <C-\><C-N><C-w>k|tnoremap <A-l> <C-\><C-N><C-w>l
 "inoremap <A-h> <C-\><C-N><C-w>h|inoremap <A-j> <C-\><C-N><C-w>j|inoremap <A-k> <C-\><C-N><C-w>k|inoremap <A-l> <C-\><C-N><C-w>l
 
-nnoremap H <C-w>h|nnoremap J <C-w>j|nnoremap K <C-w>k|nnoremap L <C-w>l
+nnoremap H <C-w>h
+nnoremap J <C-w>j
+nnoremap K <C-w>k
+nnoremap L <C-w>l
 
-nmap <C-k> <Plug>NERDCommenterToggle|xmap <C-k> <Plug>NERDCommenterToggle
+nmap <C-k> <Plug>NERDCommenterToggle
+xmap <C-k> <Plug>NERDCommenterToggle
 
 nnoremap \\ za
-nmap \f <Plug>(easymotion-overwin-f)|xmap \f <Plug>(easymotion-overwin-f)
-nmap \j <Plug>(easymotion-jumptoanywhere)|xmap \j <Plug>(easymotion-jumptoanywhere)
-nmap \w <Plug>(easymotion-overwin-w)|xmap \w <Plug>(easymotion-overwin-w)
-nmap \e <Plug>(easymotion-overwin-e)|xmap \e <Plug>(easymotion-overwin-e)
+nmap \f <Plug>(easymotion-overwin-f)
+xmap \f <Plug>(easymotion-overwin-f)
+nmap \j <Plug>(easymotion-jumptoanywhere)
+xmap \j <Plug>(easymotion-jumptoanywhere)
+nmap \w <Plug>(easymotion-overwin-w)
+xmap \w <Plug>(easymotion-overwin-w)
+nmap \e <Plug>(easymotion-overwin-e)
+xmap \e <Plug>(easymotion-overwin-e)
 "nnoremap mf :wa<cr>:!make flash<cr>
 "nnoremap mm :!make monitor<cr>
 
@@ -116,29 +149,29 @@ func! ManageMyVimrcFiles()
   call animate#window_percent_width(0.4)
 
   func! Fun1(id)
-      wincmd h | split ~/.vim/.vimrc.bundle | resize 1
-      redraw
-      call animate#window_percent_height(0.5)
+    wincmd h | split ~/.vim/.vimrc.bundle | resize 1
+    redraw
+    call animate#window_percent_height(0.5)
   endfunc
 
   func! Fun2(id)
-      wincmd l | split ~/.vim/.vimrc.appearance | resize 1
-      redraw
-      call animate#window_percent_height(0.5)
+    wincmd l | split ~/.vim/.vimrc.appearance | resize 1
+    redraw
+    call animate#window_percent_height(0.5)
   endfunc
 
   func! Fun3(id)
-      vsplit ~/.vim/.vimrc.language | vertical resize 1
-      redraw
-      call animate#window_percent_width(0.2)
+    "vsplit ~/.vim/.vimrc.language | vertical resize 1
+    "redraw
+    "call animate#window_percent_width(0.2)
   endfunc
 
   func! Fun4(id)
-      wincmd t
-      "let g:lens#disabled = s:disabled_tmp
-      let g:lens#disabled = 0
-      let g:animate#duration = s:duration_tmp
-      "AirlineToggle
+    wincmd t
+    "let g:lens#disabled = s:disabled_tmp
+    "let g:lens#disabled = 0
+    let g:animate#duration = s:duration_tmp
+    "AirlineToggle
   endfunc
 
   let tick = float2nr(g:animate#duration)
@@ -164,7 +197,7 @@ function! ToggleBG()
 endfunction
 " }}}
 " QuickfixToggle() {{{
-au FileType qf map <buffer> q <C-W>q:let g:quickfix_is_open=0<cr>|
+au FileType qf map <silent> <buffer> q <C-W>q:let g:quickfix_is_open=0<cr>|
       \  map <buffer> t <C-W><CR><C-W>T|
       \  map <buffer> gt <C-W><CR><C-W>TgT<C-W>j|
       \  map <buffer> o <CR>|
@@ -195,9 +228,7 @@ func! QuickfixToggle(flag)
 endfunc
 "}}}
 
-
 " M (man): get helped {{{
-
 nnoremap M K
 vnoremap M K
 au BufEnter *.rkt,*.rktl nnoremap <buffer> M :silent !raco docs <cword><cr>:redraw!<cr>
@@ -233,7 +264,7 @@ nnoremap <F11>   :Step<cr>
 
 "au BufEnter *.rkt,*.rktl nnoremap <buffer> <F5> :!racket -t %<cr>
 "function! s:start_debug(ft)
-    "if ft == 'haskell'
-    "endif
+"if ft == 'haskell'
+"endif
 "endfunction
 " }}}

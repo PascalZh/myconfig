@@ -10,3 +10,7 @@
 	default = simple
 [credential]
 	helper = store
+;[https]
+;  proxy = https://192.168.31.88:8888
+;[http]
+;  proxy = http://192.168.31.88:8889

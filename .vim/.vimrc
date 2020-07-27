@@ -1,11 +1,11 @@
-set nocompatible " identify platform {{{1
-silent function! OSX()
+" identify platform {{{1
+function! OSX()
   return has('macunix')
 endfunction
-silent function! LINUX()
+function! LINUX()
   return has('unix') && !has('macunix') && !has('win32unix')
 endfunction
-silent function! WINDOWS()
+function! WINDOWS()
   return  (has('win32') || has('win64'))
 endfunction
 " format encoding and tab {{{1
@@ -18,14 +18,13 @@ endif
 set encoding=utf-8
 set fileencoding=utf-8
 " tab will be converted to 4 spaces.
-set tabstop=4
-"set softtabstop=4
-set shiftwidth=4
+set tabstop=2
+set shiftwidth=2
 set expandtab
 set smarttab
 augroup Z_VariousTab
   au!
-  au FileType masm set tabstop=8 softtabstop=8 shiftwidth=8
+  au FileType masm set tabstop=8 shiftwidth=8
 augroup END
 " }}}
 " other settings {{{1
@@ -43,6 +42,7 @@ if has('clipboard')
     set clipboard=unnamed
   endif
 endif
+
 set timeoutlen=666
 set virtualedit=onemore
 
@@ -70,15 +70,9 @@ set mousehide
 set history=1000
 
 " search
-set magic
-set hlsearch
-set incsearch
 set ignorecase
 set smartcase
 
-" fuzzy find
-set noautochdir                       "Set the working directories to wherever the open file lives
-set wildmenu
 set wildmode=list:longest,full
 
 if exists('+inccommand')
@@ -100,7 +94,6 @@ call plug#begin('~/.vim/bundle')
 Plug 'itchyny/lightline.vim'
 "Plug 'vim-airline/vim-airline' | Plug 'vim-airline/vim-airline-themes'
 "Plug 'powerline/fonts', { 'do': './install.sh' }
-Plug 'ryanoasis/vim-devicons'
 Plug 'rakr/vim-one'
 "Plug 'altercation/vim-colors-solarized'
 Plug 'dracula/vim', { 'as': 'dracula' }
@@ -116,7 +109,7 @@ Plug 'easymotion/vim-easymotion'
 Plug 'sjl/gundo.vim'
 Plug 'tmsvg/pear-tree'
 "Plug 'jiangmiao/auto-pairs'
-Plug 'scrooloose/nerdcommenter'
+Plug 'preservim/nerdcommenter'
 Plug 'godlygeek/tabular'
 
 "Plug 'haya14busa/vim-edgemotion'
@@ -130,7 +123,12 @@ Plug 'yuttie/comfortable-motion.vim'
 " }}}
 " Other {{{
 Plug 'vim-scripts/utl.vim'
-Plug 'scrooloose/nerdtree', { 'on':  'NERDTreeToggle' }
+Plug 'preservim/nerdtree', { 'on':  'NERDTreeToggle' }
+"Plug 'kyazdani42/nvim-web-devicons'
+"Plug 'kyazdani42/nvim-tree.lua'
+
+Plug 'nvim-treesitter/nvim-treesitter'
+
 Plug 'mbbill/fencview'
 Plug 'lervag/vimtex', { 'for': 'tex' }
 Plug 'dstein64/vim-startuptime'
@@ -168,6 +166,7 @@ Plug 'mattn/flappyvird-vim'
 
 Plug 'rbtnn/game_engine.vim' | Plug 'rbtnn/mario.vim' | Plug 'rbtnn/puyo.vim'
 " }}}
+Plug 'ryanoasis/vim-devicons'
 
 " My own plugin
 Plug 'PascalZh/vim-color-explorer' | Plug 'PascalZh/vim-racket'

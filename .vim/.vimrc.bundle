@@ -1,24 +1,24 @@
 " Outlooking
 " rainbow parentheses {{{1
 let g:rbpt_colorpairs = [
-            \ ['brown',       'RoyalBlue3'],
-            \ ['Darkblue',    'SeaGreen3'],
-            \ ['darkgray',    'DarkOrchid3'],
-            \ ['darkgreen',   'firebrick3'],
-            \ ['darkcyan',    'RoyalBlue3'],
-            \ ['darkred',     'SeaGreen3'],
-            \ ['brown',       'firebrick3'],
-            \ ['darkmagenta', 'DarkOrchid3'],
-            \ ['Darkblue',    'firebrick3'],
-            \ ['darkgreen',   'RoyalBlue3'],
-            \ ['darkcyan',    'SeaGreen3'],
-            \ ['darkred',     'DarkOrchid3'],
-            \ ['red',         'firebrick3'],
-            \ ]
+      \ ['brown',       'RoyalBlue3'],
+      \ ['Darkblue',    'SeaGreen3'],
+      \ ['darkgray',    'DarkOrchid3'],
+      \ ['darkgreen',   'firebrick3'],
+      \ ['darkcyan',    'RoyalBlue3'],
+      \ ['darkred',     'SeaGreen3'],
+      \ ['brown',       'firebrick3'],
+      \ ['darkmagenta', 'DarkOrchid3'],
+      \ ['Darkblue',    'firebrick3'],
+      \ ['darkgreen',   'RoyalBlue3'],
+      \ ['darkcyan',    'SeaGreen3'],
+      \ ['darkred',     'DarkOrchid3'],
+      \ ['red',         'firebrick3'],
+      \ ]
 
-            "\ ['gray',        'RoyalBlue3'],
-            "\ ['black',       'SeaGreen3'],
-            "\ ['darkmagenta', 'DarkOrchid3'],
+      "\ ['gray',        'RoyalBlue3'],
+      "\ ['black',       'SeaGreen3'],
+      "\ ['darkmagenta', 'DarkOrchid3'],
 let g:rbpt_max = 16
 let g:rbpt_loadcmd_toggle = 0
 " }}}
@@ -33,6 +33,9 @@ let g:lens#width_resize_max = 100
 let g:lens#width_resize_min = 3
 " }}}
 " Edit
+" preservim/nerdcommenter {{{
+let g:NERDDefaultAlign = 'left'
+" }}}
 " autopair (deleted) {{{1
 " works in the insert mode
 "au FileType racket let b:AutoPairs = {'(':')', '[':']', '{':'}','"':'"', '`':'`'}
@@ -43,15 +46,15 @@ let g:lens#width_resize_min = 3
 "let g:AutoPairsShortcutBackInsert = '<leader>b'
 
 " }}}
-" Plug 'tmsvg/pear-tree' {{{
+" tmsvg/pear-tree {{{
 " Default rules for matching:
 let g:pear_tree_pairs = {
-            \ '(': {'closer': ')'},
-            \ '[': {'closer': ']'},
-            \ '{': {'closer': '}'},
-            \ "'": {'closer': "'"},
-            \ '"': {'closer': '"'}
-            \ }
+      \ '(': {'closer': ')'},
+      \ '[': {'closer': ']'},
+      \ '{': {'closer': '}'},
+      \ "'": {'closer': "'"},
+      \ '"': {'closer': '"'}
+      \ }
 " See pear-tree/after/ftplugin/ for filetype-specific matching rules
 
 " Pear Tree is enabled for all filetypes by default:
@@ -61,9 +64,9 @@ let g:pear_tree_ft_disabled = []
 let g:pear_tree_repeatable_expand = 1
 
 " Smart pairs are disabled by default:
-let g:pear_tree_smart_openers = 0
-let g:pear_tree_smart_closers = 0
-let g:pear_tree_smart_backspace = 0
+let g:pear_tree_smart_openers = 1
+let g:pear_tree_smart_closers = 1
+let g:pear_tree_smart_backspace = 1
 
 " If enabled, smart pair functions timeout after 60ms:
 let g:pear_tree_timeout = 60
@@ -72,6 +75,7 @@ let g:pear_tree_timeout = 60
 let g:pear_tree_map_special_keys = 0
 imap <BS> <Plug>(PearTreeBackspace)
 imap <CR> <Plug>(PearTreeExpand)
+imap <Space> <Plug>(PearTreeSpace)
 " remap of <ESC> will cause some conflicts with other plugins, so it will be
 " integrated in my `easy_jk` plugin.
 
@@ -99,10 +103,10 @@ if finddir('.vim/backup', $HOME) == ''
 endif
 set backupdir=~/.vim/backup
 if has('persistent_undo')
-	set undodir=~/.vim/undo
-	set undofile
-	set undolevels=1000
-	set undoreload=10000
+  set undodir=~/.vim/undo
+  set undofile
+  set undolevels=1000
+  set undoreload=10000
 endif
 let g:gundo_width=50
 let g:gundo_prefer_python3=1
@@ -128,18 +132,32 @@ let NERDTreeShowBookmarks=1
 let NERDTreeShowHidden=1
 
 func! NERDTreeToggleAndMap_b_()
-    NERDTreeToggle
-    let str=expand('%')
-    if matchstr(str,'NERD_tree_') != ''
-        setlocal nocuc
-        nnoremap <buffer> b gg3j
-    endif
+  NERDTreeToggle
+  let str=expand('%')
+  if matchstr(str,'NERD_tree_') != ''
+    setlocal nocuc
+    nnoremap <buffer> b gg3j
+  endif
 endfunc
+let g:NERDTreeNaturalSort=1
 let g:NERDTreeMapOpenSplit="s"
 let g:NERDTreeMapPreviewSplit="gs"
 let g:NERDTreeMapOpenVSplit="v"
 let g:NERDTreeMapPreviewVSplit="gv"
 "}}}
+" Plug 'nvim-treesitter/nvim-treesitter' {{{
+lua <<EOF
+require'nvim-treesitter.configs'.setup {
+    highlight = {
+        enable = true,                    -- false will disable the whole extension
+        -- disable = { 'c', 'rust' },        -- list of language that will be disabled
+        custom_captures = {               -- mapping of user defined captures to highlight groups
+          -- ["foo.bar"] = "Identifier"   -- highlight own capture @foo.bar with highlight group "Identifier", see :h nvim-treesitter-query-extensions
+        },            
+    },
+}
+EOF
+" }}}
 "  ack.vim {{{1
 if LINUX()
   let g:ack_mappings = {
@@ -172,9 +190,9 @@ let g:UltiSnipsUsePythonVersion=3
 let g:UltiSnipsSnippetsDir=$HOME . "/.vim/suba_snippets"
 let g:UltiSnipsSnippetDirectories=[$HOME . "/.vim/suba_snippets"]
 
-let g:UltiSnipsExpandTrigger='<Tab>'
-let g:UltiSnipsJumpForwardTrigger='<Tab>'
-let g:UltiSnipsJumpBackwardTrigger='<S-Tab>'
+let g:UltiSnipsExpandTrigger='<M-j>'
+let g:UltiSnipsJumpForwardTrigger='<M-j>'
+let g:UltiSnipsJumpBackwardTrigger='<M-k>'
 "let g:UltiSnipsRemoveSelectModeMappings = 0
 " }}}
 " neoclide/coc.nvim {{{
@@ -182,6 +200,16 @@ let g:UltiSnipsJumpBackwardTrigger='<S-Tab>'
 call coc#add_extension('coc-python', 'coc-ultisnips', 'coc-marketplace')
 
 inoremap <silent><expr> <c-space> coc#refresh()
+inoremap <silent><expr> <TAB>
+      \ pumvisible() ? "\<C-n>" :
+      \ <SID>check_back_space() ? "\<TAB>" :
+      \ coc#refresh()
+inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
+
+function! s:check_back_space() abort
+  let col = col('.') - 1
+  return !col || getline('.')[col - 1]  =~# '\s'
+endfunction
 
 " Highlight the symbol and its references when holding the cursor.
 autocmd CursorHold * silent call CocActionAsync('highlight')
@@ -199,25 +227,26 @@ nmap <silent> gr <Plug>(coc-references)
 " }}}
 " mhinz/vim-startify {{{1
 let g:startify_fortune_use_unicode = 1
+let g:startify_files_number = 10
 autocmd User Startified nmap <buffer> o <plug>(startify-open-buffers)
-let g:startify_change_to_vcs_root = 1
-let g:startify_enable_unsafe = 1
+let g:startify_change_to_vcs_root = 0
+"let g:startify_enable_unsafe = 1
 "autocmd User Startified highlight StartifyBracket ctermfg=240 |
-      "\highlight StartifyFooter  ctermfg=242                  |
-      "\highlight StartifyHeader  ctermfg=50                   |
-      "\highlight StartifyNumber  ctermfg=215                  |
-      "\highlight StartifyPath    ctermfg=160                  |
-      "\highlight StartifySlash   ctermfg=215                  |
-      "\highlight StartifySpecial ctermfg=240
+"\highlight StartifyFooter  ctermfg=242                  |
+"\highlight StartifyHeader  ctermfg=50                   |
+"\highlight StartifyNumber  ctermfg=215                  |
+"\highlight StartifyPath    ctermfg=160                  |
+"\highlight StartifySlash   ctermfg=215                  |
+"\highlight StartifySpecial ctermfg=240
 " }}}
 " airblade/vim-gitgutter {{{1
 set updatetime=100
-omap ih <Plug>GitGutterTextObjectInnerPending
-omap ah <Plug>GitGutterTextObjectOuterPending
-xmap ih <Plug>GitGutterTextObjectInnerVisual
-xmap ah <Plug>GitGutterTextObjectOuterVisual
-nmap ]h <Plug>GitGutterNextHunk
-nmap [h <Plug>GitGutterPrevHunk
+omap ih <Plug>(GitGutterTextObjectInnerPending)
+omap ah <Plug>(GitGutterTextObjectOuterPending)
+xmap ih <Plug>(GitGutterTextObjectInnerVisual)
+xmap ah <Plug>(GitGutterTextObjectOuterVisual)
+nmap ]h <Plug>(GitGutterNextHunk)
+nmap [h <Plug>(GitGutterPrevHunk)
 if exists('&signcolumn')  " Vim 7.4.2201
   set signcolumn=yes
 else
@@ -257,22 +286,22 @@ endif
 " }}}
 " neomake/neomake(deleted) {{{1
 "function! MyOnBattery()
-  "return readfile('/sys/class/power_supply/AC/online') == ['0']
+"return readfile('/sys/class/power_supply/AC/online') == ['0']
 "endfunction
 
 "if has('nvim')
-  "if MyOnBattery()
-    "call neomake#configure#automake('nrwi', 500)
-  "else
-    "call neomake#configure#automake('nrwi', 150)
-  "endif
+"if MyOnBattery()
+"call neomake#configure#automake('nrwi', 500)
+"else
+"call neomake#configure#automake('nrwi', 150)
+"endif
 "endif
 "let g:neomake_cpp_enabled_makers=['gcc']
 "let g:neomake_cpp_gcc_args=['-fsyntax-only', '-Wall', '-Wextra', '-I./',
-      "\'-std=c++1z',
-      "\'-I/usr/include/python3.5m',
-      "\'-lfmt']
-      "\'-L/usr/lib/python3.5/config-3.5m-x86_64-linux-gnu', '-L/usr/lib', '-lpython3.5m', '-lpthread', '-ldl', '-lutil', '-lm', '-Xlinker', '-export-dynamic', '-Wl,-O1', '-Wl,-Bsymbolic-functions',
+"\'-std=c++1z',
+"\'-I/usr/include/python3.5m',
+"\'-lfmt']
+"\'-L/usr/lib/python3.5/config-3.5m-x86_64-linux-gnu', '-L/usr/lib', '-lpython3.5m', '-lpthread', '-ldl', '-lutil', '-lm', '-Xlinker', '-export-dynamic', '-Wl,-O1', '-Wl,-Bsymbolic-functions',
 "let g:neomake_open_list = 2
 " }}}
 " ncm2/ncm2-ultisnips(deleted) {{{1
@@ -292,14 +321,14 @@ endif
 " }}}
 " ale {{{1
 "let g:ale_fixers={
-      "\	'*':['remove_trailing_lines', 'trim_whitespace'],
+"\	'*':['remove_trailing_lines', 'trim_whitespace'],
       "\ 'python':['autopep8', 'yapf'],
-      "\}
+"\}
 "let g:ale_linters={
-      "\	'c++':['clang'],
-      "\	'c':['clang'],
+"\	'c++':['clang'],
+"\	'c':['clang'],
       "\ 'python':['flake8', 'pylint'],
-      "\}
+"\}
 "let g:ale_lint_on_text_changed='always'
 "let g:ale_lint_on_enter = 0
 " }}}
@@ -308,12 +337,4 @@ let g:hscoptions='wErl↱'
 " }}}
 " haskell-vim{{{
 let g:haskell_classic_highlighting=1
-" }}}
-" Game
-" vim games {{{1
-command! GameCodeBreak VimGameCodeBreak
-command! GameNibble Nibble
-command! GameFlappyVird FlappyVird
-command! GameMario Mario
-command! GamePuyo Puyo
 " }}}

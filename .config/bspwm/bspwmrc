@@ -1,27 +1,45 @@
 #! /bin/sh
-
 sxhkd &
 
-bspc config normal_border_color "#10151b"
-bspc config focused_border_color "#98d1ce"
-
 bspc monitor -d term media web chat code help show_off
-
-bspc config border_width         1 
-bspc config window_gap           37 
-
-bspc config split_ratio          0.52
-bspc config borderless_monocle   true
-bspc config gapless_monocle      true
-
-bspc desktop term -l normal
 bspc desktop web -l monocle
 
-#bspc rule -a "*" split_dir=left
-bspc rule -a Zathura split_dir=right focus=off state=tiled
+bspc config initial_polarity second_child
+#┌──────────────────────────────────────────────────────────────────┐
+#│                              outlooking                          │
+#└──────────────────────────────────────────────────────────────────┘
+bspc config normal_border_color "#10151b"
+bspc config focused_border_color "#98d1ce"
+bspc config presel_feedback_color "#aaaaaa"
+bspc config border_width         1 
+bspc config window_gap           25
+
+bspc config split_ratio          0.52
+bspc config gapless_monocle      true
+
+#┌───────────────────────────────────────────────────────────────────┐
+#│                              mouse                                │
+#└───────────────────────────────────────────────────────────────────┘
+# press down the windows key and mouse left button to move the window
+bspc config pointer_action1 move
+# none
+bspc config pointer_action2 none
+# press down the windows key and mouse left button to resize the window
+bspc config pointer_action3 resize_corner
+
+bspc config click_to_focus true
+#bspc config ignore_ewmh_focus true
+
+#┌───────────────────────────────────────────────────────────────────┐
+#│                              rule                                 │
+#└───────────────────────────────────────────────────────────────────┘
+#bspc rule -a "*" split_dir=east
+bspc rule -a Zathura split_dir=east focus=off state=tiled
+
 #bspc rule -a Gimp desktop=^8 state=floating follow=on
 #bspc rule -a Google-chrome desktop=^1
 #bspc rule -a Genymotion desktop=^3
+
 #bspc rule -a TelegramDesktop desktop=^3
 #bspc rule -a Subl desktop=^4
 #bspc rule -a Spotify desktop=^5
@@ -36,20 +54,11 @@ bspc rule -a Zathura split_dir=right focus=off state=tiled
 #bspc rule -a Kupfer.py focus=on
 #bspc rule -a Screenkey manage=off
 
-bspc config super mod4
-bspc config pointer_action1 move
-bspc config pointer_action2 none
-bspc config pointer_action3 resize_corner
-bspc config click_to_focus true
-#bspc config ignore_ewmh_focus true
-
-bspc config presel_feedback_color \#aaaaaa
-
 xsetroot -cursor_name left_ptr
  
-#┌───────────┐
-#│ autostart │
-#└───────────┘
+#┌───────────────────────────────────────────────────────────────────┐
+#│                           autostart                               │
+#└───────────────────────────────────────────────────────────────────┘
 xrdb -merge ~/.Xdefaults
 
 feh --randomize --bg-fill ~/Pictures/wallpaper
@@ -62,7 +71,8 @@ pgrep -u "$USER" redshift >/dev/null || \
 
 #lantern
 
-gnome-terminal --hide-menubar -e fish
+nvim-qt
+#gnome-terminal --hide-menubar -e fish
 
 # set `wm-restack = bspwm` to avoid visible polybar on fullscreen
 #. ~/.config/polybar/launch.sh &
