@@ -44,6 +44,18 @@ def add_row(snip):
 
 endglobal
 
+#┌─────────────────────────────────────────────────────────────────────────────┐
+#│                              start of snippets                              │
+#└─────────────────────────────────────────────────────────────────────────────┘
+snippet template "Template" b
+%! TEX program = xelatex
+\documentclass[12pt]{article}
+\usepackage{xeCJK}
+\begin{document}
+$0
+\end{document}
+endsnippet
+
 snippet "b(egin)?" "begin{} / end{}" br
 \begin{${1:something}}
 	${0:${VISUAL}}
@@ -144,7 +156,7 @@ endsnippet
 
 
 snippet sub "Subsection"
-\subsection{${1:${VISUAL:subsection name}}}%
+\subsection{${1:${VISUAL:subsection name}}}
 \label{sub:${2:${1/\\\w+\{(.*?)\}|\\(.)|(\w+)|([^\w\\]+)/(?4:_:\L$1$2$3\E)/ga}}}
 
 $0

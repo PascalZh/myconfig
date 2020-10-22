@@ -1,4 +1,8 @@
 # daily use
+
+# :terminal :! in neovim need the following environment set to work normally.
+set -x LC_ALL en_US.UTF-8
+
 #set -x http_proxy http://192.168.31.88:8889
 #set -x https_proxy https://192.168.31.88:8888
 #set -a -x PATH /usr/local/lib/nodejs/node-v12.16.0-linux-x64/bin
@@ -9,8 +13,8 @@ if status --is-interactive
     # -a: --add; -g: --global
     abbr -a -g pls 'sudo'
     abbr -a -g rm 'rm -i'
-    abbr -a -g vim nvim
-    abbr -a -g t tree -h
+    abbr -a -g vim 'nvim'
+    abbr -a -g t 'tree -h'
 
     abbr -a -g gs 'git status'
     abbr -a -g ga 'git add'
@@ -20,8 +24,8 @@ if status --is-interactive
     abbr -a -g gd 'git diff'
 
     abbr -a -g m 'make -j2'
-    abbr -a -g sai sudo apt install
-    abbr -a -g sar sudo apt remove
+    abbr -a -g sai 'sudo apt install'
+    abbr -a -g sar 'sudo apt remove'
 
     abbr -a -g cff 'nvim ~/.config/fish/config.fish'
     abbr -a -g cfui 'nvim ~/.config/bspwm/bspwmrc ~/.config/sxhkd/sxhkdrc ~/.compton.conf'
@@ -32,8 +36,8 @@ if status --is-interactive
     abbr -a -g fortune 'fortune | lolcat'
 
     # various use of particular tasks
-    abbr -a -g my_create_esp_project 'source ~/bin/_E_create_esp_project_E_'
-    abbr -a -g my_download_gogh \
+    abbr -a -g create_esp_project 'source ~/bin/_E_create_esp_project_E_'
+    abbr -a -g download_gogh \
     'wget -O gogh https://git.io/vQgMr && chmod +x gogh'
     abbr -a -g matlab_ "matlab -nodesktop -nojvm"
     abbr -a -g leelaz '~/program_files/leela-zero/build/leelaz'
@@ -67,11 +71,11 @@ else:
 ' $argv
 end
 
-function my_mount_windows_shared_folder
+function mount_windows_shared_folder
     sudo mount -t cifs -o username=PascalZh,password=zhang19980918,uid=pascal //192.168.31.82/biyesheji ~/Share
 end
 
-function my_git_clone
+function P_git_clone
 
     if test (count $argv) -eq 1
         git clone https://github.com/PascalZh/$argv[1].git
@@ -83,10 +87,10 @@ function my_git_clone
 
 end
 
-function my_install_my_tools
+function P_install_my_tools
 
-    my_check_installed dialog
-    my_check_installed curl
+    P_check_installed dialog
+    P_check_installed curl
 
     dialog --checklist "Install some common softwares" 0 0 5 \
     "nvim"            "get newest NVIM nightly(unstable) and put it in /usr/local/bin"         off \
@@ -129,7 +133,7 @@ function my_install_my_tools
             if test ! -d ~/.config/fish/conf.d
                 mkdir ~/.config/fish/conf.d
             end
-            my_git_clone skywind3000 z.lua
+            P_git_clone skywind3000 z.lua
             and rm -rf  ~/.local/share/z.lua
             and mv z.lua ~/.local/share
             and echo "source (lua ~/.local/share/z.lua/z.lua --init fish | psub)" \
@@ -142,30 +146,30 @@ function my_install_my_tools
     end
 
     # Appearance
-    my_check_installed redshift-gtk ; my_check_installed feh
-    my_check_installed zathura  ; my_check_installed rofi
-    my_check_installed bspwm    ; my_check_installed sxhkd
-    my_check_installed compton
+    P_check_installed redshift-gtk ; P_check_installed feh
+    P_check_installed zathura  ; P_check_installed rofi
+    P_check_installed bspwm    ; P_check_installed sxhkd
+    P_check_installed compton
 
     # Some useful command
-    my_check_installed neofetch
-    my_check_installed ack-grep
-    my_check_installed ncdu
+    P_check_installed neofetch
+    P_check_installed ack-grep
+    P_check_installed ncdu
 
     # C++
 end
 
-function my_check_installed
+function P_check_installed
     set flag (dpkg -s $argv[1] 2> /dev/null)
     if test -z (count flag)
         sudo apt install $argv[1]
     end
 end
 
-function my_show_cheatsheet
-    echo "########
-disable bold font in gnome-terminal, try tab to complete the long code below
+function P_show_cheatsheet
+    echo "# Cheatsheet when I use ubuntu.
+### disable bold font in gnome-terminal, try tab to complete the long code below
 > dconf write /org/gnome/terminal/legacy/profiles:/:a372873d-7fcd-4f50-9566-6aa3c0870ea8/allow-bold  false
 
-########"
+"
 end

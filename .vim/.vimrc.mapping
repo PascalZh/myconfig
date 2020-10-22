@@ -1,13 +1,6 @@
-" vim games {{{1
-command! GameCodeBreak VimGameCodeBreak
-command! GameNibble Nibble
-command! GameFlappyVird FlappyVird
-command! GameMario Mario
-command! GamePuyo Puyo
-" }}}
 command! Q q!
 command! Qa qa!
-command! Zenmode execute "Goyo" | "Limelight"
+command! Zenmode execute "Goyo | Limelight"
 
 " leader and , {{{1
 let mapleader=";"
@@ -20,7 +13,6 @@ nmap <leader>g g@
 
 "imap <leader>im <C-O>:call blitz#input_method_open()<CR>|imap <leader>ic <C-O>:call blitz#input_method_close()<CR>
 nmap <expr> <leader>r ":split term://ghci ".expand('%')."\n"
-nmap <leader>sh :terminal<cr>
 "nmap <leader>sv :wa<CR>:so $MYVIMRC<CR>
 nmap <leader>sw :FSHere<cr>
 
@@ -44,16 +36,14 @@ nmap ,s :Startify<cr>
 
 " }}}
 
-" Basic
-
 " My own plugin
 
-if system("pgrep -f Practice/Shell/record_keyboard.py") == ""
-  call jobstart(["python3", expand("~/Practice/Shell/record_keyboard.py")
-        \, expand("~/Practice/Shell/kb_record.db")]
-        \, {'detach':1})
-endif
-au VimLeave * call system("pgrep -f Practice/Shell/record_keyboard.py | xargs -r kill")
+"if system("pgrep -f Practice/Shell/record_keyboard.py") == ""
+"  call jobstart(["python3", expand("~/Practice/Shell/record_keyboard.py")
+"        \, expand("~/Practice/Shell/kb_record.db")]
+"        \, {'detach':1})
+"endif
+"au VimLeave * call system("pgrep -f Practice/Shell/record_keyboard.py | xargs -r kill")
 
 nmap <F1> :ZOmniwindowToggle<enter>
 imap <F1> <esc>:ZOmniwindowToggle<enter>
@@ -67,10 +57,16 @@ cnoremap <expr> k easy_jk#map_k()
 
 vmap X y/<C-R>"<CR>
 nnoremap <space> 2gj
+
+" Basic
+
 nnoremap Y y$
 
 nnoremap <silent> <Tab> :bn<cr>
 nnoremap <silent> <S-Tab> :bN<CR>
+" <C-i> is bind to <Tab>, so remapping <Tab> will cause <C-i> remapping the
+" same as <Tab>, so we need to fix it remapping it to itself:
+nnoremap <C-i> <C-i>
 
 nnoremap <C-p> :<C-p>
 nnoremap <C-q> <C-w>q
@@ -80,8 +76,6 @@ nnoremap <C-l> i<C-g>u<Esc>$[s1z=`]a<C-g>u<Esc>
 
 nnoremap <C-s> :wa<cr>
 inoremap <C-s> <Esc>:wa<cr>a
-" jk kj in insert mode are mapped to <esc> by vim-easyescape
-"inoremap ;k ;<ESC>
 
 vnoremap < <gv
 vnoremap > >gv
@@ -112,7 +106,6 @@ xmap \e <Plug>(easymotion-overwin-e)
 " grep or ack {{{1
 
 " grep the words in the path where the file is located.
-
 set opfunc=MyGrepFunc
 func! MyGrepFunc(type)
   let s:store_temp_register=@z
@@ -136,12 +129,6 @@ endfunc
 " }}}
 " ManageMyVimrcFiles() {{{
 func! ManageMyVimrcFiles()
-  "AirlineToggle
-  let s:disabled_tmp = g:lens#disabled
-  let s:duration_tmp = g:animate#duration
-  let g:animate#duration = 400.0
-  let g:lens#disabled = 1
-
   tabedit ~/.vim/.vimrc
 
   vsplit ~/.vim/.vimrc.mapping | vertical resize 1
@@ -160,27 +147,9 @@ func! ManageMyVimrcFiles()
     call animate#window_percent_height(0.5)
   endfunc
 
-  func! Fun3(id)
-    "vsplit ~/.vim/.vimrc.language | vertical resize 1
-    "redraw
-    "call animate#window_percent_width(0.2)
-  endfunc
-
-  func! Fun4(id)
-    wincmd t
-    "let g:lens#disabled = s:disabled_tmp
-    "let g:lens#disabled = 0
-    let g:animate#duration = s:duration_tmp
-    "AirlineToggle
-  endfunc
-
   let tick = float2nr(g:animate#duration)
   call timer_start(tick*1, function("Fun1"))
   call timer_start(tick*2, function("Fun2"))
-  call timer_start(tick*3, function("Fun3"))
-  call timer_start(tick*4, function("Fun4"))
-
-  echo
 endfunc
 " }}}
 " Toggle background {{{
@@ -197,7 +166,7 @@ function! ToggleBG()
 endfunction
 " }}}
 " QuickfixToggle() {{{
-au FileType qf map <silent> <buffer> q <C-W>q:let g:quickfix_is_open=0<cr>|
+au FileType qf map <silent> <buffer> q <C-W>q|
       \  map <buffer> t <C-W><CR><C-W>T|
       \  map <buffer> gt <C-W><CR><C-W>TgT<C-W>j|
       \  map <buffer> o <CR>|
@@ -205,24 +174,28 @@ au FileType qf map <silent> <buffer> q <C-W>q:let g:quickfix_is_open=0<cr>|
       \  map <buffer> s <C-W><CR><C-W>K|
       \  map <buffer> gs <C-W><CR><C-W>K<C-W>b|
       \  map <buffer> v <C-W><CR><C-W>H<C-W>b<C-W>J<C-W>t|
-      \  map <buffer> gv <C-W><CR><C-W>H<C-W>b<C-W>J|
-      \let g:quickfix_is_open=1
+      \  map <buffer> gv <C-W><CR><C-W>H<C-W>b<C-W>J
 
-let g:quickfix_is_open=0
 func! QuickfixToggle(flag)
-  if g:quickfix_is_open
+  if a:flag != "qf" && a:flag != "ll"
+    echom "QuickfixToggle(flag): a:flag not valid!"
+    return
+  endif
+
+  let qf_or_loc_list_is_open = a:flag == "qf" ? getqflist({'winid' : 0}).winid :
+        \ getloclist(winnr(), {'winid' : 0}).winid
+  if qf_or_loc_list_is_open
     if a:flag == "qf"
       cclose
     elseif a:flag == "ll"
       lclose
     endif
     wincmd p
-    let g:quickfix_is_open = 0
   else
     if a:flag == "qf"
       botright copen
     elseif a:flag == "ll"
-      botright lopen
+      lopen
     endif
   endif
 endfunc

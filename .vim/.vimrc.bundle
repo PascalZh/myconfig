@@ -150,10 +150,9 @@ lua <<EOF
 require'nvim-treesitter.configs'.setup {
     highlight = {
         enable = true,                    -- false will disable the whole extension
-        -- disable = { 'c', 'rust' },        -- list of language that will be disabled
-        custom_captures = {               -- mapping of user defined captures to highlight groups
-          -- ["foo.bar"] = "Identifier"   -- highlight own capture @foo.bar with highlight group "Identifier", see :h nvim-treesitter-query-extensions
-        },            
+    },
+    indent = {
+        enable = true,
     },
 }
 EOF
@@ -175,6 +174,7 @@ endif
 " {{{ lervag/vimtex
 let g:vimtex_view_method='zathura'
 let g:vimtex_quickfix_mode=0
+let g:tex_flavor = 'latex'
 set conceallevel=1
 let g:tex_conceal='abdmg'
 let g:vimtex_compiler_progname='nvr'
@@ -190,9 +190,9 @@ let g:UltiSnipsUsePythonVersion=3
 let g:UltiSnipsSnippetsDir=$HOME . "/.vim/suba_snippets"
 let g:UltiSnipsSnippetDirectories=[$HOME . "/.vim/suba_snippets"]
 
-let g:UltiSnipsExpandTrigger='<M-j>'
-let g:UltiSnipsJumpForwardTrigger='<M-j>'
-let g:UltiSnipsJumpBackwardTrigger='<M-k>'
+let g:UltiSnipsExpandTrigger='<Tab>'
+let g:UltiSnipsJumpForwardTrigger='<Tab>'
+let g:UltiSnipsJumpBackwardTrigger='<S-Tab>'
 "let g:UltiSnipsRemoveSelectModeMappings = 0
 " }}}
 " neoclide/coc.nvim {{{
@@ -200,11 +200,11 @@ let g:UltiSnipsJumpBackwardTrigger='<M-k>'
 call coc#add_extension('coc-python', 'coc-ultisnips', 'coc-marketplace')
 
 inoremap <silent><expr> <c-space> coc#refresh()
-inoremap <silent><expr> <TAB>
+inoremap <silent><expr> <c-n>
       \ pumvisible() ? "\<C-n>" :
       \ <SID>check_back_space() ? "\<TAB>" :
       \ coc#refresh()
-inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
+inoremap <expr> <c-p> pumvisible() ? "\<C-p>" : "\<C-h>"
 
 function! s:check_back_space() abort
   let col = col('.') - 1

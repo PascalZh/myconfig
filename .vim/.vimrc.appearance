@@ -1,24 +1,34 @@
+" function! AdjustHelpWindow() {{{
+function! AdjustHelpWindow()
+  setlocal signcolumn=no
+  wincmd L
+  vertical resize 80
+endfunction
+" }}}
+
 augroup Z_APPEARANCE
   au!
-  au FileType haskell,python,vim,cpp,c,javascript,markdown setlocal colorcolumn=81 |
+  au FileType haskell,python,vim,cpp,c,javascript,markdown,lua
+        \ setlocal colorcolumn=81 |
         \ hi ColorColumn ctermbg=Green guibg=Green
+  au TextYankPost *
+        \ silent! lua vim.highlight.on_yank {higroup="IncSearch", timeout=222}
+  au FileType help call AdjustHelpWindow()
 augroup END
 
 set termguicolors
-colorscheme one
+colorscheme NeoSolarized
 
 " common
 " 字体设置方法，windows系统要用windows的命令行安装字体
-" 然后set guifont=*
-" 选择字体
-" 然后set guifont?就可以看到字体的名字了
-"set cursorline
+" 1. set guifont=*
+" 2. 选择字体
+" 3. set guifont?就可以看到字体的名字了
+set cursorline
 "set cursorcolumn
 set noequalalways
 
-set viewoptions=folds,options,cursor,unix,slash
-set shortmess+=filmnrxoOtT          " Abbrev. of messages (avoids 'hit enter')
-set shortmess+=c
+"set shortmess+=filmnrxoOtTc
 
 set number
 set relativenumber
@@ -27,7 +37,7 @@ set relativenumber
 set nolist
 set listchars=tab:\ \ ,eol:$,trail:*,extends:#
 
-set scrolloff=2                 " Minimum lines to keep above and below cursor
+set scrolloff=4  " Minimum lines to keep above and below cursor
 
 set winminheight=0
 set cmdheight=1
@@ -35,19 +45,11 @@ set showcmd
 set laststatus=2
 set more
 
-" 设置了之后，vim就不会在一行文字超过一定长度后自动按Enter换行
 set whichwrap=b,s,h,l,<,>,[,]
-set nowrap
-set textwidth=0
+set wrap
 
 " Toggle Menu and Toolbar
-set guioptions-=m
-set guioptions-=T
-set guioptions-=l " do not show vertical scrollbar
-set guioptions-=L
-set guioptions-=r
-set guioptions-=R
-set guioptions-=b
+set guioptions="eg"
 
 " airline
 "let g:airline_disable_statusline = 1
@@ -96,4 +98,3 @@ endfunction
 function! MyFileformat()
   return winwidth(0) > 70 ? (WebDevIconsGetFileFormatSymbol()) : ''
 endfunction
-

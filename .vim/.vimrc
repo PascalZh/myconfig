@@ -73,7 +73,7 @@ set history=1000
 set ignorecase
 set smartcase
 
-set wildmode=list:longest,full
+"set wildmode=list:longest,full
 
 if exists('+inccommand')
   set inccommand=split
@@ -159,12 +159,7 @@ Plug 'airblade/vim-gitgutter'
 " }}}
 " Game {{{
 Plug 'johngrib/vim-game-code-break'
-Plug 'vim-scripts/Nibble'
-" Nibble has a dependency
-Plug 'vim-scripts/genutils', { 'on': 'GameFlappyVird' }
-Plug 'mattn/flappyvird-vim'
 
-Plug 'rbtnn/game_engine.vim' | Plug 'rbtnn/mario.vim' | Plug 'rbtnn/puyo.vim'
 " }}}
 Plug 'ryanoasis/vim-devicons'
 

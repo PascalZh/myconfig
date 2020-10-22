@@ -17,10 +17,11 @@ let $1 = 1$3
 endsnippet
 
 snippet f "function" b
-" fun ${1:function_name}(${2:args}) {{{${3:1}
-fun $1($2)
+" function! ${1:function_name}(${2:args}) {{{${3}
+function! $1($2)
 	${4:" code}
-endf
+endfunction
+" }}}
 ${0}
 endsnippet
 
