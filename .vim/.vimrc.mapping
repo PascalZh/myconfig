@@ -1,3 +1,5 @@
+cabbrev H vert bo help
+cabbrev h vert bo help
 command! Q q!
 command! Qa qa!
 command! Zenmode execute "Goyo | Limelight"
@@ -8,31 +10,33 @@ let mapleader=";"
 nmap <leader><space> :nohlsearch<cr>
 nmap <leader>bg :call ToggleBG()<CR>
 nmap <leader>ev :call ManageMyVimrcFiles()<cr>
-vmap <leader>g :<c-u>call MyGrepFunc(visualmode())<cr>
-nmap <leader>g g@
+nmap <leader>ef <Plug>(easymotion-overwin-f)
+xmap <leader>ef <Plug>(easymotion-overwin-f)
+nmap <leader>ej <Plug>(easymotion-jumptoanywhere)
+xmap <leader>ej <Plug>(easymotion-jumptoanywhere)
+nmap <leader>ew <Plug>(easymotion-overwin-w)
+xmap <leader>ew <Plug>(easymotion-overwin-w)
+nmap <leader>ee <Plug>(easymotion-overwin-e)
+xmap <leader>ee <Plug>(easymotion-overwin-e)
+
+nmap <leader>g :Grepper -tool git<CR>
+nmap <leader>G :Grepper -tool ack<CR>
 
 "imap <leader>im <C-O>:call blitz#input_method_open()<CR>|imap <leader>ic <C-O>:call blitz#input_method_close()<CR>
 nmap <expr> <leader>r ":split term://ghci ".expand('%')."\n"
 "nmap <leader>sv :wa<CR>:so $MYVIMRC<CR>
 nmap <leader>sw :FSHere<cr>
 
-nmap <silent> <leader>wh :call animate#window_delta_width(-10)<CR>
-nmap <silent> <leader>wl :call animate#window_delta_width(10)<CR>
-nmap <silent> <leader>wj :call animate#window_delta_height(-5)<CR>
-nmap <silent> <leader>wk :call animate#window_delta_height(5)<CR>
-
 nmap <leader>t :Tabularize /
 vmap <leader>t :Tabularize /
-nmap <leader>u :Utl<cr>
-"nmap <leader>uhs :let g:utl_cfg_hdl_scm_http=g:utl_cfg_hdl_scm_http_system<cr>
-"nmap <leader>uhw :let g:utl_cfg_hdl_scm_http=g:utl_cfg_hdl_scm_http__wget<cr>
 
 nmap ,c :ColorExplorerToggle<cr>
-nmap <silent> ,e :call NERDTreeToggleAndMap_b_()<cr>
+"nmap ,e <Cmd>:call NERDTreeToggleAndSetOptions()<cr>
+nmap ,e <Cmd>:call LuaTreeToggleAndSetOptions()<cr>
 nmap ,m :GundoToggle<cr>
-nmap <silent> ,l :call QuickfixToggle("ll")<cr>
-nmap <silent> ,q :call QuickfixToggle("qf")<cr>
-nmap ,s :Startify<cr>
+nmap ,l <Cmd>:call QuickfixToggle("ll")<cr>
+nmap ,q <Cmd>:call QuickfixToggle("qf")<cr>
+nmap ,a za
 
 " }}}
 
@@ -45,28 +49,37 @@ nmap ,s :Startify<cr>
 "endif
 "au VimLeave * call system("pgrep -f Practice/Shell/record_keyboard.py | xargs -r kill")
 
-nmap <F1> :ZOmniwindowToggle<enter>
-imap <F1> <esc>:ZOmniwindowToggle<enter>
-tmap <F1> <C-\><C-n>:ZOmniwindowToggle<enter>
+nmap <silent> <F1> :ZOmniwindowToggle<CR>
+imap <silent> <F1> <esc>:ZOmniwindowToggle<CR>
+tmap <silent> <F1> <C-\><C-n>:ZOmniwindowToggle<CR>
 
 " In order to use pear-tree, don't use noremap
 imap <expr> j easy_jk#map_j()
 imap <expr> k easy_jk#map_k()
-cnoremap <expr> j easy_jk#map_j()
-cnoremap <expr> k easy_jk#map_k()
+cnoremap <expr> j easy_jk#cmap_j()
+cnoremap <expr> k easy_jk#cmap_k()
 
-vmap X y/<C-R>"<CR>
-nnoremap <space> 2gj
+nmap <silent> <C-d> :call animation#scroll_up(winheight(0)/2)<CR>
+nmap <silent> <C-f> :call animation#scroll_up(winheight(0))<CR>
+nmap <silent> <C-u> :call animation#scroll_down(winheight(0)/2)<CR>
+nmap <silent> <C-b> :call animation#scroll_down(winheight(0))<CR>
+nmap <PageDown> <C-f>
+nmap <PageUp> <C-b>
+
+vnoremap X y/<C-R>"<CR>
+vnoremap <silent> x :call <SID>ExchangeSelected()<CR>
+nnoremap <space> gjgj
 
 " Basic
 
 nnoremap Y y$
+nmap gs <Plug>(GrepperOperator)
+xmap gs <Plug>(GrepperOperator)
 
-nnoremap <silent> <Tab> :bn<cr>
-nnoremap <silent> <S-Tab> :bN<CR>
+"nnoremap <silent> <Tab> :bn<cr>
+"nnoremap <silent> <S-Tab> :bN<CR>
 " <C-i> is bind to <Tab>, so remapping <Tab> will cause <C-i> remapping the
-" same as <Tab>, so we need to fix it remapping it to itself:
-nnoremap <C-i> <C-i>
+" same as <Tab>
 
 nnoremap <C-p> :<C-p>
 nnoremap <C-q> <C-w>q
@@ -87,45 +100,36 @@ nnoremap H <C-w>h
 nnoremap J <C-w>j
 nnoremap K <C-w>k
 nnoremap L <C-w>l
+nnoremap <C-w>< <C-w><<C-w><<C-w><<C-w><<C-w><<C-w><<C-w><<C-w><<C-w><<C-w><
+nnoremap <C-w>> <C-w>><C-w>><C-w>><C-w>><C-w>><C-w>><C-w>><C-w>><C-w>><C-w>>
+nnoremap <C-w>+ <C-w>+<C-w>+<C-w>+<C-w>+<C-w>+
+nnoremap <C-w>- <C-w>-<C-w>-<C-w>-<C-w>-<C-w>-
 
 nmap <C-k> <Plug>NERDCommenterToggle
 xmap <C-k> <Plug>NERDCommenterToggle
 
-nnoremap \\ za
-nmap \f <Plug>(easymotion-overwin-f)
-xmap \f <Plug>(easymotion-overwin-f)
-nmap \j <Plug>(easymotion-jumptoanywhere)
-xmap \j <Plug>(easymotion-jumptoanywhere)
-nmap \w <Plug>(easymotion-overwin-w)
-xmap \w <Plug>(easymotion-overwin-w)
-nmap \e <Plug>(easymotion-overwin-e)
-xmap \e <Plug>(easymotion-overwin-e)
 "nnoremap mf :wa<cr>:!make flash<cr>
 "nnoremap mm :!make monitor<cr>
 
-" grep or ack {{{1
-
-" grep the words in the path where the file is located.
-set opfunc=MyGrepFunc
-func! MyGrepFunc(type)
-  let s:store_temp_register=@z
-  if a:type ==# 'v' || a:type ==# 'V' || a:type ==# ''
-    normal! `<v`>"zy
-  elseif a:type ==# 'char'
-    normal! `[v`]"zy
+" s:ExchangeSelected {{{
+let s:saved_text=""
+function! s:ExchangeSelected()
+  if len(s:saved_text) == 0
+    normal! gvxmZ
+    let s:saved_text=@"
   else
-    return
+    let tmp=@z
+    let @z=s:saved_text
+    normal! gv"zp`ZP
+    let @z=tmp
+    let s:saved_text=""
   endif
 
-  if LINUX()
-    execute "Ack! " . expand(@z)
-  elseif WINDOWS()
-    silent! execute "vimgrep /" . expand(@z) . "/gj **/*.*"
-  endif
-
-  botright copen
-  let @z=s:store_temp_register
-endfunc
+  function! ClearSavedText(timer)
+    let s:saved_text=""
+  endfunction
+  call timer_start(10 * 1000, 'ClearSavedText')
+endfunction
 " }}}
 " ManageMyVimrcFiles() {{{
 func! ManageMyVimrcFiles()
@@ -133,7 +137,7 @@ func! ManageMyVimrcFiles()
 
   vsplit ~/.vim/.vimrc.mapping | vertical resize 1
   redraw
-  call animate#window_percent_width(0.4)
+  call animate#window_percent_width(0.5)
 
   func! Fun1(id)
     wincmd h | split ~/.vim/.vimrc.bundle | resize 1
@@ -142,7 +146,7 @@ func! ManageMyVimrcFiles()
   endfunc
 
   func! Fun2(id)
-    wincmd l | split ~/.vim/.vimrc.appearance | resize 1
+    wincmd l | split ~/.vim/.vimrc.tui | resize 1
     redraw
     call animate#window_percent_height(0.5)
   endfunc
@@ -200,7 +204,6 @@ func! QuickfixToggle(flag)
   endif
 endfunc
 "}}}
-
 " M (man): get helped {{{
 nnoremap M K
 vnoremap M K

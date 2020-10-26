@@ -3,22 +3,18 @@
 
 /*
 
-!README.md
-!.vimrc
-!.vimrc.bundle
-!.vimrc.appearance
-!.vimrc.mapping
-!.vimrc.syntax
+!/README.md
 
-!.gitignore
-!.gitconfig
+!/.gitignore
+!/.gitconfig
 
-!.myshrc
+!/.myshrc
 
-!.xmodmaprc
+!/.xmodmaprc
 
-!.tmux.conf.local.local
+!/.tmux.conf.local.local
 
+!/.compton.conf
 # 这里应该在最前面加/，这样才表示项目根目录下的.vim目录
 # 不然可以表示任意某个文件夹下的.vim目录
 
@@ -41,5 +37,3 @@
 /.config/fish/*
 !/.config/fish/config.fish
 !/.config/fish/functions/*
-
-!.compton.conf

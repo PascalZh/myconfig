@@ -1,23 +1,14 @@
-" function! AdjustHelpWindow() {{{
-function! AdjustHelpWindow()
-  setlocal signcolumn=no
-  wincmd L
-  vertical resize 80
-endfunction
-" }}}
-
-augroup Z_APPEARANCE
+augroup Z_TUI
   au!
   au FileType haskell,python,vim,cpp,c,javascript,markdown,lua
         \ setlocal colorcolumn=81 |
         \ hi ColorColumn ctermbg=Green guibg=Green
   au TextYankPost *
         \ silent! lua vim.highlight.on_yank {higroup="IncSearch", timeout=222}
-  au FileType help call AdjustHelpWindow()
 augroup END
 
 set termguicolors
-colorscheme NeoSolarized
+colorscheme dracula
 
 " common
 " 字体设置方法，windows系统要用windows的命令行安装字体
@@ -41,33 +32,16 @@ set scrolloff=4  " Minimum lines to keep above and below cursor
 
 set winminheight=0
 set cmdheight=1
-set showcmd
-set laststatus=2
-set more
 
-set whichwrap=b,s,h,l,<,>,[,]
-set wrap
+"set whichwrap=b,s,h,l,<,>,[,]
+set nowrap
 
 " Toggle Menu and Toolbar
 set guioptions="eg"
 
-" airline
-"let g:airline_disable_statusline = 1
-"这个是安装字体后 必须设置此项"
-"let g:airline_theme="qwq"
-"let g:airline_powerline_fonts = 1
-
-"打开tabline功能,方便查看Buffer和切换,省去了minibufexpl插件
-"let g:airline#extensions#tabline#enabled = 1
-"let g:airline#extensions#tabline#buffer_nr_show = 1
-
-" 关闭状态显示空白符号计数
-"let g:airline#extensions#whitespace#enabled = 0
-
 " light line
-function! CocCurrentFunction()
-  return get(b:, 'coc_current_function', '')
-endfunction
+let g:nerdfont_table = {}
+let g:nerdfont_table.powerline = "                         "
 
 let g:lightline = {
       \ 'colorscheme': 'PaperColor',
@@ -88,13 +62,20 @@ let g:lightline = {
       \ 'separator': { 'left': '', 'right': '' },
       \ 'subseparator': { 'left': '│', 'right': '│' },
       \ }
+let g:lightline.enable = {
+      \ 'statusline': 1,
+      \ 'tabline': 1
+      \ }
+
 function! LightlineReadonly()
   return &readonly ? '' : ''
 endfunction
 function! MyFiletype()
   return winwidth(0) > 70 ? (strlen(&filetype) ? WebDevIconsGetFileTypeSymbol() : 'no ft') : ''
 endfunction
-
 function! MyFileformat()
   return winwidth(0) > 70 ? (WebDevIconsGetFileFormatSymbol()) : ''
+endfunction
+function! CocCurrentFunction()
+  return get(b:, 'coc_current_function', '')
 endfunction

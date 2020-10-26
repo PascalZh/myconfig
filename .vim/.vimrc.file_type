@@ -18,11 +18,3 @@ augroup Z_MY_FILETYPE
   au BufRead .myshrc* set ft=sh
   au BufRead .tmux.conf* set ft=tmux
 augroup END
-
-augroup Z_MY_FoldMethod
-  au!
-  "au FileType python setlocal foldmethod=indent foldlevel=99
-  au FileType vim,racket,javascript setlocal foldmethod=marker foldlevel=99 | normal zM
-  au FileType lua setlocal foldexpr=getline(v:lnum)=~'^local\ function'?'a1':(getline(v:lnum)=~'^end'?'s1':'=')
-  au FileType lua setlocal foldmethod=expr
-augroup END
