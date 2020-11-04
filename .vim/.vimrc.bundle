@@ -22,16 +22,6 @@ let g:rbpt_colorpairs = [
 let g:rbpt_max = 16
 let g:rbpt_loadcmd_toggle = 0
 " }}}
-" camspiers/lens.vim  & animate.vim {{{
-let g:animate#distribute_space = 1
-let g:animate#duration = 500.0
-" available: ease_out_cubic ease_out_quad ease_linear
-let g:animate#easing_func = 'animate#ease_out_quad'
-let g:lens#disabled = 1
-let g:lens#disabled_filetypes = ['nerdtree', 'fzf', 'qf']
-let g:lens#width_resize_max = 100
-let g:lens#width_resize_min = 3
-" }}}
 " mhinz/vim-startify {{{1
 let g:startify_fortune_use_unicode = 1
 let g:startify_files_number = 5

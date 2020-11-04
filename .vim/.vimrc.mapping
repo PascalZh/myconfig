@@ -3,6 +3,7 @@ cabbrev h vert bo help
 command! Q q!
 command! Qa qa!
 command! Zenmode execute "Goyo | Limelight"
+command! LightlineToggle call lightline#toggle()
 
 " leader and , {{{1
 let mapleader=";"
@@ -36,7 +37,7 @@ nmap ,e <Cmd>:call LuaTreeToggleAndSetOptions()<cr>
 nmap ,m :GundoToggle<cr>
 nmap ,l <Cmd>:call QuickfixToggle("ll")<cr>
 nmap ,q <Cmd>:call QuickfixToggle("qf")<cr>
-nmap ,a za
+nmap ,, za
 
 " }}}
 
@@ -132,29 +133,31 @@ function! s:ExchangeSelected()
 endfunction
 " }}}
 " ManageMyVimrcFiles() {{{
-func! ManageMyVimrcFiles()
+function! ManageMyVimrcFiles() abort
+  call lightline#disable()
   tabedit ~/.vim/.vimrc
+  let width = winwidth(0) / 2 - 2
+  let height = winheight(0) / 2 - 2
+  let g:animation_task_queue = 1
+  call animation#cmd("1vsplit ~/.vim/.vimrc.bundle")
+  call animation#vertical_resize_delta(width)
+  call animation#cmd("wincmd h | 1split ~/.vim/.vimrc.mapping")
+  call animation#resize_delta(height)
+  call animation#cmd("wincmd l | 1split ~/.vim/.vimrc.tui")
+  call animation#resize_delta(height)
+  call animation#cmd("wincmd h")
+  call animation#cmd("call lightline#enable()")
+endfunction
 
-  vsplit ~/.vim/.vimrc.mapping | vertical resize 1
-  redraw
-  call animate#window_percent_width(0.5)
+" function! Foo() {{{
+function! Foo()
+  let g:animation_task_queue = 1
+  call animation#vertical_resize_delta({-> 120 - 1}, '1vsplit')
+  call animation#vertical_resize_delta({-> 80 - 1}, '1vsp')
+  call animation#vertical_resize_delta({-> 40 - 1}, '1vsp')
+endfunction
+" }}}
 
-  func! Fun1(id)
-    wincmd h | split ~/.vim/.vimrc.bundle | resize 1
-    redraw
-    call animate#window_percent_height(0.5)
-  endfunc
-
-  func! Fun2(id)
-    wincmd l | split ~/.vim/.vimrc.tui | resize 1
-    redraw
-    call animate#window_percent_height(0.5)
-  endfunc
-
-  let tick = float2nr(g:animate#duration)
-  call timer_start(tick*1, function("Fun1"))
-  call timer_start(tick*2, function("Fun2"))
-endfunc
 " }}}
 " Toggle background {{{
 function! ToggleBG()

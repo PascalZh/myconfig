@@ -66,10 +66,6 @@ au FileType markdown setlocal spell
 au FileType tex setlocal spell
 set spelllang=en,cjk
 
-set iskeyword-=.                    " '.' is an end of word designator
-set iskeyword-=#                    " '#' is an end of word designator
-set iskeyword-=-
-
 set splitright
 set splitbelow
 
@@ -102,7 +98,6 @@ set directory=$HOME/.vim/tmp
 " }}}
 
 " Vim-plug
-command! LightlineToggle call lightline#toggle()
 call plug#begin('~/.vim/bundle')
 " Outlooking {{{
 "Plug 'flazz/vim-colorschemes'
@@ -115,8 +110,6 @@ Plug 'dracula/vim', { 'as': 'dracula' }
 Plug 'iCyMind/NeoSolarized'
 
 Plug 'kien/rainbow_parentheses.vim', { 'for': 'racket,scheme,lisp'}
-
-Plug 'camspiers/animate.vim' | Plug 'camspiers/lens.vim'
 " }}}
 " Edit {{{
 Plug 'tpope/vim-surround'

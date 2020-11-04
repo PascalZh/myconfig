@@ -50,7 +50,8 @@ let g:lightline = {
       \             [ 'cocstatus', 'currentfunction', 'readonly', 'filename', 'modified' ] ]
       \ },
       \ 'component': {
-      \   'lineinfo': ' %3l:%-2v',
+      \   'lineinfo': ' %l:%v',
+      \   'percent': '%p%%',
       \ },
       \ 'component_function': {
       \   'readonly': 'LightlineReadonly',
@@ -58,6 +59,7 @@ let g:lightline = {
       \   'currentfunction': 'CocCurrentFunction',
       \   'filetype': 'MyFiletype',
       \   'fileformat': 'MyFileformat',
+      \   'fileencoding': 'MyFenc',
       \ },
       \ 'separator': { 'left': '', 'right': '' },
       \ 'subseparator': { 'left': '│', 'right': '│' },
@@ -79,3 +81,7 @@ endfunction
 function! CocCurrentFunction()
   return get(b:, 'coc_current_function', '')
 endfunction
+function! MyFenc()
+  return &fenc == 'utf-8'?'':&fenc
+endfunction
+
