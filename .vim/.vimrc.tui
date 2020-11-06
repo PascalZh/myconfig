@@ -8,7 +8,8 @@ augroup Z_TUI
 augroup END
 
 set termguicolors
-colorscheme dracula
+let s:color_list = ['one', 'dracula', 'NeoSolarized']
+exe 'colorscheme '.s:color_list[localtime() % len(s:color_list)]
 
 " common
 " 字体设置方法，windows系统要用windows的命令行安装字体
@@ -34,14 +35,16 @@ set winminheight=0
 set cmdheight=1
 
 "set whichwrap=b,s,h,l,<,>,[,]
-set nowrap
+set wrap
 
-" Toggle Menu and Toolbar
+set foldtext='>-'.printf('%3d',v:foldend-v:foldstart+1).'\ '.getline(v:foldstart)
+
 set guioptions="eg"
 
 " light line
-let g:nerdfont_table = {}
-let g:nerdfont_table.powerline = "                         "
+let g:nerdfont = {}
+let g:nerdfont.powerline = "                        ".
+      \ "             "
 
 let g:lightline = {
       \ 'colorscheme': 'PaperColor',
@@ -84,4 +87,3 @@ endfunction
 function! MyFenc()
   return &fenc == 'utf-8'?'':&fenc
 endfunction
-

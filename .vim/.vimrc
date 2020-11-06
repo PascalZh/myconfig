@@ -124,10 +124,11 @@ Plug 'godlygeek/tabular'
 
 " 韩国人写的两个插件
 Plug 'junegunn/goyo.vim' | Plug 'junegunn/limelight.vim'
+Plug 'junegunn/vim-peekaboo'
 
-Plug 'terryma/vim-multiple-cursors' | Plug 'terryma/vim-expand-region'
-"Plug 'terryma/vim-smooth-scroll'
-"Plug 'yuttie/comfortable-motion.vim'
+Plug 'terryma/vim-multiple-cursors'
+Plug 'terryma/vim-expand-region'
+"Plug 'mg979/vim-visual-multi'
 " }}}
 " Other {{{
 "Plug 'vim-scripts/utl.vim'

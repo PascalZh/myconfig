@@ -93,6 +93,8 @@ imap <Space> <Plug>(PearTreeSpace)
 " <Plug>(PearTreeJNR)
 " }}}
 " gundo and backup{{{1
+" TODO figure out backup and undo, find potential bugs with treesitter
+" switch this plugin to mundo or others
 set backup
 if finddir('.vim/undo', $HOME) == ''
   call mkdir($HOME . "/.vim/undo", "p")
@@ -111,9 +113,10 @@ let g:gundo_width=50
 let g:gundo_prefer_python3=1
 " }}}
 " multiple-cursors{{{1
-"let g:multi_cursor_insert_maps        = {'j':1, '<leader>':1}
-
-let g:multi_cursor_normal_maps = {'@': 1, 'F': 1, 'T': 1, '[': 1, '\': 1, ']': 1, '!': 1, '"': 1, 'c': 1, 'd': 1, 'f': 1, 'g': 1, 'm': 1, 'q': 1, 'r': 1, 't': 1, 'y': 1, 'z': 1, '<': 1, '=': 1, '>': 1, 'a': 1, 'i': 1}
+let g:multi_cursor_visual_maps = {'T': 1, 't': 1, 'F': 1, 'f': 1}
+" }}}
+" Plug 'junegunn/vim-peekaboo' {{{
+let g:peekaboo_window = 'vert bo 40new'
 " }}}
 " Code
 " ultisnips {{{1
@@ -206,29 +209,11 @@ func! LuaTreeToggleAndSetOptions()
   LuaTreeToggle
   if expand('%') == 'LuaTree'
     setlocal nocursorcolumn
+    setlocal nowrap
     map <buffer> q <C-w>q
   endif
 endfunc
 " }}}
-" NerdTree {{{1
-" 最后一个窗口是nerdtree时关闭vim正常关闭
-let NERDTreeShowBookmarks=1
-let NERDTreeShowHidden=1
-
-func! NERDTreeToggleAndSetOptions()
-  NERDTreeToggle
-  let str=expand('%')
-  if matchstr(str,'NERD_tree_') != ''
-    setlocal nocursorcolumn
-    nnoremap <buffer> b 3G
-  endif
-endfunc
-let g:NERDTreeNaturalSort=1
-let g:NERDTreeMapOpenSplit="s"
-let g:NERDTreeMapPreviewSplit="gs"
-let g:NERDTreeMapOpenVSplit="v"
-let g:NERDTreeMapPreviewVSplit="gv"
-"}}}
 " Plug 'nvim-treesitter/nvim-treesitter' {{{
 lua <<EOF
 require'nvim-treesitter.configs'.setup {
@@ -249,10 +234,12 @@ set conceallevel=1
 "let g:tex_conceal='abdmg'
 " }}}
 let g:startuptime_self = 1
+" Plug 'mhinz/vim-grepper' {{{
 let g:grepper = {}
 let g:grepper.tools = ['git', 'ack']
 let g:grepper.prompt_text = '$c=> '
 let g:grepper.jump = 0
+" }}}
 " Deleted
 " ncm2/ncm2(deleted) {{{1
 " CTRL-C doesn't trigger the InsertLeave autocmd . map to <ESC> instead.
@@ -357,3 +344,22 @@ endif
 "let g:AutoPairsShortcutBackInsert = '<leader>b'
 
 " }}}
+" NerdTree (deleted) {{{1
+" 最后一个窗口是nerdtree时关闭vim正常关闭
+"let NERDTreeShowBookmarks=1
+"let NERDTreeShowHidden=1
+
+"func! NERDTreeToggleAndSetOptions()
+"  NERDTreeToggle
+"  let str=expand('%')
+"  if matchstr(str,'NERD_tree_') != ''
+"    setlocal nocursorcolumn
+"    nnoremap <buffer> b 3G
+"  endif
+"endfunc
+"let g:NERDTreeNaturalSort=1
+"let g:NERDTreeMapOpenSplit="s"
+"let g:NERDTreeMapPreviewSplit="gs"
+"let g:NERDTreeMapOpenVSplit="v"
+"let g:NERDTreeMapPreviewVSplit="gv"
+"}}}

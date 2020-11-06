@@ -67,6 +67,7 @@ nmap <silent> <C-b> :call animation#scroll_down(winheight(0))<CR>
 nmap <PageDown> <C-f>
 nmap <PageUp> <C-b>
 
+" TODO X should escape / and other regex characters
 vnoremap X y/<C-R>"<CR>
 vnoremap <silent> x :call <SID>ExchangeSelected()<CR>
 nnoremap <space> gjgj
