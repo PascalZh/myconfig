@@ -113,6 +113,7 @@ Plug 'kien/rainbow_parentheses.vim', { 'for': 'racket,scheme,lisp'}
 " }}}
 " Edit {{{
 Plug 'tpope/vim-surround'
+Plug 'tpope/vim-repeat'
 Plug 'easymotion/vim-easymotion'
 Plug 'sjl/gundo.vim'
 Plug 'tmsvg/pear-tree'

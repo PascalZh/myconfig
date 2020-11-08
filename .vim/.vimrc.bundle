@@ -24,15 +24,15 @@ let g:rbpt_loadcmd_toggle = 0
 " }}}
 " mhinz/vim-startify {{{1
 let g:startify_fortune_use_unicode = 1
-let g:startify_files_number = 5
+let g:startify_files_number = 7
 let g:startify_change_to_vcs_root = 0
 "let g:startify_enable_unsafe = 1
 let g:startify_lists = [
-      \ { 'type': 'files',     'header': ['   MRU']            },
-      \ { 'type': 'dir',       'header': ['   MRU '. getcwd()] },
       \ { 'type': 'bookmarks', 'header': ['   Bookmarks']      },
+      \ { 'type': 'files',     'header': ['   MRU']            },
       \ { 'type': 'commands',  'header': ['   Commands']       },
       \ ]
+      "\ { 'type': 'dir',       'header': ['   MRU '. getcwd()] },
 let g:startify_bookmarks = [ '~/.vim/bundle/omniwindow.nvim/lua/fancy_q.lua' ]
 let g:startify_commands = [
       \ ':help startify',
