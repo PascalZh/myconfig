@@ -107,7 +107,7 @@ Plug 'itchyny/lightline.vim'
 Plug 'rakr/vim-one'
 "Plug 'altercation/vim-colors-solarized'
 Plug 'dracula/vim', { 'as': 'dracula' }
-Plug 'iCyMind/NeoSolarized'
+Plug 'PascalZh/NeoSolarized'
 
 Plug 'kien/rainbow_parentheses.vim', { 'for': 'racket,scheme,lisp'}
 " }}}

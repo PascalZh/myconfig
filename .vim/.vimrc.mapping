@@ -24,8 +24,10 @@ nmap <leader>g :Grepper -tool git<CR>
 nmap <leader>G :Grepper -tool ack<CR>
 
 "imap <leader>im <C-O>:call blitz#input_method_open()<CR>|imap <leader>ic <C-O>:call blitz#input_method_close()<CR>
+
+nnoremap <leader>q q
+
 nmap <expr> <leader>r ":split term://ghci ".expand('%')."\n"
-"nmap <leader>sv :wa<CR>:so $MYVIMRC<CR>
 nmap <leader>s :%s/
 
 nmap <leader>t :Tabularize /
@@ -67,10 +69,12 @@ nmap <silent> <C-b> :call animation#scroll_down(winheight(0))<CR>
 nmap <PageDown> <C-f>
 nmap <PageUp> <C-b>
 
-" TODO X should escape / and other regex characters
-vnoremap X y/<C-R>"<CR>
+vnoremap X y/\V<C-R>=escape(escape(@",'\'),'/')<CR><CR>
 vnoremap <silent> x :call <SID>ExchangeSelected()<CR>
+
 nnoremap <space> gjgj
+
+nmap q <Nop>
 
 " Basic
 
@@ -214,19 +218,18 @@ func! QuickfixToggle(flag)
     return
   endif
 
-  let qf_or_loc_list_is_open = a:flag == "qf" ? getqflist({'winid' : 0}).winid :
-        \ getloclist(winnr(), {'winid' : 0}).winid
-  if qf_or_loc_list_is_open
-    if a:flag == "qf"
+  if a:flag == "qf"
+    if getqflist({'winid' : 0}).winid
       cclose
-    elseif a:flag == "ll"
-      lclose
-    endif
-    wincmd p
-  else
-    if a:flag == "qf"
+      wincmd p
+    else
       botright copen
-    elseif a:flag == "ll"
+    endif
+  elseif a:flag == "ll"
+    if getloclist(winnr(), {'winid' : 0}).winid
+      lclose
+      wincmd p
+    else
       lopen
     endif
   endif
