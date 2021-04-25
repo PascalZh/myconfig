@@ -8,9 +8,9 @@ command! LightlineToggle call lightline#toggle()
 " leader and , {{{1
 let mapleader=";"
 
-nmap <leader><space> :nohlsearch<cr>
-nmap <leader>bg :call ToggleBG()<CR>
-nmap <leader>ev :call ManageMyVimrcFiles()<cr>
+nmap <leader><space> <Cmd>nohlsearch<CR>
+nmap <leader>bg <Cmd>call ToggleBG()<CR>
+nmap <leader>ev <Cmd>call ManageMyVimrcFiles()<CR>
 nmap <leader>ef <Plug>(easymotion-overwin-f)
 xmap <leader>ef <Plug>(easymotion-overwin-f)
 nmap <leader>ej <Plug>(easymotion-jumptoanywhere)
@@ -20,8 +20,8 @@ xmap <leader>ew <Plug>(easymotion-overwin-w)
 nmap <leader>ee <Plug>(easymotion-overwin-e)
 xmap <leader>ee <Plug>(easymotion-overwin-e)
 
-nmap <leader>g :Grepper -tool git<CR>
-nmap <leader>G :Grepper -tool ack<CR>
+nmap <leader>g <Cmd>Grepper -tool git<CR>
+nmap <leader>G <Cmd>Grepper -tool ack<CR>
 
 "imap <leader>im <C-O>:call blitz#input_method_open()<CR>|imap <leader>ic <C-O>:call blitz#input_method_close()<CR>
 
@@ -30,13 +30,17 @@ nnoremap <leader>q q
 nmap <expr> <leader>r ":split term://ghci ".expand('%')."\n"
 nmap <leader>s :%s/
 
-nmap <leader>t :Tabularize /
-vmap <leader>t :Tabularize /
+nmap <leader>t :Tabularize 
+vmap <leader>t :Tabularize 
+nmap <leader>tt :Tabularize 
+vmap <leader>tt :Tabularize 
+nmap <leader>ta :Tabularize argument_list
+vmap <leader>ta :Tabularize argument_list
 
-nmap ,c :ColorExplorerToggle<cr>
+nmap ,c <Cmd>ColorExplorerToggle<CR>
 "nmap ,e <Cmd>:call NERDTreeToggleAndSetOptions()<cr>
 nmap ,e <Cmd>:call LuaTreeToggleAndSetOptions()<cr>
-nmap ,m :GundoToggle<cr>
+nmap ,m <Cmd>GundoToggle<cr>
 nmap ,l <Cmd>:call QuickfixToggle("ll")<cr>
 nmap ,q <Cmd>:call QuickfixToggle("qf")<cr>
 nmap ,, za
@@ -52,9 +56,9 @@ nmap ,, za
 "endif
 "au VimLeave * call system("pgrep -f Practice/Shell/record_keyboard.py | xargs -r kill")
 
-nmap <silent> <F1> :ZOmniwindowToggle<CR>
-imap <silent> <F1> <esc>:ZOmniwindowToggle<CR>
-tmap <silent> <F1> <C-\><C-n>:ZOmniwindowToggle<CR>
+nnoremap <silent> <F1> <Cmd>ZOmniwindowToggle<CR>
+inoremap <silent> <F1> <Esc>:ZOmniwindowToggle<CR>
+tnoremap <silent> <F1> <C-\><C-n>:ZOmniwindowToggle<CR>
 
 " In order to use pear-tree, don't use noremap
 imap <expr> j easy_jk#map_j()
@@ -62,10 +66,10 @@ imap <expr> k easy_jk#map_k()
 cnoremap <expr> j easy_jk#cmap_j()
 cnoremap <expr> k easy_jk#cmap_k()
 
-nmap <silent> <C-d> :call animation#scroll_up(winheight(0)/2)<CR>
-nmap <silent> <C-f> :call animation#scroll_up(winheight(0))<CR>
-nmap <silent> <C-u> :call animation#scroll_down(winheight(0)/2)<CR>
-nmap <silent> <C-b> :call animation#scroll_down(winheight(0))<CR>
+nnoremap <C-d> <Cmd>call animation#scroll_up(winheight(0)/2)<CR>
+nnoremap <C-f> <Cmd>call animation#scroll_up(winheight(0))<CR>
+nnoremap <C-u> <Cmd>call animation#scroll_down(winheight(0)/2)<CR>
+nnoremap <C-b> <Cmd>call animation#scroll_down(winheight(0))<CR>
 nmap <PageDown> <C-f>
 nmap <PageUp> <C-b>
 
@@ -82,19 +86,18 @@ nnoremap Y y$
 nmap gs <Plug>(GrepperOperator)
 xmap gs <Plug>(GrepperOperator)
 
-"nnoremap <silent> <Tab> :bn<cr>
+"nnoremap <silent> <Tab> :bn<CR>
 "nnoremap <silent> <S-Tab> :bN<CR>
 " <C-i> is bind to <Tab>, so remapping <Tab> will cause <C-i> remapping the
 " same as <Tab>
 
-nnoremap <C-p> :<C-p>
 nnoremap <C-q> <C-w>q
 
 inoremap <C-l> <C-g>u<Esc>$[s1z=`]i<C-g>u
 nnoremap <C-l> i<C-g>u<Esc>$[s1z=`]a<C-g>u<Esc>
 
-nnoremap <C-s> :wa<cr>
-inoremap <C-s> <Esc>:wa<cr>a
+nnoremap <C-s> :wa<CR>
+inoremap <C-s> <Esc>:wa<CR>a
 
 vnoremap < <gv
 vnoremap > >gv
@@ -128,6 +131,7 @@ function! ClearSavedText(timer)
   echo "vmap x: saved text cleared."
 endfunction
 
+" TODO highlight exchanged text and clear hi after 'timeout' milliseconds.
 function! s:ExchangeSelected()
   if len(s:text1) == 0
     let s:timer_id = timer_start(10 * 1000, 'ClearSavedText')
@@ -178,15 +182,6 @@ function! ManageMyVimrcFiles() abort
   call animation#cmd("call lightline#enable()")
 endfunction
 
-" function! Foo() {{{
-function! Foo()
-  let g:animation_task_queue = 1
-  call animation#vertical_resize_delta({-> 120 - 1}, '1vsplit')
-  call animation#vertical_resize_delta({-> 80 - 1}, '1vsp')
-  call animation#vertical_resize_delta({-> 40 - 1}, '1vsp')
-endfunction
-" }}}
-
 " }}}
 " Toggle background {{{
 function! ToggleBG()
@@ -202,15 +197,16 @@ function! ToggleBG()
 endfunction
 " }}}
 " QuickfixToggle() {{{
-au FileType qf map <silent> <buffer> q <C-W>q|
-      \  map <buffer> t <C-W><CR><C-W>T|
-      \  map <buffer> gt <C-W><CR><C-W>TgT<C-W>j|
-      \  map <buffer> o <CR>|
-      \  map <buffer> go <CR><C-W>j|
-      \  map <buffer> s <C-W><CR><C-W>K|
-      \  map <buffer> gs <C-W><CR><C-W>K<C-W>b|
-      \  map <buffer> v <C-W><CR><C-W>H<C-W>b<C-W>J<C-W>t|
-      \  map <buffer> gv <C-W><CR><C-W>H<C-W>b<C-W>J
+au FileType qf 
+      \ map <silent> <buffer> q <C-W>q<C-W>p|
+      \ map <buffer> t <C-W><CR><C-W>T|
+      \ map <buffer> gt <C-W><CR><C-W>TgT<C-W>j|
+      \ map <buffer> o <CR>|
+      \ map <buffer> go <CR><C-W>j|
+      \ map <buffer> s <C-W><CR><C-W>K|
+      \ map <buffer> gs <C-W><CR><C-W>K<C-W>b|
+      \ map <buffer> v <C-W><CR><C-W>H<C-W>b<C-W>J<C-W>t|
+      \ map <buffer> gv <C-W><CR><C-W>H<C-W>b<C-W>J
 
 func! QuickfixToggle(flag)
   if a:flag != "qf" && a:flag != "ll"

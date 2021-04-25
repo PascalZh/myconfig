@@ -11,6 +11,6 @@
 [credential]
 	helper = store
 ;[https]
-;  proxy = https://192.168.31.88:8888
+;  proxy = https://10.138.84.35:9421
 ;[http]
-;  proxy = http://192.168.31.88:8889
+;  proxy = http://10.138.84.35:9422

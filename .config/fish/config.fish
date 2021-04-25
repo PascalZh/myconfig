@@ -1,7 +1,7 @@
 # daily use
 
 # :terminal :! in neovim need the following environment set to work normally.
-set -x LC_ALL en_US.UTF-8
+set -x LC_ALL "en_US.UTF-8"
 
 #set -x http_proxy http://192.168.31.88:8889
 #set -x https_proxy https://192.168.31.88:8888
