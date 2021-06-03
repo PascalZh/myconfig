@@ -10,7 +10,9 @@ let mapleader=";"
 
 nmap <leader><space> <Cmd>nohlsearch<CR>
 nmap <leader>bg <Cmd>call ToggleBG()<CR>
+
 nmap <leader>ev <Cmd>call ManageMyVimrcFiles()<CR>
+
 nmap <leader>ef <Plug>(easymotion-overwin-f)
 xmap <leader>ef <Plug>(easymotion-overwin-f)
 nmap <leader>ej <Plug>(easymotion-jumptoanywhere)
@@ -25,6 +27,7 @@ nmap <leader>G <Cmd>Grepper -tool ack<CR>
 
 "imap <leader>im <C-O>:call blitz#input_method_open()<CR>|imap <leader>ic <C-O>:call blitz#input_method_close()<CR>
 
+nmap q <Nop>
 nnoremap <leader>q q
 
 nmap <expr> <leader>r ":split term://ghci ".expand('%')."\n"
@@ -77,8 +80,6 @@ vnoremap X y/\V<C-R>=escape(escape(@",'\'),'/')<CR><CR>
 vnoremap <silent> x :call <SID>ExchangeSelected()<CR>
 
 nnoremap <space> gjgj
-
-nmap q <Nop>
 
 " Basic
 

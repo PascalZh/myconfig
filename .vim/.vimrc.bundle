@@ -82,6 +82,7 @@ let g:pear_tree_map_special_keys = 0
 imap <BS> <Plug>(PearTreeBackspace)
 imap <CR> <Plug>(PearTreeExpand)
 imap <Space> <Plug>(PearTreeSpace)
+imap <C-j> <Plug>(PearTreeJump)
 " remap of <ESC> will cause some conflicts with other plugins, so it will be
 " integrated in my `easy_jk` plugin.
 
@@ -225,7 +226,7 @@ func! LuaTreeToggleAndSetOptions()
 endfunc
 " }}}
 " Plug 'nvim-treesitter/nvim-treesitter' {{{
-lua <<EOF
+lua << EOF
 require'nvim-treesitter.configs'.setup {
   ensure_installed = "all",
   highlight = {

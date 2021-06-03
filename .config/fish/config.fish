@@ -2,7 +2,13 @@
 
 # :terminal :! in neovim need the following environment set to work normally.
 set -x LC_ALL "en_US.UTF-8"
-
+function P_wsl_ip
+  echo (ip route | grep default | awk '{print $3}')
+end
+function P_set_proxy
+  set -x https_proxy http://(P_wsl_ip):10809
+  set -x http_proxy http://(P_wsl_ip):10809
+end
 #set -x http_proxy http://192.168.31.88:8889
 #set -x https_proxy https://192.168.31.88:8888
 #set -a -x PATH /usr/local/lib/nodejs/node-v12.16.0-linux-x64/bin
