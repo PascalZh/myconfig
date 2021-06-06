@@ -1,16 +1,9 @@
-# This is Git's per-user configuration file.
 [user]
-  name = PascalZh
-  email = 1315521905@qq.com
+	name = PascalZh
+	email = 1315521905@qq.com
 [core]
   editor = nvim
 [alias]
   lslog = log --graph --oneline --decorate
-[push]
-	default = simple
 [credential]
 	helper = store
-;[https]
-;  proxy = https://10.138.84.35:9421
-;[http]
-;  proxy = http://10.138.84.35:9422

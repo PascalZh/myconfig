@@ -6,9 +6,10 @@ function P_wsl_ip
   echo (ip route | grep default | awk '{print $3}')
 end
 function P_set_proxy
-  set -x https_proxy http://(P_wsl_ip):10809
-  set -x http_proxy http://(P_wsl_ip):10809
+  set -gx https_proxy http://(P_wsl_ip):10809
+  set -gx http_proxy http://(P_wsl_ip):10809
 end
+P_set_proxy
 #set -x http_proxy http://192.168.31.88:8889
 #set -x https_proxy https://192.168.31.88:8888
 #set -a -x PATH /usr/local/lib/nodejs/node-v12.16.0-linux-x64/bin
@@ -78,7 +79,7 @@ else:
 end
 
 function mount_windows_shared_folder
-  sudo mount -t cifs -o username=PascalZh,password=zhang19980918,uid=pascal //192.168.31.82/biyesheji ~/Share
+  sudo mount -t cifs -o username=PascalZh,password=,uid=pascal //192.168.31.82/biyesheji ~/Share
 end
 
 function P_git_clone
@@ -100,17 +101,14 @@ function P_install_my_tools
   P_check_installed python3-pip
 
   dialog --checklist "Install some common softwares" 0 0 5 \
-  "nvim"            "get newest NVIM nightly(unstable) and put it in /usr/local/bin"         off \
-  "setup_nvim"      "create init.vim; get the plug.vim installed; get all plugins installed" off \
-  "z_lua_for_fish"  "clone z.lua in ~/.local/share and install z.lua for fish"               off \
-  "nodejs"          "show how to install nodejs"                                             off \
-  "gui"             "install bspwm, rofi, zathura, feh, sxhkd, compton"                      off \
+  "get_nvim"        "get newest NVIM nightly(unstable) and put it in /usr/local/bin" off \
+  "setup_nvim"      "get packer.nvim installed; get all plugins installed"           off \
+  "z_lua_for_fish"  "clone z.lua in ~/.local/share and install z.lua for fish"       off \
+  "nodejs"          "show how to install nodejs"                                     off \
+  "gui"             "install bspwm, rofi, zathura, feh, sxhkd, compton"              off \
   2> /tmp/dialogtmp
   if test $status = 0
-    if grep -w "nvim" /tmp/dialogtmp
-      #┌───────────────────────────────────┐
-      #│ download nvim and install plugins │
-      #└───────────────────────────────────┘
+    if grep -w "get_nvim" /tmp/dialogtmp
       curl -fLo ~/nvim.appimage https://github.com/neovim/neovim/releases/download/nightly/nvim.appimage
       sudo chmod u+x ~/nvim.appimage
       sudo mv ~/nvim.appimage /usr/local/bin/nvim
@@ -118,24 +116,13 @@ function P_install_my_tools
 
     if grep -w "setup_nvim" /tmp/dialogtmp
       python3 -m pip install --user --upgrade pynvim
-      if test ! -f ~/.config/nvim/init.vim
-        if test ! -d ~/.config/nvim
-          mkdir ~/.config/nvim
-            end
-            if test ! -d ~/.vim
-              mkdir -p ~/.vim/autoload
-            end
-
-            echo -e "set runtimepath^=~/.vim runtimepath+=~/.vim/after\nlet &packpath = &runtimepath\nsource ~/.vim/.vimrc" > ~/.config/nvim/init.vim
-            echo "~/.config/nvim/init.vim created"
-
-            curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
-            https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
-            nvim -u NORC +PlugInstall
-            echo -e "\033[33mplug.vim\033[0m installed"
-        else
-          echo -e "\033[33mplug.vim\033[0m already installed; you can install plugins manually"
-        end
+      if test ! -d ~/.local/share/nvim/site/pack/packer/start/packer.nvim 
+        git clone https://github.com/wbthomason/packer.nvim\
+          ~/.local/share/nvim/site/pack/packer/start/packer.nvim
+      else
+        echo -e "\033[33mpacker.nvim\033[0m already installed"
+      end
+      nvim +PackerSync
     end
 
     if grep -w "z_lua_for_fish" /tmp/dialogtmp

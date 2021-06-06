@@ -19,37 +19,44 @@ local config = {
     clone_timeout = 5 * 60,
   },
 }
-local ret = packer.startup({
+local M = packer.startup({
   function(use)
-    use 'wbthomason/packer.nvim'
+    use {'wbthomason/packer.nvim'}
+
+    -- Library
+    use 'nvim-lua/plenary.nvim'
 
     -- UI
     use 'itchyny/lightline.vim'
+    use {'mengelbrecht/lightline-bufferline', requires = {'ryanoasis/vim-devicons'}}
+
     use 'rakr/vim-one'
     use {'dracula/vim', as = 'dracula'}
     use 'PascalZh/NeoSolarized'
 
     use {'kien/rainbow_parentheses.vim', ft = {'racket', 'scheme', 'lisp'}}
+    --use { 'jose-elias-alvarez/buftabline.nvim', requires = {'kyazdani42/nvim-web-devicons'} }
 
     -- Editting
     use 'windwp/nvim-autopairs'
     use 'mg979/vim-visual-multi'
 
-    use 'tpope/vim-surround' use 'tpope/vim-repeat'
+    use {'tpope/vim-surround', 'tpope/vim-repeat'}
 
     use 'preservim/nerdcommenter'
     use 'godlygeek/tabular'
     use 'mhinz/vim-grepper'
 
-    use 'junegunn/goyo.vim'
-    use 'junegunn/limelight.vim'
+    use {'junegunn/goyo.vim', 'junegunn/limelight.vim'}
     --use 'junegunn/vim-peekaboo'
     use 'terryma/vim-expand-region'
 
+    use 'chaoren/vim-wordmotion'
+
+    use 'arthurxavierx/vim-caser'
+
     -- Code
-    use 'hrsh7th/vim-vsnip'
-    use 'hrsh7th/vim-vsnip-integ'
-    use "rafamadriz/friendly-snippets"
+    use {'hrsh7th/vim-vsnip', 'hrsh7th/vim-vsnip-integ', 'rafamadriz/friendly-snippets' }
 
     use 'neovim/nvim-lspconfig'
     use 'nvim-lua/completion-nvim'
@@ -65,15 +72,14 @@ local ret = packer.startup({
 
     use 'mhinz/vim-startify'
 
-    use 'ryanoasis/vim-devicons'
-    use 'kyazdani42/nvim-web-devicons'
-    use {'kyazdani42/nvim-tree.lua', opt = true, cmd = 'NvimTreeToggle'}
+    use {'kyazdani42/nvim-tree.lua', requires = {'kyazdani42/nvim-web-devicons'}}
 
     use 'mbbill/fencview'
 
     use {'lervag/vimtex', ft = 'tex'}
     use 'plasticboy/vim-markdown'
     use 'dstein64/vim-startuptime'
+    use 'folke/which-key.nvim'
 
   end,
   config = config
@@ -87,9 +93,9 @@ require'lspconfig'.clangd.setup{
 -- }}}
 
 -- nvim-lua/completion-nvim {{{
-cmd("autocmd FileType "..
-"haskell,python,vim,cpp,c,javascript,lua,markdown "..
-[[lua require'completion'.on_attach()]])
+cmd('autocmd FileType '..
+  'haskell,python,vim,cpp,c,javascript,lua,markdown '..
+  'lua require"completion".on_attach()')
 
 map('i', '<C-n>', '<Plug>(completion_trigger)', {noremap = false})
 
@@ -103,7 +109,7 @@ g.completion_timer_cycle = 200
 -- }}}
 
 -- hrsh7th/vim-vsnip {{{
-map('i', '<Tab>', [[pumvisible() ? '<C-n>' : vsnip#available(1)  ? '<Plug>(vsnip-expand-or-jump)' : '<Tab>']],
+map('i', '<Tab>', [[pumvisible() ? '<C-n>' : vsnip#available(1)  ? '<Plug>(vsnip-expand-or-jump)' : '<Tab>']],  -- TODO trigger vsnip first, then <C-n>
   {expr = true, noremap = false})
 map('s', '<Tab>', [[vsnip#available(1)  ? '<Plug>(vsnip-expand-or-jump)' : '<Tab>']],
   {expr = true, noremap = false})
@@ -121,7 +127,7 @@ local npairs = require('nvim-autopairs')
 npairs.setup()
 
 -- skip it, if you use another global object
-_G.MUtils= {}
+_G.MUtils = MUtils == nil and {} or MUtils
 
 vim.g.completion_confirm_key = ""
 
@@ -144,7 +150,7 @@ end
 map('i', '<CR>','v:lua.MUtils.completion_confirm()', {expr = true})
 -- }}}
 
--- rainbow parentheses {{{
+-- kien/rainbow_parentheses.vim {{{
 g.rbpt_colorpairs = {
   {'brown',       'RoyalBlue3' },
   {'Darkblue',    'SeaGreen3'  },
@@ -244,7 +250,13 @@ g.grepper = {
   tools = {'git', 'ack'},
   prompt_text = '$c=> ',
   jump = 0,
+  operator = {
+    prompt = 1,
+  },
 }
+cmd [[
+let &statusline .= ' %{grepper#statusline()}'
+]]
 -- }}}
 -- nvim-treesitter/nvim-treesitter {{{
 -- take about 95ms to load this part
@@ -268,4 +280,120 @@ g.vim_markdown_new_list_item_indent = 2
 g.startuptime_self = 1
 -- }}}
 
-return ret
+-- kyazdani42/nvim-tree.lua {{{
+g.nvim_tree_auto_close = 1
+g.nvim_tree_follow = 1
+g.nvim_tree_indent_markers = 1
+g.nvim_tree_git_hl = 1
+g.nvim_tree_highlight_opened_files = 1
+g.nvim_tree_add_trailing = 0
+g.nvim_tree_group_empty = 1
+g.nvim_tree_hijack_cursor = 1
+g.nvim_tree_special_files = {
+  ['README.md'] = true, ['Makefile'] = true, ['MAKEFILE'] = true,
+  ['CMakeLists.txt'] = true
+}
+
+local tree_cb = require'nvim-tree.config'.nvim_tree_callback
+g.nvim_tree_bindings = {
+  ["<CR>"]           = tree_cb("edit"),
+  ["o"]              = tree_cb("edit"),
+  ["<2-LeftMouse>"]  = tree_cb("edit"),
+  ["<2-RightMouse>"] = tree_cb("cd"),
+  ["<C-]>"]          = tree_cb("cd"),
+  ["v"]              = tree_cb("vsplit"),
+  ["s"]              = tree_cb("split"),
+  ["t"]              = tree_cb("tabnew"),
+  ["<"]              = tree_cb("prev_sibling"),
+  [">"]              = tree_cb("next_sibling"),
+  ["<BS>"]           = tree_cb("close_node"),
+  ["<S-CR>"]         = tree_cb("close_node"),
+  ["<Tab>"]          = tree_cb("preview"),
+  ["I"]              = tree_cb("toggle_ignored"),
+  ["H"]              = tree_cb("toggle_dotfiles"),
+  ["R"]              = tree_cb("refresh"),
+  ["a"]              = tree_cb("create"),
+  ["d"]              = tree_cb("remove"),
+  ["r"]              = tree_cb("rename"),
+  ["<C-r>"]          = tree_cb("full_rename"),
+  ["x"]              = tree_cb("cut"),
+  ["c"]              = tree_cb("copy"),
+  ["p"]              = tree_cb("paste"),
+  ["y"]              = tree_cb("copy_name"),
+  ["Y"]              = tree_cb("copy_path"),
+  ["gy"]             = tree_cb("copy_absolute_path"),
+  ["[c"]             = tree_cb("prev_git_item"),
+  ["]c"]             = tree_cb("next_git_item"),
+  ["-"]              = tree_cb("dir_up"),
+  ["q"]              = tree_cb("close"),
+}
+-- }}}
+
+-- mg979/vim-visual-multi {{{
+g.VM_theme = 'iceblue'
+g.VM_maps = {
+  ['Move Right'] = '<M-S-l>',
+  ['Move Left'] = '<M-S-h>',
+}
+-- }}}
+
+-- tpope/vim-surround {{{
+g['surround_'..string.byte('m')] = '-- \1\1 {{{\n\r\n-- }}}'
+autocmd('Surround', { -- use BufEnter here to allow commentstring to be set
+  [[BufEnter * let b:surround_{char2nr("m")} = ]]..
+    [[printf(&commentstring, " \1comments: \1 {{{").]]..
+    [["\n\r\n".]]..
+    [[printf(&commentstring, " }}}")]]
+})
+-- }}}
+-- arthurxavierx/vim-caser {{{
+g.caser_prefix = 'gc'
+g.caser_no_mappings = 1
+local wk = require('which-key')
+local function make_caser_mappings(prefix, table)
+  for _, mapping in ipairs(table) do
+    for _, lhs in ipairs(mapping[2]) do
+      wk.register({[lhs] = {'<Plug>Caser'..mapping[3], mapping[1]}}, {prefix = prefix, noremap = false})
+      wk.register({[lhs] = {'<Plug>CaserV'..mapping[3], mapping[1]}}, {prefix = prefix, mode = 'v', noremap = false})
+    end
+    wk.register({[string.sub(prefix, 2)] = { '<Nop>', "Case Coercion"}}, {prefix = string.sub(prefix, 1, 1)})
+    wk.register({[string.sub(prefix, 2)] = { '<Nop>', "Case Coercion"}}, {prefix = string.sub(prefix, 1, 1), mode = 'v'})
+  end
+end
+local caser_table = {
+  {'MixedCase or PascalCase',             {'m', 'p' }, 'MixedCase'     },
+  {'camelCase',                           {'c'      }, 'CamelCase'     },
+  {'snake_case',                          {'_', 's' }, 'SnakeCase'     },
+  {'UPPER_CASE',                          {'u', 'U' }, 'UpperCaser'    },
+  {'Title Case',                          {'t'      }, 'TitleCase'     },
+  {'Sentence case',                       {'S'      }, 'SentenceCase'  },
+  {'space case',                          {'<space>'}, 'SpaceCaser'    },
+  {'dash-case or kebab-case',             {'-', 'k' }, 'KebabCase'     },
+  {'Title-Dash-Case or Title-Kebab-Case', {'K'      }, 'TitleKebabCase'},
+  {'dot.case',                            {'.'      }, 'DotCase'       },
+}
+make_caser_mappings('<leader>k', caser_table)
+-- }}}
+
+-- jose-elias-alvarez/buftabline.nvim {{{
+--require("buftabline").setup {
+--  modifier = ":t",
+--  index_format = "%d: ",
+--  buffer_id_index = false,
+--  padding = 1,
+--  icons = true,
+--  icon_colors = 'normal',
+--  start_hidden = false,
+--  auto_hide = true,
+--  disable_commands = false,
+--  go_to_maps = true,
+--  kill_maps = false,
+--  next_indicator = ">",
+--  custom_command = nil,
+--  custom_map_prefix = nil,
+--  hlgroup_current = "TabLineSel",
+--  hlgroup_normal = "TabLineFill",
+--}
+-- }}}
+
+return M
