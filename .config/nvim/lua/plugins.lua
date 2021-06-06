@@ -339,12 +339,22 @@ g.VM_maps = {
 
 -- tpope/vim-surround {{{
 g['surround_'..string.byte('m')] = '-- \1\1 {{{\n\r\n-- }}}'
-autocmd('Surround', { -- use BufEnter here to allow commentstring to be set
-  [[BufEnter * let b:surround_{char2nr("m")} = ]]..
-    [[printf(&commentstring, " \1comments: \1 {{{").]]..
-    [["\n\r\n".]]..
-    [[printf(&commentstring, " }}}")]]
+autocmd('Surround', { -- use BufEnter instead of FileType here to allow commentstring to be set
+  [[BufEnter * let b:surround_{char2nr("m")} = ]] ..
+    utils.prefix.func .. 'SurroundMarker()'
 })
+cmd('function! ' .. utils.prefix.func .. 'SurroundMarker()\n' ..
+[[
+  let l:start_marker = " \1comments: \1 {{{"
+  let l:end_marker = " }}}"
+  if &cms != ""
+    let l:start_marker = printf(&cms, l:start_marker)
+    let l:end_marker = printf(&cms, l:end_marker)
+  endif
+  return l:start_marker."\n\r\n".l:end_marker
+endfunction
+]]
+)
 -- }}}
 -- arthurxavierx/vim-caser {{{
 g.caser_prefix = 'gc'

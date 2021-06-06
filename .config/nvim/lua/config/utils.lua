@@ -5,7 +5,8 @@ local map_key = vim.api.nvim_set_keymap
 
 M.prefix = {
   autocmd = 'My',
-  statusline_func = 'MyStatusLineFunc_'
+  statusline_func = 'MyStatusLineFunc_',
+  func = 'My'
 }
 
 function M.opt(o, v, scopes)
