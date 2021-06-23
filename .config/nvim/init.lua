@@ -9,6 +9,14 @@ local opt = utils.opt
 local autocmd = utils.autocmd
 local map = utils.map  -- must set noremap = false to map <plug>(..)
 
+-- ensure packer.nvim is installed
+local install_path = fn.stdpath('data')..'/site/pack/packer/start/packer.nvim'
+
+if fn.empty(fn.glob(install_path)) > 0 then
+  fn.system({'git', 'clone', 'https://github.com/wbthomason/packer.nvim', install_path})
+  execute 'packadd packer.nvim'
+end
+
 require('plugins')
 require('statusline')
 require('highlight')
@@ -23,7 +31,7 @@ opt('termguicolors', true)
 -- Color Scheme {{{
 local color_list = {'one', 'dracula', 'NeoSolarized'}
 cmd('colorscheme '..color_list[
-  math.floor(fn.localtime() / (7 * 24 * 60 * 60) % #color_list)
+   1 + math.floor(fn.localtime() / (7 * 24 * 60 * 60) % #color_list)
 ])
 -- }}}
 

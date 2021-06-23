@@ -88,7 +88,7 @@ local M = packer.startup({
 -- neovim/nvim-lspconfig {{{
 -- https://github.com/neovim/nvim-lspconfig/blob/master/CONFIG.md#clangd
 require'lspconfig'.clangd.setup{
-  cmd = { "clangd-10", "--background-index" },
+  cmd = { "clangd-11", "--background-index" },
 }
 -- }}}
 
@@ -99,7 +99,7 @@ cmd('autocmd FileType '..
 
 map('i', '<C-n>', '<Plug>(completion_trigger)', {noremap = false})
 
-opt('completeopt', 'menuone,noinsert')
+opt('completeopt', 'menuone,noinsert,noselect')
 --cmd [[set shortmess+=c]]
 
 g.completion_enable_auto_popup = 1
