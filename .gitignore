@@ -41,5 +41,6 @@
 !/.config/nvim/
 /.config/nvim/*
 !/.config/nvim/init.lua
+!/.config/nvim/ginit.vim
 !/.config/nvim/lua/
 !/.config/nvim/autoload/

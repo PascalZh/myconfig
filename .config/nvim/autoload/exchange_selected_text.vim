@@ -1,43 +1,74 @@
-let s:text1=""
-let s:text2=""
-let s:location1=[]
-let s:location2=[]
-let s:timer_id = 0
-function! ClearSavedText(timer)
-  let s:text1=""
+let s:fst_string=""
+let s:snd_string=""
+let s:fst_loc=[]
+let s:snd_loc=[]
+let s:fst_buf=0
+let s:snd_buf=0
+let s:timer_id=0
+let s:ns=nvim_create_namespace('exchange_selected_text')
+
+func! s:ClearSavedText(timer)
+  let s:fst_string=""
   echo "vmap x: saved text cleared."
-endfunction
+endf
 
-" TODO highlight exchanged text and clear hi after 'timeout' milliseconds.
-function! exchange_selected_text#ExchangeSelectedText()
-  if len(s:text1) == 0
-    let s:timer_id = timer_start(10 * 1000, 'ClearSavedText')
-    let s:location1 = getpos("'<")
-    normal! gvxmZ
-    let s:text1=@"
+func! exchange_selected_text#ExchangeSelectedText()
+  if len(s:fst_string) == 0
+
+    let s:timer_id = timer_start(10 * 1000, expand("<SID>")."ClearSavedText")
+
+    let s:fst_loc = getpos("'<")  " -> [bufnum, lnum, col, off]
+
+    let s:fst_buf = nvim_get_current_buf()
+
+    normal! gvxmX
+    let s:fst_string=@"
+
   else
+    let tmp=@z " save @z
+
     call timer_stop(s:timer_id)
-    let s:location2 = getpos("'<")
 
-    let tmp=@z
-    let @z=s:text1
+    let s:snd_loc = getpos("'<")
 
+    let s:snd_buf = nvim_get_current_buf()
+
+    let @z=s:fst_string
     normal! gv"zp
-    let s:text2 = @"
+    let s:snd_string = @"
 
-    " this fix the bug when text2 precede text1 in the same line: the mark
-    " will not move when the preceding text are deleted, thus mark `Z` is no
-    " longer the position of text1.
-    if s:location2[1] == s:location1[1] && s:location2[2] < s:location1[2]
-      let offset = strdisplaywidth(s:text1) - strdisplaywidth(s:text2)
-      let move = "0" . string(s:location1[2] + offset - 1) . "l"
+    " this fix the bug when snd_string precede fst_string in the same line: the mark
+    " will not move when the preceding text are deleted, thus mark `X` is no
+    " longer the position of fst_string.
+    if s:snd_loc[1] == s:fst_loc[1] && s:snd_loc[2] < s:fst_loc[2]
+      let offset = strdisplaywidth(s:fst_string) - strdisplaywidth(s:snd_string)
+      let move = "0" . string(s:fst_loc[2] + offset - 1) . "l"
 
       exe "normal! " . move . "P"
     else
-      normal! `ZP
+      normal! `XP
     endif
 
-    let @z=tmp
-    let s:text1=""
+    call s:ShowTheDifference()
+
+    let s:fst_string=""
+
+    let @z=tmp " restore @z
   endif
-endfunction
+endf
+
+func! s:ShowTheDifference()
+
+  call nvim_buf_add_highlight(s:fst_buf, s:ns, 'IncSearch', s:fst_loc[1] - 1,
+        \ s:fst_loc[2] - 1, s:fst_loc[2] + strdisplaywidth(s:snd_string) - 1)
+
+  call nvim_buf_add_highlight(s:snd_buf, s:ns, 'IncSearch', s:snd_loc[1] - 1,
+        \ s:snd_loc[2] - 1, s:snd_loc[2] + strdisplaywidth(s:fst_string) - 1)
+
+  call timer_start(5000, {-> nvim_buf_clear_namespace(s:fst_buf, s:ns,
+        \ s:fst_loc[1] -1, s:fst_loc[1])})
+
+  call timer_start(5000, {-> nvim_buf_clear_namespace(s:snd_buf, s:ns,
+        \ s:snd_loc[1] -1, s:snd_loc[1])})
+
+endf

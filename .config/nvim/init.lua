@@ -1,3 +1,7 @@
+if vim.fn.exists(':GuiFont') ~= 0 then  -- configs for GUI
+  cmd[[source ginit.vim]]
+end
+
 local g = vim.g
 local cmd = vim.cmd
 local o, wo, bo = vim.o, vim.wo, vim.bo
@@ -9,13 +13,14 @@ local opt = utils.opt
 local autocmd = utils.autocmd
 local map = utils.map  -- must set noremap = false to map <plug>(..)
 
--- ensure packer.nvim is installed
+-- ensure packer.nvim is installed {{{
 local install_path = fn.stdpath('data')..'/site/pack/packer/start/packer.nvim'
 
 if fn.empty(fn.glob(install_path)) > 0 then
   fn.system({'git', 'clone', 'https://github.com/wbthomason/packer.nvim', install_path})
   execute 'packadd packer.nvim'
 end
+-- }}}
 
 require('plugins')
 require('statusline')
@@ -86,8 +91,8 @@ opt('textwidth', 80, buffer)
 opt('fileencoding', 'utf-8', buffer)
 
 -- Fold {{{
-opt('foldtext', "'>-'.printf('%3d',v:foldend-v:foldstart+1).'=>'.getline(v:foldstart)", window)
-opt('fillchars', 'fold:>', window)
+opt('foldtext', "repeat('>',v:foldlevel).printf('%3d',v:foldend-v:foldstart+1).' '.getline(v:foldstart).' ...'", window)
+opt('fillchars', 'fold: ', window)
 
 autocmd('FoldSetting', {
   'FileType vim,racket,javascript,lua '..
@@ -151,7 +156,7 @@ g.mapleader = " "
 
 map('v', '*', [[y/\V<C-R>=escape(escape(@",'\'),'/')<CR><CR>]])
 -- DO NOT USE <Cmd>...<CR>
-map('v', 'x', ':call exchange_selected_text#ExchangeSelectedText()<CR>')
+map('v', 'x', ':call exchange_selected_text#ExchangeSelectedText()<CR>', {silent = true})
 
 map('n', ';<space>', '<Cmd>nohlsearch<CR>')
 map('n', '<leader>bg', '<Cmd>call ToggleBG()<CR>')

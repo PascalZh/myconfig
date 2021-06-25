@@ -31,7 +31,7 @@ g.lightline = {
     filetype = 'MyFiletype',
     fileformat = 'MyFileformat',
     fileencoding = 'MyFenc',
-    treesitter_status = 'nvim_treesitter#statusline' -- TODO: limiting len
+    treesitter_status = 'MyTreesitter' -- TODO: limiting len
   },
   component_expand = {
     buffers = 'lightline#bufferline#buffers'
@@ -62,6 +62,10 @@ endfunction
 function! MyFenc()
   return &fenc == 'utf-8'?'':&fenc
 endfunction
+func! MyTreesitter()
+  let ret=nvim_treesitter#statusline({'indicator_size': float2nr(winwidth(0) * 0.8)})
+  return ret == v:null ? '' : ret
+endf
 ]]
 
 g['lightline#bufferline#show_number'] = 2
