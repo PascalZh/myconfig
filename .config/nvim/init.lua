@@ -1,7 +1,3 @@
-if vim.fn.exists(':GuiFont') ~= 0 then  -- configs for GUI
-  cmd[[source ginit.vim]]
-end
-
 local g = vim.g
 local cmd = vim.cmd
 local o, wo, bo = vim.o, vim.wo, vim.bo
@@ -12,6 +8,14 @@ local utils = require('config.utils')
 local opt = utils.opt
 local autocmd = utils.autocmd
 local map = utils.map  -- must set noremap = false to map <plug>(..)
+local imap = utils.imap
+local nmap = utils.nmap
+local vmap = utils.vmap
+local nvmap = utils.nvmap
+
+if utils.isNvimQt() then  -- configs for GUI
+  cmd[[source ginit.vim]]
+end
 
 -- ensure packer.nvim is installed {{{
 local install_path = fn.stdpath('data')..'/site/pack/packer/start/packer.nvim'
@@ -154,73 +158,73 @@ cmd [[command! LightlineToggle call lightline#toggle()]]
 local silent = {silent = true}
 g.mapleader = " "
 
-map('v', '*', [[y/\V<C-R>=escape(escape(@",'\'),'/')<CR><CR>]])
+vmap('*', [[y/\V<C-R>=escape(escape(@",'\'),'/')<CR><CR>]])
 -- DO NOT USE <Cmd>...<CR>
-map('v', 'x', ':call exchange_selected_text#ExchangeSelectedText()<CR>', {silent = true})
+vmap('d', ':call exchange_selected_text#delete()<CR>', {silent = true})
 
-map('n', ';<space>', '<Cmd>nohlsearch<CR>')
-map('n', '<leader>bg', '<Cmd>call ToggleBG()<CR>')
+nmap(';<space>', '<Cmd>nohlsearch<CR>')
+nmap('<leader>bg', '<Cmd>call ToggleBG()<CR>')
 wk.register({b = {name = "Toggle Dark/Light Background"}}, {prefix = '<leader>'})
 
-map('n', '<leader>G', '<Cmd>Grepper -tool git<CR>')
-map({'n', 'x'}, '<leader>g', '<Plug>(GrepperOperator)', {noremap = false})
+nmap('<leader>G', '<Cmd>Grepper -tool git<CR>')
+nvmap('<leader>g', '<Plug>(GrepperOperator)', {noremap = false})
 
 --map('n', 'q', '<Nop>')
 --map('n', '<leader>q', 'q')
 
-map('n', '<leader>s', ':%s/')
-map('v', '<leader>s', ':s/')
+nmap('<leader>s', ':%s/')
+vmap('<leader>s', ':s/')
 
-map({'n', 'v'}, '<leader>t', ':Tabularize ')
-map({'n', 'v'}, '<leader>tt', ':Tabularize /')
-map({'n', 'v'}, '<leader>ta', ':Tabularize argument_list<CR>')
+nvmap('<leader>t', ':Tabularize ')
+nvmap('<leader>tt', ':Tabularize /')
+nvmap('<leader>ta', ':Tabularize argument_list<CR>')
 
 -- Toggle mappings(begin with ,) {{{
-map('n', ',e', '<Cmd>:NvimTreeToggle<CR>')
-map('n', ',l', '<Cmd>:call quickfix_toggle#QuickfixToggle("ll")<cr>')
-map('n', ',q', '<Cmd>:call quickfix_toggle#QuickfixToggle("qf")<cr>')
+nmap(',e', '<Cmd>:NvimTreeToggle<CR>')
+nmap(',l', '<Cmd>:call quickfix_toggle#QuickfixToggle("ll")<cr>')
+nmap(',q', '<Cmd>:call quickfix_toggle#QuickfixToggle("qf")<cr>')
 -- }}}
 
 --map('n', '<Tab>', '<Cmd>bnext<CR>')
 --map('n', '<S-Tab>', '<Cmd>bNext<CR>')
-map('n', ';;', 'za')
-map('i', 'j', 'easy_jk#map_j()', {noremap = false, expr = true})
-map('i', 'k', 'easy_jk#map_k()', {noremap = false, expr = true})
+nmap(';;', 'za')
+imap('j', 'easy_jk#map_j()', {noremap = false, expr = true})
+imap('k', 'easy_jk#map_k()', {noremap = false, expr = true})
 
 -- Scroll {{{
-map('n', '<C-d>', '<Cmd>call animation#scroll_up(winheight(0)/2)<CR>')
-map('n', '<C-f>', '<Cmd>call animation#scroll_up(winheight(0))<CR>')
-map('n', '<C-u>', '<Cmd>call animation#scroll_down(winheight(0)/2)<CR>')
-map('n', '<C-b>', '<Cmd>call animation#scroll_down(winheight(0))<CR>')
-map('n', '<PageDown>', '<C-f>', {noremap = false})
-map('n', '<PageUp>', '<C-b>', {noremap = false})
+nmap('<C-d>', '<Cmd>call animation#scroll_up(winheight(0)/2)<CR>')
+nmap('<C-f>', '<Cmd>call animation#scroll_up(winheight(0))<CR>')
+nmap('<C-u>', '<Cmd>call animation#scroll_down(winheight(0)/2)<CR>')
+nmap('<C-b>', '<Cmd>call animation#scroll_down(winheight(0))<CR>')
+nmap('<PageDown>', '<C-f>', {noremap = false})
+nmap('<PageUp>', '<C-b>', {noremap = false})
 -- }}}
 
 -- Window commands: jump/resize/quit/... {{{
-map('n', 'H', '<C-w>h')
-map('n', 'J', '<C-w>j')
-map('n', 'K', '<C-w>k')
-map('n', 'L', '<C-w>l')
+nmap('H', '<C-w>h')
+nmap('J', '<C-w>j')
+nmap('K', '<C-w>k')
+nmap('L', '<C-w>l')
 
 local delta_resize = 6
-map('n', '<C-w><', string.rep('<C-w><', delta_resize * 2))
-map('n', '<C-w>>', string.rep('<C-w>>', delta_resize * 2))
-map('n', '<C-w>+', string.rep('<C-w>+', delta_resize))
-map('n', '<C-w>-', string.rep('<C-w>-', delta_resize))
+nmap('<C-w><', string.rep('<C-w><', delta_resize * 2))
+nmap('<C-w>>', string.rep('<C-w>>', delta_resize * 2))
+nmap('<C-w>+', string.rep('<C-w>+', delta_resize))
+nmap('<C-w>-', string.rep('<C-w>-', delta_resize))
 
-map('n', '<C-q>', '<C-w>q')
+nmap('<C-q>', '<C-w>q')
 -- }}}
 
-map('n', '<C-l>', 'i<C-g>u<Esc>$[s1z=`]a<C-g>u<Esc>')
-map('i', '<C-l>', '<C-g>u<Esc>$[s1z=`]i<C-g>u');
+nmap('<C-l>', 'i<C-g>u<Esc>$[s1z=`]a<C-g>u<Esc>')
+imap('<C-l>', '<C-g>u<Esc>$[s1z=`]i<C-g>u');
 
-map('n', '<C-s>',  '<Cmd>w<CR>')
-map('i', '<C-s>',  '<Cmd>:w<CR>')
+nmap('<C-s>',  '<Cmd>w<CR>')
+imap('<C-s>',  '<Cmd>w<CR>')
 
-map('v', '<', '<gv')
-map('v', '>', '>gv')
+vmap('<', '<gv')
+vmap('>', '>gv')
 
-map({'n', 'x'}, '<C-k>', '<Plug>NERDCommenterToggle', {noremap = false})
+nvmap('<C-k>', '<Plug>NERDCommenterToggle', {noremap = false})
 wk.register({c = {name = "NERD Commenter"}}, {prefix = '<leader>'})
 
 wk.register({h = {name = "Git Gutter"}}, {prefix = '<leader>'})

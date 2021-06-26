@@ -39,4 +39,32 @@ function M.map(modes, lhs, rhs, opts)
   end
 end
 
+function M.imap(lhs, rhs, opts)
+  M.map('i', lhs, rhs, opts)
+end
+
+function M.nmap(lhs, rhs, opts)
+  M.map('n', lhs, rhs, opts)
+end
+
+function M.vmap(lhs, rhs, opts)
+  M.map('v', lhs, rhs, opts)
+end
+
+function M.omap(lhs, rhs, opts)
+  M.map('o', lhs, rhs, opts)
+end
+
+function M.nvmap(lhs, rhs, opts)
+  M.map({'n', 'v'}, lhs, rhs, opts)
+end
+
+function M.nvomap(lhs, rhs, opts)
+  M.map({'n', 'v', 'o'}, lhs, rhs, opts)
+end
+
+function M.isNvimQt()
+  return vim.fn.exists(':GuiFont') == 2
+end
+
 return M

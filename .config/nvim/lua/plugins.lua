@@ -85,6 +85,8 @@ local M = packer.startup({
   config = config
 })
 
+local wk = require('which-key')
+
 -- neovim/nvim-lspconfig {{{
 -- https://github.com/neovim/nvim-lspconfig/blob/master/CONFIG.md#clangd
 require'lspconfig'.clangd.setup{
@@ -269,6 +271,9 @@ require'nvim-treesitter.configs'.setup {
     enable = true,
   },
 }
+if utils.isNvimQt() then
+  require'nvim-treesitter.install'.compilers = { "clang" }
+end
 -- }}}
 -- plasticboy/vim-markdown {{{
 g.vim_markdown_math = 1
@@ -359,7 +364,6 @@ endfunction
 -- arthurxavierx/vim-caser {{{
 g.caser_prefix = 'gc'
 g.caser_no_mappings = 1
-local wk = require('which-key')
 local function make_caser_mappings(prefix, table)
   for _, mapping in ipairs(table) do
     for _, lhs in ipairs(mapping[2]) do
@@ -385,7 +389,7 @@ local caser_table = {
 make_caser_mappings('<leader>k', caser_table)
 -- }}}
 
--- jose-elias-alvarez/buftabline.nvim {{{
+-- jose-elias-alvarez/buftabline.nvim (unused) {{{
 --require("buftabline").setup {
 --  modifier = ":t",
 --  index_format = "%d: ",
@@ -405,5 +409,15 @@ make_caser_mappings('<leader>k', caser_table)
 --  hlgroup_normal = "TabLineFill",
 --}
 -- }}}
+
+g.wordmotion_nomap = 1
+local nvmap = utils.nvmap
+nvmap('w',   '<Plug>WordMotion_w', {noremap = false})
+nvmap('e',   '<Plug>WordMotion_e', {noremap = false})
+nvmap('b',   '<Plug>WordMotion_b', {noremap = false})
+nvmap('ge',  '<Plug>WordMotion_ge', {noremap = false})
+
+wk.setup({})
+require("which-key.config").options.operators = {}
 
 return M

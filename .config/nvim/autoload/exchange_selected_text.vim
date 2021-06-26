@@ -5,15 +5,16 @@ let s:snd_loc=[]
 let s:fst_buf=0
 let s:snd_buf=0
 let s:timer_id=0
+let s:is_exchange_pending = v:false
 let s:ns=nvim_create_namespace('exchange_selected_text')
 
 func! s:ClearSavedText(timer)
-  let s:fst_string=""
-  echo "vmap x: saved text cleared."
+  let s:is_exchange_pending = v:false
+  echo "exchange_selected_text: saved text cleared."
 endf
 
-func! exchange_selected_text#ExchangeSelectedText()
-  if len(s:fst_string) == 0
+func! exchange_selected_text#delete()
+  if !s:is_exchange_pending
 
     let s:timer_id = timer_start(10 * 1000, expand("<SID>")."ClearSavedText")
 
@@ -23,6 +24,7 @@ func! exchange_selected_text#ExchangeSelectedText()
 
     normal! gvxmX
     let s:fst_string=@"
+    let s:is_exchange_pending = v:true
 
   else
     let tmp=@z " save @z
@@ -51,7 +53,7 @@ func! exchange_selected_text#ExchangeSelectedText()
 
     call s:ShowTheDifference()
 
-    let s:fst_string=""
+    let s:is_exchange_pending = v:false
 
     let @z=tmp " restore @z
   endif
