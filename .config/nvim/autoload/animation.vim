@@ -1,8 +1,8 @@
 if !exists("g:animation_fps")
-  let g:animation_fps = 30
+  let g:animation_fps = 90
 endif
 if !exists("g:animation_f")
-  let g:animation_f = "animation#f_sine"
+  let g:animation_f = "animation#f_linear"
 endif
 if !exists("g:animation_duration")
   let g:animation_duration = 300

@@ -1,13 +1,6 @@
-local g = vim.g
-local cmd = vim.cmd
-local o, wo, bo = vim.o, vim.wo, vim.bo
-local execute = vim.api.nvim_command
-local fn = vim.fn
-
-local utils = require('config.utils')
-local opt = utils.opt
-local autocmd = utils.autocmd
-local map = utils.map
+local env = require('config.inject_env')
+setmetatable(env, {__index = _G})
+setfenv(1, env)
 
 local packer = require('packer')
 
@@ -19,7 +12,7 @@ local config = {
     clone_timeout = 5 * 60,
   },
 }
-local M = packer.startup({
+local M = packer.startup {
   function(use)
     use {'wbthomason/packer.nvim'}
 
@@ -83,7 +76,7 @@ local M = packer.startup({
 
   end,
   config = config
-})
+}
 
 local wk = require('which-key')
 
@@ -99,7 +92,7 @@ cmd('autocmd FileType '..
   'haskell,python,vim,cpp,c,javascript,lua,markdown '..
   'lua require"completion".on_attach()')
 
-map('i', '<C-n>', '<Plug>(completion_trigger)', {noremap = false})
+map('i', '<C-space>', '<Plug>(completion_trigger)', {noremap = false})
 
 opt('completeopt', 'menuone,noinsert,noselect')
 --cmd [[set shortmess+=c]]
@@ -108,10 +101,22 @@ g.completion_enable_auto_popup = 1
 g.completion_enable_snippet = 'vim-vsnip'
 g.completion_trigger_on_delete = 1
 g.completion_timer_cycle = 200
+
+g.completion_chain_complete_list = {
+  default = {
+    {complete_items = {'lsp', 'snippet'}},
+    {complete_items = {'path'}},
+    {mode = 'keyn'},
+  }
+}
+
+map('i', '<c-j>', '<Plug>(completion_next_source)', {noremap = false})
+map('i', '<c-k>', '<Plug>(completion_prev_source)', {noremap = false})
+g.completion_auto_change_source = 0
 -- }}}
 
 -- hrsh7th/vim-vsnip {{{
-map('i', '<Tab>', [[pumvisible() ? '<C-n>' : vsnip#available(1)  ? '<Plug>(vsnip-expand-or-jump)' : '<Tab>']],  -- TODO trigger vsnip first, then <C-n>
+map('i', '<Tab>', [[pumvisible() ? '<C-n>' : vsnip#available(1)  ? '<Plug>(vsnip-expand-or-jump)' : '<Tab>']],
   {expr = true, noremap = false})
 map('s', '<Tab>', [[vsnip#available(1)  ? '<Plug>(vsnip-expand-or-jump)' : '<Tab>']],
   {expr = true, noremap = false})
@@ -127,6 +132,22 @@ g.vsnip_snippet_dir = '~/.local/share/nvim/site/pack/packer/start/friendly-snipp
 -- windwp/nvim-autopairs {{{
 local npairs = require('nvim-autopairs')
 npairs.setup()
+local Rule = require('nvim-autopairs.rule')
+local cond = require('nvim-autopairs.conds')
+
+npairs.add_rules({
+  Rule("$", "$",{"tex", "latex", "markdown"})
+    -- don't add a pair if the next character is %
+    --:with_pair(cond.not_after_regex_check("%%"))
+    -- don't add a pair if  the previous character is xxx
+    --:with_pair(cond.not_before_regex_check("xxx", 3))
+    :with_move(cond.not_before_text_check('$'))
+    -- don't delete if the next character is xx
+    --:with_del(cond.not_after_regex_check("xx"))
+    -- disable  add newline when press <cr>
+    --:with_cr(cond.none())
+  }
+)
 
 -- skip it, if you use another global object
 _G.MUtils = MUtils == nil and {} or MUtils
@@ -147,7 +168,6 @@ MUtils.completion_confirm=function()
     return npairs.autopairs_cr()
   end
 end
-
 
 map('i', '<CR>','v:lua.MUtils.completion_confirm()', {expr = true})
 -- }}}
@@ -174,15 +194,15 @@ g.rbpt_loadcmd_toggle = 0
 -- }}}
 -- mhinz/vim-startify {{{
 g.startify_fortune_use_unicode = 1
-g.startify_files_number = 7
+g.startify_files_number = 15
 g.startify_change_to_vcs_root = 0
 -- g.startify_enable_unsafe = 1
 g.startify_lists = {
-  {type = 'bookmarks', header = {'   Bookmarks'}      },
-  {type = 'files'    , header = {'   MRU'}            },
-  {type = 'commands' , header = {'   Commands'}       },
+  { type = 'bookmarks', header = {'   Bookmarks'}      },
+  { type = 'files'    , header = {'   MRU'}            },
+  { type = 'commands' , header = {'   Commands'}       },
 }
-g.startify_bookmarks = {'~/.vim/bundle/omniwindow.nvim/lua/omniwindowlib/ui.lua'}
+g.startify_bookmarks = {}
 g.startify_commands = {
   ':help startify',
 }
@@ -271,7 +291,7 @@ require'nvim-treesitter.configs'.setup {
     enable = true,
   },
 }
-if utils.isNvimQt() then
+if vim.fn.has('win32') then
   require'nvim-treesitter.install'.compilers = { "clang" }
 end
 -- }}}
@@ -361,8 +381,9 @@ endfunction
 ]]
 )
 -- }}}
+
 -- arthurxavierx/vim-caser {{{
-g.caser_prefix = 'gc'
+--g.caser_prefix = 'gc'
 g.caser_no_mappings = 1
 local function make_caser_mappings(prefix, table)
   for _, mapping in ipairs(table) do
@@ -411,13 +432,20 @@ make_caser_mappings('<leader>k', caser_table)
 -- }}}
 
 g.wordmotion_nomap = 1
-local nvmap = utils.nvmap
-nvmap('w',   '<Plug>WordMotion_w', {noremap = false})
-nvmap('e',   '<Plug>WordMotion_e', {noremap = false})
-nvmap('b',   '<Plug>WordMotion_b', {noremap = false})
-nvmap('ge',  '<Plug>WordMotion_ge', {noremap = false})
+map({'n', 'x'}, 'w',   '<Plug>WordMotion_w', {noremap = false})
+map({'n', 'x'}, 'e',   '<Plug>WordMotion_e', {noremap = false})
+map({'n', 'x'}, 'b',   '<Plug>WordMotion_b', {noremap = false})
+map({'n', 'x'}, 'ge',  '<Plug>WordMotion_ge', {noremap = false})
 
-wk.setup({})
-require("which-key.config").options.operators = {}
+wk.setup {
+  operators = {},
+  triggers_blacklist = {
+    -- list of mode / prefixes that should never be hooked by WhichKey
+    -- this is mostly relevant for key maps that start with a native binding
+    -- most people should not need to change this
+    i = { "j", "k", ";" },
+    v = { "j", "k" },
+  },
+}
 
 return M

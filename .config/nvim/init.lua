@@ -1,21 +1,7 @@
-local g = vim.g
-local cmd = vim.cmd
-local o, wo, bo = vim.o, vim.wo, vim.bo
-local execute = vim.api.nvim_command
-local fn = vim.fn
-
-local utils = require('config.utils')
-local opt = utils.opt
-local autocmd = utils.autocmd
-local map = utils.map  -- must set noremap = false to map <plug>(..)
-local imap = utils.imap
-local nmap = utils.nmap
-local vmap = utils.vmap
-local nvmap = utils.nvmap
-
-if utils.isNvimQt() then  -- configs for GUI
-  cmd[[source ginit.vim]]
-end
+-- must set noremap = false to map <plug>(..)
+local env = require('config.inject_env')
+setmetatable(env, {__index = _G})
+setfenv(1, env)
 
 -- ensure packer.nvim is installed {{{
 local install_path = fn.stdpath('data')..'/site/pack/packer/start/packer.nvim'
@@ -31,6 +17,7 @@ require('statusline')
 require('highlight')
 
 local wk = require('which-key')
+
 g.netrw_browsex_viewer = 'cmd.exe /C start'
 g.netrw_suppress_gx_mesg = 0
 
@@ -158,13 +145,16 @@ cmd [[command! LightlineToggle call lightline#toggle()]]
 local silent = {silent = true}
 g.mapleader = " "
 
-vmap('*', [[y/\V<C-R>=escape(escape(@",'\'),'/')<CR><CR>]])
+xmap('*', [[y/\V<C-R>=escape(escape(@",'\'),'/')<CR><CR>]])
 -- DO NOT USE <Cmd>...<CR>
-vmap('d', ':call exchange_selected_text#delete()<CR>', {silent = true})
+xmap('X', ':call exchange_selected_text#delete()<CR>', {silent = true})
 
 nmap(';<space>', '<Cmd>nohlsearch<CR>')
+
 nmap('<leader>bg', '<Cmd>call ToggleBG()<CR>')
 wk.register({b = {name = "Toggle Dark/Light Background"}}, {prefix = '<leader>'})
+
+nmap('<leader>ev', '<Cmd>lua require"config.edit_vimrc"()<CR>')
 
 nmap('<leader>G', '<Cmd>Grepper -tool git<CR>')
 nvmap('<leader>g', '<Plug>(GrepperOperator)', {noremap = false})
@@ -175,9 +165,12 @@ nvmap('<leader>g', '<Plug>(GrepperOperator)', {noremap = false})
 nmap('<leader>s', ':%s/')
 vmap('<leader>s', ':s/')
 
-nvmap('<leader>t', ':Tabularize ')
+nmap('<leader>S', '<Cmd>Startify<CR>')
+
+nvmap('<leader>t<space>', ':Tabularize ')
 nvmap('<leader>tt', ':Tabularize /')
 nvmap('<leader>ta', ':Tabularize argument_list<CR>')
+wk.register({t = {name = "Tabularize"}}, {prefix='<leader>'})
 
 -- Toggle mappings(begin with ,) {{{
 nmap(',e', '<Cmd>:NvimTreeToggle<CR>')
@@ -224,9 +217,9 @@ imap('<C-s>',  '<Cmd>w<CR>')
 vmap('<', '<gv')
 vmap('>', '>gv')
 
-nvmap('<C-k>', '<Plug>NERDCommenterToggle', {noremap = false})
-wk.register({c = {name = "NERD Commenter"}}, {prefix = '<leader>'})
+nvmap('<C-/>', '<Plug>NERDCommenterToggle', {noremap = false})
 
+wk.register({c = {name = "NERD Commenter"}}, {prefix = '<leader>'})
 wk.register({h = {name = "Git Gutter"}}, {prefix = '<leader>'})
 
 -- bufline mappings {{{
@@ -256,3 +249,22 @@ nmap <Leader>d0 <Plug>lightline#bufferline#delete(10)
 ]]
 wk.register({d = {name = "bufferline: Delete"}}, {prefix = '<leader>'})
 -- }}}
+
+imap(';d', '$', {noremap = false})
+
+-- normal 0~9 mappings {{{
+--local special_symbol_key = ")!@#$%^&*("
+--for i = 0, 9 do
+--  map({'n', 'v', 'o'}, tostring(i), special_symbol_key:sub(i+1, i+1))
+--  map({'n', 'v', 'o'}, special_symbol_key:sub(i+1, i+1), tostring(i))
+--end
+-- }}}
+
+
+-------------------------------- for neovide -----------------------------------
+g.neovide_refresh_rate = 90
+g.neovide_remember_window_size = true
+g.neovide_cursor_animation_length = 0.15
+
+-- possible value: railgun, torpedo, pixiedust, sonicboom, ripple, wireframe
+g.neovide_cursor_vfx_mode = "ripple"
