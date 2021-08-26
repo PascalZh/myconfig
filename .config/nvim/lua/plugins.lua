@@ -4,7 +4,7 @@ setfenv(1, env)
 
 local packer = require('packer')
 
-local config = {
+local packer_config = {
   display = {
     open_fn = require('packer.util').float,
   },
@@ -27,7 +27,14 @@ local M = packer.startup {
     use {'dracula/vim', as = 'dracula'}
     use 'PascalZh/NeoSolarized'
 
-    use {'kien/rainbow_parentheses.vim', ft = {'racket', 'scheme', 'lisp'}}
+    use {'kien/rainbow_parentheses.vim', config = function()
+      vim.cmd[[
+      au VimEnter * RainbowParenthesesToggle
+      au Syntax * RainbowParenthesesLoadRound
+      au Syntax * RainbowParenthesesLoadSquare
+      au Syntax * RainbowParenthesesLoadBraces
+      ]]
+    end}
     --use { 'jose-elias-alvarez/buftabline.nvim', requires = {'kyazdani42/nvim-web-devicons'} }
 
     -- Editting
@@ -36,7 +43,8 @@ local M = packer.startup {
 
     use {'tpope/vim-surround', 'tpope/vim-repeat'}
 
-    use 'preservim/nerdcommenter'
+    use {'preservim/nerdcommenter', config = function () vim.g.NERDDefaultAlign = 'left' end}
+
     use 'godlygeek/tabular'
     use 'mhinz/vim-grepper'
 
@@ -52,13 +60,16 @@ local M = packer.startup {
     use {'hrsh7th/vim-vsnip', 'hrsh7th/vim-vsnip-integ', 'rafamadriz/friendly-snippets' }
 
     use 'neovim/nvim-lspconfig'
+
     use 'nvim-lua/completion-nvim'
 
     use 'airblade/vim-gitgutter'
 
     use 'nvim-treesitter/nvim-treesitter'
+
     use 'enomsg/vim-haskellConcealPlus'
     use 'neovimhaskell/haskell-vim'
+
     use 'dag/vim-fish'
 
     -- Other
@@ -69,13 +80,13 @@ local M = packer.startup {
 
     use 'mbbill/fencview'
 
-    use {'lervag/vimtex', ft = 'tex'}
+    use {'lervag/vimtex', ft = {'tex', 'latex'}}
     use 'plasticboy/vim-markdown'
-    use 'dstein64/vim-startuptime'
+    use {'dstein64/vim-startuptime', config = function () vim.g.startuptime_self = 1 end}
     use 'folke/which-key.nvim'
 
   end,
-  config = config
+  config = packer_config
 }
 
 local wk = require('which-key')
@@ -160,16 +171,17 @@ MUtils.completion_confirm=function()
       require'completion'.confirmCompletion()
       return npairs.esc("<c-y>")
     else
-      vim.api.nvim_select_popupmenu_item(0 , false , false ,{})
-      require'completion'.confirmCompletion()
-      return npairs.esc("<c-n><c-y>")
+      return npairs.esc("<cr><cr>")
+      --vim.api.nvim_select_popupmenu_item(0 , false , false ,{})
+      --require'completion'.confirmCompletion()
+      --return npairs.esc("<c-n><c-y>")
     end
   else
     return npairs.autopairs_cr()
   end
 end
 
-map('i', '<CR>','v:lua.MUtils.completion_confirm()', {expr = true})
+map('i', '<cr>','v:lua.MUtils.completion_confirm()', {expr = true})
 -- }}}
 
 -- kien/rainbow_parentheses.vim {{{
@@ -209,9 +221,6 @@ g.startify_commands = {
 -- {'Vim Reference', 'h ref'},
 -- {h = 'h ref'},
 -- {m = {'My magical function', 'call Magic()'}},
--- }}}
--- preservim/nerdcommenter {{{
-g.NERDDefaultAlign = 'left'
 -- }}}
 -- tmsvg/pear-tree {{{
 -- Default rules for matching:
@@ -301,10 +310,6 @@ g.vim_markdown_folding_disabled = 1
 g.vim_markdown_new_list_item_indent = 2
 -- }}}
 
--- dstein64/vim-startuptime {{{
-g.startuptime_self = 1
--- }}}
-
 -- kyazdani42/nvim-tree.lua {{{
 g.nvim_tree_auto_close = 1
 g.nvim_tree_follow = 1
@@ -319,39 +324,6 @@ g.nvim_tree_special_files = {
   ['CMakeLists.txt'] = true
 }
 
-local tree_cb = require'nvim-tree.config'.nvim_tree_callback
-g.nvim_tree_bindings = {
-  ["<CR>"]           = tree_cb("edit"),
-  ["o"]              = tree_cb("edit"),
-  ["<2-LeftMouse>"]  = tree_cb("edit"),
-  ["<2-RightMouse>"] = tree_cb("cd"),
-  ["<C-]>"]          = tree_cb("cd"),
-  ["v"]              = tree_cb("vsplit"),
-  ["s"]              = tree_cb("split"),
-  ["t"]              = tree_cb("tabnew"),
-  ["<"]              = tree_cb("prev_sibling"),
-  [">"]              = tree_cb("next_sibling"),
-  ["<BS>"]           = tree_cb("close_node"),
-  ["<S-CR>"]         = tree_cb("close_node"),
-  ["<Tab>"]          = tree_cb("preview"),
-  ["I"]              = tree_cb("toggle_ignored"),
-  ["H"]              = tree_cb("toggle_dotfiles"),
-  ["R"]              = tree_cb("refresh"),
-  ["a"]              = tree_cb("create"),
-  ["d"]              = tree_cb("remove"),
-  ["r"]              = tree_cb("rename"),
-  ["<C-r>"]          = tree_cb("full_rename"),
-  ["x"]              = tree_cb("cut"),
-  ["c"]              = tree_cb("copy"),
-  ["p"]              = tree_cb("paste"),
-  ["y"]              = tree_cb("copy_name"),
-  ["Y"]              = tree_cb("copy_path"),
-  ["gy"]             = tree_cb("copy_absolute_path"),
-  ["[c"]             = tree_cb("prev_git_item"),
-  ["]c"]             = tree_cb("next_git_item"),
-  ["-"]              = tree_cb("dir_up"),
-  ["q"]              = tree_cb("close"),
-}
 -- }}}
 
 -- mg979/vim-visual-multi {{{

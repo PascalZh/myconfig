@@ -268,3 +268,4 @@ g.neovide_cursor_animation_length = 0.15
 
 -- possible value: railgun, torpedo, pixiedust, sonicboom, ripple, wireframe
 g.neovide_cursor_vfx_mode = "ripple"
+opt('guifont', ':h13')
