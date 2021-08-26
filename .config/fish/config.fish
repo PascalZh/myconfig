@@ -15,6 +15,8 @@ P_set_proxy
 #set -x http_proxy http://192.168.31.88:8889
 #set -x https_proxy https://192.168.31.88:8888
 #set -a -x PATH /usr/local/lib/nodejs/node-v12.16.0-linux-x64/bin
+set -a -x PATH $HOME/.cargo/bin
+
 if status --is-interactive
   alias ll 'ls -alhF'
   alias la 'ls -A'
@@ -165,6 +167,10 @@ function P_check_installed
     echo -e "\033[33mInstalling $argv[1]\033[0m"
     sudo apt install $argv[1]
   end
+end
+
+function P_compdb
+  compdb -p build/ list > compile_commands.json
 end
 
 function P_show_cheatsheet
