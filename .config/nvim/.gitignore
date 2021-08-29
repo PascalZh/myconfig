@@ -1,0 +1,8 @@
+/* 
+!/.gitignore
+
+!/init.lua
+!/ginit.vim
+!/lua/
+!/autoload/
+

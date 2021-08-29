@@ -1,6 +1,3 @@
-# 要忽略某个文件夹则末尾需要/
-# **匹配任意多个中间目录
-
 /*
 
 !/README.md
@@ -15,32 +12,15 @@
 !/.tmux.conf.local.local
 
 !/.compton.conf
-# 这里应该在最前面加/，这样才表示项目根目录下的.vim目录
-# 不然可以表示任意某个文件夹下的.vim目录
-
-#!/.vim/suba_snippets/
-# 这里直接想创建suba_snippets这个反例，不过却失败了
-# 因为它的父目录已经被忽略了，应该使用下面的方法
 
 !/.vim/
-/.vim/*
-!/.vim/suba_snippets/*.snippets
-!/.vim/.vimrc*
 
-!/.config
+!/.config/
 /.config/*
+
 !/.config/bspwm
 !/.config/sxhkd
 !/.config/zathura
-
 !/.config/fish/
-/.config/fish/*
-!/.config/fish/config.fish
-!/.config/fish/functions/
-
 !/.config/nvim/
-/.config/nvim/*
-!/.config/nvim/init.lua
-!/.config/nvim/ginit.vim
-!/.config/nvim/lua/
-!/.config/nvim/autoload/
+
