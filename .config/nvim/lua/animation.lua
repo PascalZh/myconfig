@@ -1,29 +1,33 @@
-vim.cmd [[
-if !exists("g:animation_fps")
-  let g:animation_fps = 90
-endif
-if !exists("g:animation_duration")
-  let g:animation_duration = 300
-endif
-if !exists("g:animation_ease_func")
-  let g:animation_ease_func = "quad"
-endif
-]]
+if (not vim.g.animation_fps) then
+  vim.g.animation_fps = 120
+end
+if (not vim.g.animation_duration) then
+  vim.g.animation_duration = 300
+end
+if (not vim.g.animation_ease_func) then
+  vim.g.animation_ease_func = "quad"
+end
 
-local M = {}
+local M = {DEBUG = false}
 
--- @return time in milliseconds
+---@return number time in milliseconds
 local function time()
   return vim.fn.reltimefloat(vim.fn.reltime()) * 1000
+end
+
+local function dprint(str)
+  if (M.DEBUG) then
+    print(str)
+  end
 end
 
 local Animate = {}
 
 function Animate:new()
   local obj = {
-    task_idx = -1,
+    task_idx = 1,
     task_queue = {},
-    epsilon = 0.01  -- TODO epsilon better be calculated with interval and derivative informations
+    epsilon = 0.01
   }
   self.__index = self
   setmetatable(obj, self)
@@ -37,8 +41,29 @@ function Animate:start()
   end
 end
 
--- @param update a function that update current state and do the actual 'animation'
-function Animate:animate(start_state, end_state, update, duration, ease_func)
+function Animate:_run_next_task()
+  self.task_idx = self.task_idx + 1
+  if (self.task_idx <= #self.task_queue) then
+    self.task_queue[self.task_idx]()
+  end
+end
+
+---@param update function a function that update current state and do the actual 'animation'
+---cur_state = update(cur_state, next_state)
+function Animate:animate(start_state, end_state, update, options)
+  local options = options or {}
+  local ease_func
+  if (options.ease_func) then
+    if (type(options.ease_func) == 'string') then
+      ease_func = Animate.ease_funcs[options.ease_func]
+    elseif (type(options.ease_func) == 'function') then
+      ease_func = options.ease_func
+    end
+  else
+    ease_func = Animate.ease_funcs[vim.g.animation_ease_func]
+  end
+  local duration = options.duration or vim.g.animation_duration
+
   local function task()
     if (type(start_state) == 'function') then
       start_state = start_state()
@@ -48,19 +73,20 @@ function Animate:animate(start_state, end_state, update, duration, ease_func)
     end
 
     local timer = vim.loop.new_timer()
-    local start_time = time()
-    local interval = 1000 / vim.g.animation_fps
     local delta_state = end_state - start_state
     local cur_state = start_state
+    local interval = 1000 / vim.g.animation_fps
+    local delay = options.delay or interval
 
-    timer:start(interval, interval, vim.schedule_wrap(function ()
-      print('timer invoked cur_state = '..tostring(cur_state))
+    local start_time
+
+    timer:start(delay, interval, vim.schedule_wrap(function ()
+      if (not start_time) then
+        start_time = time()
+        return
+      end
+
       local elapsed_time = time() - start_time
-
-      -- calcute next_state corresponds to current time, and update
-      local next_state = ease_func(delta_state, duration, elapsed_time) + start_state
-      cur_state = update(cur_state, next_state)
-
       -- stop the timer and start the next task in the queue
       if (elapsed_time > duration) then
         timer:stop()
@@ -69,11 +95,13 @@ function Animate:animate(start_state, end_state, update, duration, ease_func)
           update(cur_state, end_state)  -- ensure end_state is reached
         end
 
-        self.task_idx = self.task_idx + 1
-        if (self.task_idx <= #self.task_queue) then
-          self.task_queue[self.task_idx]()
-        end
+        self:_run_next_task()
       end
+
+      -- calcute next_state corresponds to current time, and update
+      local next_state = ease_func(delta_state, duration, elapsed_time) + start_state
+      dprint(vim.inspect{elapsed_time, next_state, duration, start_state, delta_state})
+      cur_state = update(cur_state, next_state)
     end))
   end
 
@@ -81,29 +109,18 @@ function Animate:animate(start_state, end_state, update, duration, ease_func)
   return self
 end
 
-function Animate:animate_helper_1(start_state, end_state, update, duration)
-  return self:animate(start_state, end_state, update, duration,
-    Animate.ease_funcs[vim.g.animation_ease_func])
-end
-function Animate:animate_helper_2(start_state, end_state, update)
-  return self:animate(start_state, end_state, update,
-    vim.g.animation_duration, Animate.ease_funcs[vim.g.animation_ease_func])
-end
-
-function Animate:call_func(func, timeout)
+function Animate:call_func(func, options)
+  local options = options or {}
 
   local function func_wrapper()
     func()
-    self.task_idx = self.task_idx + 1
-    if (self.task_idx <= #self.task_queue) then
-      self.task_queue[self.task_idx]()
-    end
+    self:_run_next_task()
   end
 
   local task
 
-  if (timeout) then
-    task = function () vim.defer_fn(func_wrapper, timeout) end
+  if (options.delay) then
+    task = function () vim.defer_fn(func_wrapper, options.delay) end
   else
     task = func_wrapper
   end
@@ -112,12 +129,11 @@ function Animate:call_func(func, timeout)
   return self
 end
 
-function Animate:cmd(cmd, timeout)
-  return self:call_func(function () vim.cmd(cmd) end, timeout)
+function Animate:cmd(cmd, options)
+  return self:call_func(function () vim.cmd(cmd) end, options)
 end
 
--------------------------- predefined 'update' functions -----------------------
-
+-- Predefined 'update' functions {{{
 local function make_scroll_update(action)
   return function (cur_state, next_state)
     local diff = math.floor(next_state - cur_state)
@@ -128,17 +144,6 @@ local function make_scroll_update(action)
       return cur_state
     end
   end
-end
-
-local scroll_up_update = make_scroll_update("\\<C-e>")
-local scroll_down_update = make_scroll_update("\\<C-y>")
-
-function Animate:scroll_up(delta)
-  return self:animate_helper_2(0, delta, scroll_up_update)
-end
-
-function Animate:scroll_down(delta)
-  return self:animate_helper_2(0, delta, scroll_down_update)
 end
 
 local function make_resize_update(cmd)
@@ -154,34 +159,46 @@ local function make_resize_update(cmd)
   end
 end
 
+local scroll_up_update = make_scroll_update("\\<C-e>")
+local scroll_down_update = make_scroll_update("\\<C-y>")
+
 local resize_update = make_resize_update("resize ")
 local resize_vertically_update = make_resize_update("vertical resize ")
+-- }}}
 
-function Animate:resize_delta(delta)
-  if (type(delta) == 'function') then
-    delta = delta()
-  end
-  return self:animate_helper_2(
+-- Common api {{{
+function Animate:scroll_up(delta, options)
+  return self:animate(0, delta, scroll_up_update, options)
+end
+
+function Animate:scroll_down(delta, options)
+  return self:animate(0, delta, scroll_down_update, options)
+end
+
+function Animate:resize_delta(delta, options)
+  return self:animate(
     function () return vim.fn.winheight(0) end,
-    function () return vim.fn.winheight(0) + delta end,
-    resize_update)
+    function () return vim.fn.winheight(0) +
+      ((type(delta) == 'function') and delta() or delta) end,
+    resize_update,
+    options)
 end
 
-function Animate:resize_vertically_delta(delta)
-  if (type(delta) == 'function') then
-    delta = delta()
-  end
-  return self:animate_helper_2(
+function Animate:resize_vertically_delta(delta, options)
+  return self:animate(
     function () return vim.fn.winwidth(0) end,
-    function () return vim.fn.winwidth(0) + delta end,
-    resize_vertically_update)
+    function () return vim.fn.winwidth(0) +
+      ((type(delta) == 'function') and delta() or delta) end,
+    resize_vertically_update,
+    options)
 end
+-- }}}
 
--- ease functions {{{
+-- Ease functions {{{
 
--- @param y_ end state - start state
--- @param t_ duration
--- @param t  current time
+---@param y_ number end state - start state
+---@param t_ number duration
+---@param t  number current time
 local function ease_func_linear(y_, t_, t)
   return y_ * (t / t_)
 end
@@ -210,5 +227,31 @@ Animate.ease_funcs = {
 
 -- }}}
 
+-- Predefined Animate instances and module functions{{{
+local anim_scroll_up_half = Animate:new()
+  :scroll_up(function () return vim.fn.winheight(0) / 2 end)
+local anim_scroll_up = Animate:new()
+  :scroll_up(function () return vim.fn.winheight(0) end)
+
+local anim_scroll_down_half = Animate:new()
+  :scroll_down(function () return vim.fn.winheight(0) / 2 end)
+local anim_scroll_down = Animate:new()
+  :scroll_down(function () return vim.fn.winheight(0) end)
+
+function M.scroll_up_half()
+  anim_scroll_up_half:start()
+end
+function M.scroll_up()
+  anim_scroll_up:start()
+end
+
+function M.scroll_down_half()
+  anim_scroll_down_half:start()
+end
+function M.scroll_down()
+  anim_scroll_down:start()
+end
+
+-- }}}
 M.Animate = Animate
 return M

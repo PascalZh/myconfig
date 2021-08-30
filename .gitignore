@@ -1,17 +1,13 @@
 /*
+!/.gitignore
 
 !/README.md
-
-!/.gitignore
 !/.gitconfig
-
 !/.myshrc
-
 !/.xmodmaprc
-
 !/.tmux.conf.local.local
-
 !/.compton.conf
+!/Microsoft.PowerShell_profile.ps1
 
 !/.vim/
 

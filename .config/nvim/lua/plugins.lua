@@ -12,6 +12,7 @@ local packer_config = {
     clone_timeout = 5 * 60,
   },
 }
+
 local M = packer.startup {
   function(use)
     use {'wbthomason/packer.nvim'}
@@ -28,7 +29,7 @@ local M = packer.startup {
     use 'PascalZh/NeoSolarized'
 
     use {'kien/rainbow_parentheses.vim', config = function()
-      vim.cmd[[
+      vim.cmd [[
       au VimEnter * RainbowParenthesesToggle
       au Syntax * RainbowParenthesesLoadRound
       au Syntax * RainbowParenthesesLoadSquare
@@ -46,7 +47,6 @@ local M = packer.startup {
     use {'preservim/nerdcommenter', config = function () vim.g.NERDDefaultAlign = 'left' end}
 
     use 'godlygeek/tabular'
-    use 'mhinz/vim-grepper'
 
     use {'junegunn/goyo.vim', 'junegunn/limelight.vim'}
     --use 'junegunn/vim-peekaboo'
@@ -72,7 +72,12 @@ local M = packer.startup {
 
     use 'dag/vim-fish'
 
+    -- IDE
+    use {'jbyuki/one-small-step-for-vimkind', requires = 'mfussenegger/nvim-dap'}
+
     -- Other
+
+    use 'mhinz/vim-grepper'
 
     use 'mhinz/vim-startify'
 
@@ -82,7 +87,9 @@ local M = packer.startup {
 
     use {'lervag/vimtex', ft = {'tex', 'latex'}}
     use 'plasticboy/vim-markdown'
+
     use {'dstein64/vim-startuptime', config = function () vim.g.startuptime_self = 1 end}
+
     use 'folke/which-key.nvim'
 
   end,
@@ -93,6 +100,56 @@ local wk = require('which-key')
 
 -- neovim/nvim-lspconfig {{{
 -- https://github.com/neovim/nvim-lspconfig/blob/master/CONFIG.md#clangd
+local system_name
+if vim.fn.has("mac") == 1 then
+  system_name = "macOS"
+elseif vim.fn.has("unix") == 1 then
+  system_name = "Linux"
+elseif vim.fn.has('win32') == 1 then
+  system_name = "Windows"
+else
+  print("Unsupported system for sumneko")
+end
+
+local runtime_path = vim.split(package.path, ';')
+table.insert(runtime_path, "lua/?.lua")
+table.insert(runtime_path, "lua/?/init.lua")
+
+local sumneko_root_path = fn.expand('$HOME/Programs/lua-language-server')
+local sumneko_binary = sumneko_root_path..'/bin/'..
+  system_name..'/lua-language-server'
+
+local lua_globals = {'vim'}
+for k, v in pairs(require('config.inject_env')) do
+  table.insert(lua_globals, k)
+end
+
+require'lspconfig'.sumneko_lua.setup {
+  cmd = {sumneko_binary, "-E", sumneko_root_path .. "/main.lua"};
+  settings = {
+    Lua = {
+      runtime = {
+        -- Tell the language server which version of Lua you're using (most likely LuaJIT in the case of Neovim)
+        version = 'LuaJIT',
+        -- Setup your lua path
+        path = runtime_path,
+      },
+      diagnostics = {
+        -- Get the language server to recognize the `vim` global
+        globals = lua_globals,
+      },
+      workspace = {
+        -- Make the server aware of Neovim runtime files
+        library = vim.api.nvim_get_runtime_file("", true),
+      },
+      -- Do not send telemetry data containing a randomized but unique identifier
+      telemetry = {
+        enable = false,
+      },
+    },
+  },
+}
+
 require'lspconfig'.clangd.setup{
   cmd = { "clangd-11", "--background-index" },
 }
@@ -108,14 +165,15 @@ map('i', '<C-space>', '<Plug>(completion_trigger)', {noremap = false})
 opt('completeopt', 'menuone,noinsert,noselect')
 --cmd [[set shortmess+=c]]
 
-g.completion_enable_auto_popup = 1
+g.completion_enable_auto_popup = 1  -- TODO sumneko lua lsp will trigger on space
 g.completion_enable_snippet = 'vim-vsnip'
 g.completion_trigger_on_delete = 1
 g.completion_timer_cycle = 200
 
 g.completion_chain_complete_list = {
   default = {
-    {complete_items = {'lsp', 'snippet'}},
+    {complete_items = {'lsp'}},
+    {complete_items = {'snippet'}},
     {complete_items = {'path'}},
     {mode = 'keyn'},
   }
@@ -403,11 +461,13 @@ make_caser_mappings('<leader>k', caser_table)
 --}
 -- }}}
 
+-- chaoren/vim-wordmotion {{{
 g.wordmotion_nomap = 1
 map({'n', 'x'}, 'w',   '<Plug>WordMotion_w', {noremap = false})
 map({'n', 'x'}, 'e',   '<Plug>WordMotion_e', {noremap = false})
 map({'n', 'x'}, 'b',   '<Plug>WordMotion_b', {noremap = false})
 map({'n', 'x'}, 'ge',  '<Plug>WordMotion_ge', {noremap = false})
+-- }}}
 
 wk.setup {
   operators = {},
@@ -419,5 +479,18 @@ wk.setup {
     v = { "j", "k" },
   },
 }
+
+local dap = require"dap"
+dap.configurations.lua = {
+  {
+    type = 'nlua',
+    request = 'attach',
+    name = "Attach to running Neovim instance",
+  }
+}
+
+dap.adapters.nlua = function(callback, config)
+  callback({ type = 'server', host = config.host or "127.0.0.1", port = config.port or 8088 })
+end
 
 return M

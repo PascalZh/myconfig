@@ -1,3 +1,4 @@
+_G.MUtils = MUtils == nil and {} or MUtils
 local M = {}
 local cmd = vim.cmd
 local o_s = vim.o
@@ -39,5 +40,12 @@ function M.map(modes, lhs, rhs, opts)
   end
 end
 
-return M
+MUtils.toggle_background = function ()
+  if vim.o.background == 'dark' then
+    vim.o.background = 'light'
+  else
+    vim.o.background = 'dark'
+  end
+end
 
+return M

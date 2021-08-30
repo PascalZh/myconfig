@@ -22,9 +22,9 @@ if status --is-interactive
   alias la 'ls -A'
   alias l 'ls -CF'
   # -a: --add; -g: --global
+  abbr -a -g vim 'nvim'
   abbr -a -g pls 'sudo'
   abbr -a -g rm 'rm -i'
-  abbr -a -g vim 'nvim'
   abbr -a -g t 'tree -h'
 
   abbr -a -g gs 'git status'
@@ -34,7 +34,6 @@ if status --is-interactive
   abbr -a -g gl 'git lslog'
   abbr -a -g gd 'git diff'
 
-  abbr -a -g m 'make -j2'
   abbr -a -g sai 'sudo apt install'
   abbr -a -g sar 'sudo apt remove'
 

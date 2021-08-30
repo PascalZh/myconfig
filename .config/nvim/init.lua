@@ -1,4 +1,3 @@
--- must set noremap = false to map <plug>(..)
 local env = require('config.inject_env')
 setmetatable(env, {__index = _G})
 setfenv(1, env)
@@ -17,8 +16,10 @@ require('statusline')
 require('highlight')
 
 local wk = require('which-key')
+local window = {o, wo}
+local buffer = {o, bo}
 
-g.netrw_browsex_viewer = 'cmd.exe /C start'
+g.netrw_browsex_viewer = 'cmd.exe /C start' -- TODO FIXME
 g.netrw_suppress_gx_mesg = 0
 
 -- TUI {{{
@@ -66,21 +67,6 @@ opt('wildmode', 'full')
 opt('inccommand', 'split')
 opt('mouse', 'a')
 
--- }}}
-
-cmd [[autocmd TermOpen * startinsert]]
-
-local window = {o, wo}
-local buffer = {o, bo}
-
--- Format {{{
--- `formatoptions` is set by ftplugin/*.vim in neovim runtime folder and other
--- plugins' folder, I don't know how to override them.
-opt('textwidth', 80, buffer)
--- }}}
-
-opt('fileencoding', 'utf-8', buffer)
-
 -- Fold {{{
 opt('foldtext', "repeat('>',v:foldlevel).printf('%3d',v:foldend-v:foldstart+1).' '.getline(v:foldstart).' ...'", window)
 opt('fillchars', 'fold: ', window)
@@ -91,13 +77,23 @@ autocmd('FoldSetting', {
 })
 -- }}}
 
+-- }}}
+
+cmd [[autocmd TermOpen * startinsert]]
+
+-- Format {{{
+-- `formatoptions` is set by ftplugin/*.vim in neovim runtime folder and other
+-- plugins' folder, I don't know how to override them. TODO
+opt('textwidth', 80, buffer)
+-- }}}
+
+opt('autochdir', true)
+
 -- Tab {{{
 opt('tabstop', 2, buffer)
 opt('expandtab', true, buffer)
 opt('shiftwidth', 2, buffer)
 -- }}}
-
-opt('hidden', true)
 
 -- Clipboard {{{
 if fn.exists('$WSL_DISTRO_NAME') then
@@ -147,12 +143,15 @@ g.mapleader = " "
 
 xmap('*', [[y/\V<C-R>=escape(escape(@",'\'),'/')<CR><CR>]])
 -- DO NOT USE <Cmd>...<CR>
-xmap('X', ':call exchange_selected_text#delete()<CR>', {silent = true})
+xmap('X', ':call exchange_selected_text#delete()<CR>', silent)
 
 nmap(';<space>', '<Cmd>nohlsearch<CR>')
 
-nmap('<leader>bg', '<Cmd>call ToggleBG()<CR>')
-wk.register({b = {name = "Toggle Dark/Light Background"}}, {prefix = '<leader>'})
+--map('n', '<Tab>', '<Cmd>bnext<CR>')
+--map('n', '<S-Tab>', '<Cmd>bNext<CR>')
+nmap(';;', 'za')
+imap('j', 'easy_jk#map_j()', {noremap = false, expr = true})
+imap('k', 'easy_jk#map_k()', {noremap = false, expr = true})
 
 nmap('<leader>ev', '<Cmd>lua require"config.edit_vimrc"()<CR>')
 
@@ -176,19 +175,15 @@ wk.register({t = {name = "Tabularize"}}, {prefix='<leader>'})
 nmap(',e', '<Cmd>:NvimTreeToggle<CR>')
 nmap(',l', '<Cmd>:call quickfix_toggle#QuickfixToggle("ll")<cr>')
 nmap(',q', '<Cmd>:call quickfix_toggle#QuickfixToggle("qf")<cr>')
+nmap(',bg', '<Cmd>lua MUtils.toggle_background()<CR>')
+wk.register({b = {name = "Toggle Dark/Light Background"}}, {prefix = ','})
 -- }}}
 
---map('n', '<Tab>', '<Cmd>bnext<CR>')
---map('n', '<S-Tab>', '<Cmd>bNext<CR>')
-nmap(';;', 'za')
-imap('j', 'easy_jk#map_j()', {noremap = false, expr = true})
-imap('k', 'easy_jk#map_k()', {noremap = false, expr = true})
-
 -- Scroll {{{
-nmap('<C-d>', '<Cmd>call animation#scroll_up(winheight(0)/2)<CR>')
-nmap('<C-f>', '<Cmd>call animation#scroll_up(winheight(0))<CR>')
-nmap('<C-u>', '<Cmd>call animation#scroll_down(winheight(0)/2)<CR>')
-nmap('<C-b>', '<Cmd>call animation#scroll_down(winheight(0))<CR>')
+nmap('<C-d>', '<Cmd>lua require"animation".scroll_up_half()<CR>')
+nmap('<C-f>', '<Cmd>lua require"animation".scroll_up()<CR>')
+nmap('<C-u>', '<Cmd>lua require"animation".scroll_down_half()<CR>')
+nmap('<C-b>', '<Cmd>lua require"animation".scroll_down()<CR>')
 nmap('<PageDown>', '<C-f>', {noremap = false})
 nmap('<PageUp>', '<C-b>', {noremap = false})
 -- }}}
@@ -208,7 +203,7 @@ nmap('<C-w>-', string.rep('<C-w>-', delta_resize))
 nmap('<C-q>', '<C-w>q')
 -- }}}
 
-nmap('<C-l>', 'i<C-g>u<Esc>$[s1z=`]a<C-g>u<Esc>')
+nmap('<C-l>', 'i<C-g>u<Esc>$[s1z=`]a<C-g>u<Esc>')  -- TODO some hidden bugs?
 imap('<C-l>', '<C-g>u<Esc>$[s1z=`]i<C-g>u');
 
 nmap('<C-s>',  '<Cmd>w<CR>')
@@ -217,7 +212,20 @@ imap('<C-s>',  '<Cmd>w<CR>')
 vmap('<', '<gv')
 vmap('>', '>gv')
 
+-- This mapping doesn't work when open nvim in PowerShell.
 nvmap('<C-/>', '<Plug>NERDCommenterToggle', {noremap = false})
+
+-- Debug mappings {{{
+nmap('<F5>', ":lua require'dap'.continue()<CR>")
+nmap('<F10>', ":lua require'dap'.step_over()<CR>")
+nmap('<F11>', ":lua require'dap'.step_into()<CR>")
+nmap('<F12>', ":lua require'dap'.step_out()<CR>")
+nmap('<leader>b', ":lua require'dap'.toggle_breakpoint()<CR>")
+nmap('<leader>B', ":lua require'dap'.set_breakpoint(vim.fn.input('Breakpoint condition: '))<CR>")
+nmap('<leader>lp', ":lua require'dap'.set_breakpoint(nil, nil, vim.fn.input('Log point message: '))<CR>")
+nmap('<leader>dr', ":lua require'dap'.repl.open()<CR>")
+nmap('<leader>dl', ":lua require'dap'.run_last()<CR>")
+-- }}}
 
 wk.register({c = {name = "NERD Commenter"}}, {prefix = '<leader>'})
 wk.register({h = {name = "Git Gutter"}}, {prefix = '<leader>'})
@@ -259,7 +267,6 @@ imap(';d', '$', {noremap = false})
 --  map({'n', 'v', 'o'}, special_symbol_key:sub(i+1, i+1), tostring(i))
 --end
 -- }}}
-
 
 -------------------------------- for neovide -----------------------------------
 g.neovide_refresh_rate = 90
