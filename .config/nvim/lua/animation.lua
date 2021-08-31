@@ -48,8 +48,8 @@ function Animate:_run_next_task()
   end
 end
 
----@param update function a function that update current state and do the actual 'animation'
----cur_state = update(cur_state, next_state)
+---@param update fun(cur_state:number, next_state:number):number a function that update current state and do the actual 'animation'
+---@param options table support ease_func, duration and delay options
 function Animate:animate(start_state, end_state, update, options)
   local options = options or {}
   local ease_func
@@ -253,5 +253,6 @@ function M.scroll_down()
 end
 
 -- }}}
+
 M.Animate = Animate
 return M

@@ -24,12 +24,20 @@ g.netrw_suppress_gx_mesg = 0
 
 -- TUI {{{
 opt('termguicolors', true)
-
 -- Color Scheme {{{
-local color_list = {'one', 'dracula', 'NeoSolarized'}
+local color_list = {'one', 'dracula', 'NeoSolarized', 'default'}
 cmd('colorscheme '..color_list[
    1 + math.floor(fn.localtime() / (7 * 24 * 60 * 60) % #color_list)
 ])
+-- }}}
+-- Fold {{{
+opt('foldtext', "repeat('>',v:foldlevel).printf('%3d',v:foldend-v:foldstart+1).' '.getline(v:foldstart).' ...'", window)
+opt('fillchars', 'fold: ', window)
+
+autocmd('FoldSetting', {
+  'FileType vim,racket,javascript,lua '..
+    'setlocal foldmethod=marker foldlevel=99 | normal zM',
+})
 -- }}}
 
 autocmd('TUI', {
@@ -66,17 +74,6 @@ opt('wildmode', 'full')
 
 opt('inccommand', 'split')
 opt('mouse', 'a')
-
--- Fold {{{
-opt('foldtext', "repeat('>',v:foldlevel).printf('%3d',v:foldend-v:foldstart+1).' '.getline(v:foldstart).' ...'", window)
-opt('fillchars', 'fold: ', window)
-
-autocmd('FoldSetting', {
-  'FileType vim,racket,javascript,lua '..
-    'setlocal foldmethod=marker foldlevel=99 | normal zM',
-})
--- }}}
-
 -- }}}
 
 cmd [[autocmd TermOpen * startinsert]]
@@ -86,15 +83,11 @@ cmd [[autocmd TermOpen * startinsert]]
 -- plugins' folder, I don't know how to override them. TODO
 opt('textwidth', 80, buffer)
 -- }}}
-
-opt('autochdir', true)
-
 -- Tab {{{
 opt('tabstop', 2, buffer)
 opt('expandtab', true, buffer)
 opt('shiftwidth', 2, buffer)
 -- }}}
-
 -- Clipboard {{{
 if fn.exists('$WSL_DISTRO_NAME') then
 	g.clipboard = {
@@ -110,14 +103,8 @@ if fn.exists('$WSL_DISTRO_NAME') then
 		cache_enabled = 0,
 	}
 end
--- }}}
-
 --opt('clipboard', 'unnamed,unnamedplus') -- always use yanking to paste in other place
-
-opt('timeoutlen', 500) -- also controls the delay of which-key
-opt('updatetime', 500) -- also controls the delay of gitgutter
-opt('virtualedit', 'onemore')
-
+-- }}}
 -- Spell {{{
 opt('spell', false, window)
 autocmd('Spell', {
@@ -125,6 +112,13 @@ autocmd('Spell', {
 })
 opt('spelllang', 'en,cjk', buffer)
 -- }}}
+
+opt('autochdir', true)
+
+opt('timeoutlen', 500) -- also controls the delay of which-key
+opt('updatetime', 500) -- also controls the delay of gitgutter
+opt('virtualedit', 'onemore')
+
 
 opt('smartindent', true, buffer)
 

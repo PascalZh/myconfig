@@ -154,7 +154,6 @@ require'lspconfig'.clangd.setup{
   cmd = { "clangd-11", "--background-index" },
 }
 -- }}}
-
 -- nvim-lua/completion-nvim {{{
 cmd('autocmd FileType '..
   'haskell,python,vim,cpp,c,javascript,lua,markdown '..
@@ -165,25 +164,41 @@ map('i', '<C-space>', '<Plug>(completion_trigger)', {noremap = false})
 opt('completeopt', 'menuone,noinsert,noselect')
 --cmd [[set shortmess+=c]]
 
-g.completion_enable_auto_popup = 1  -- TODO sumneko lua lsp will trigger on space
+--g.completion_enable_auto_popup = 1
 g.completion_enable_snippet = 'vim-vsnip'
+--g.completion_timer_cycle = 80
+
+g.completion_trigger_keyword_length = 2
 g.completion_trigger_on_delete = 1
-g.completion_timer_cycle = 200
+--g.completion_enable_server_trigger = 1
+
+-- sumneko uses triggerCharacters ['\n', '\t', ' ', ...], it will cause
+-- completion to trigger on space in VSCode, triggerCharacters are processed
+-- differently, so it will not popup on space
+autocmd('CompletionTriggerCharacter', {
+  'BufEnter *.c,*.cpp let g:completion_enable_server_trigger = 1',
+  'BufEnter *.lua let g:completion_trigger_character = [".", ":"]'..
+    '|let g:completion_enable_server_trigger = 0'
+})
 
 g.completion_chain_complete_list = {
   default = {
-    {complete_items = {'lsp'}},
-    {complete_items = {'snippet'}},
-    {complete_items = {'path'}},
-    {mode = 'keyn'},
+    default = {
+      {complete_items = {'lsp'}},
+      {complete_items = {'snippet'}},
+      {complete_items = {'path'}, triggered_only = {'/'}},
+      {mode = 'keyn'}
+    },
+    comment = {
+      {mode = 'keyn'}
+    }
   }
 }
+--g.completion_auto_change_source = 0
 
 map('i', '<c-j>', '<Plug>(completion_next_source)', {noremap = false})
 map('i', '<c-k>', '<Plug>(completion_prev_source)', {noremap = false})
-g.completion_auto_change_source = 0
 -- }}}
-
 -- hrsh7th/vim-vsnip {{{
 map('i', '<Tab>', [[pumvisible() ? '<C-n>' : vsnip#available(1)  ? '<Plug>(vsnip-expand-or-jump)' : '<Tab>']],
   {expr = true, noremap = false})
@@ -197,7 +212,6 @@ map('s', '<S-Tab>', [[vsnip#jumpable(-1)  ? '<Plug>(vsnip-jump-prev)' : '<S-Tab>
 g.vsnip_snippet_dir = '~/.local/share/nvim/site/pack/packer/start/friendly-snippets/snippets/'
 
 -- }}}
-
 -- windwp/nvim-autopairs {{{
 local npairs = require('nvim-autopairs')
 npairs.setup()
@@ -241,6 +255,21 @@ end
 
 map('i', '<cr>','v:lua.MUtils.completion_confirm()', {expr = true})
 -- }}}
+-- nvim-treesitter/nvim-treesitter {{{
+-- take about 95ms to load this part
+require'nvim-treesitter.configs'.setup {
+  --ensure_installed = "all",
+  highlight = {
+    enable = true,  -- false will disable the whole extension
+  },
+  indent = {
+    enable = true,
+  },
+}
+if vim.fn.has('win32') then
+  require'nvim-treesitter.install'.compilers = { "clang" }
+end
+-- }}}
 
 -- kien/rainbow_parentheses.vim {{{
 g.rbpt_colorpairs = {
@@ -280,7 +309,7 @@ g.startify_commands = {
 -- {h = 'h ref'},
 -- {m = {'My magical function', 'call Magic()'}},
 -- }}}
--- tmsvg/pear-tree {{{
+-- tmsvg/pear-tree (unused) {{{
 -- Default rules for matching:
 --g.pear_tree_pairs = {
 --  ['('] = {closer = ')'},
@@ -347,21 +376,6 @@ cmd [[
 let &statusline .= ' %{grepper#statusline()}'
 ]]
 -- }}}
--- nvim-treesitter/nvim-treesitter {{{
--- take about 95ms to load this part
-require'nvim-treesitter.configs'.setup {
-  --ensure_installed = "all",
-  highlight = {
-    enable = true,  -- false will disable the whole extension
-  },
-  indent = {
-    enable = true,
-  },
-}
-if vim.fn.has('win32') then
-  require'nvim-treesitter.install'.compilers = { "clang" }
-end
--- }}}
 -- plasticboy/vim-markdown {{{
 g.vim_markdown_math = 1
 g.vim_markdown_folding_disabled = 1
@@ -369,12 +383,12 @@ g.vim_markdown_new_list_item_indent = 2
 -- }}}
 
 -- kyazdani42/nvim-tree.lua {{{
+--g.nvim_tree_follow = 0
+g.nvim_tree_width = 40
 g.nvim_tree_auto_close = 1
-g.nvim_tree_follow = 1
 g.nvim_tree_indent_markers = 1
 g.nvim_tree_git_hl = 1
 g.nvim_tree_highlight_opened_files = 1
-g.nvim_tree_add_trailing = 0
 g.nvim_tree_group_empty = 1
 g.nvim_tree_hijack_cursor = 1
 g.nvim_tree_special_files = {
@@ -391,7 +405,6 @@ g.VM_maps = {
   ['Move Left'] = '<M-S-h>',
 }
 -- }}}
-
 -- tpope/vim-surround {{{
 g['surround_'..string.byte('m')] = '-- \1\1 {{{\n\r\n-- }}}'
 autocmd('Surround', { -- use BufEnter instead of FileType here to allow commentstring to be set
@@ -411,7 +424,6 @@ endfunction
 ]]
 )
 -- }}}
-
 -- arthurxavierx/vim-caser {{{
 --g.caser_prefix = 'gc'
 g.caser_no_mappings = 1
@@ -460,7 +472,6 @@ make_caser_mappings('<leader>k', caser_table)
 --  hlgroup_normal = "TabLineFill",
 --}
 -- }}}
-
 -- chaoren/vim-wordmotion {{{
 g.wordmotion_nomap = 1
 map({'n', 'x'}, 'w',   '<Plug>WordMotion_w', {noremap = false})
