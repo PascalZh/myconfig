@@ -14,7 +14,7 @@ local packer_config = {
 }
 
 local M = packer.startup {
-  function(use)
+  function (use)
     use {'wbthomason/packer.nvim'}
 
     -- Library
@@ -28,13 +28,15 @@ local M = packer.startup {
     use {'dracula/vim', as = 'dracula'}
     use 'PascalZh/NeoSolarized'
 
-    use {'kien/rainbow_parentheses.vim', config = function()
+    use {'kien/rainbow_parentheses.vim', config = function ()
+      -- TODO not compatible with treesitter
       vim.cmd [[
-      au VimEnter * RainbowParenthesesToggle
+      au VimEnter * RainbowParenthesesActivate
       au Syntax * RainbowParenthesesLoadRound
       au Syntax * RainbowParenthesesLoadSquare
       au Syntax * RainbowParenthesesLoadBraces
       ]]
+      vim.g.rbpt_max = 10
     end}
     --use { 'jose-elias-alvarez/buftabline.nvim', requires = {'kyazdani42/nvim-web-devicons'} }
 
@@ -57,11 +59,18 @@ local M = packer.startup {
     use 'arthurxavierx/vim-caser'
 
     -- Code
-    use {'hrsh7th/vim-vsnip', 'hrsh7th/vim-vsnip-integ', 'rafamadriz/friendly-snippets' }
+    use {'hrsh7th/vim-vsnip', 'rafamadriz/friendly-snippets' }
+
+    -- Install nvim-cmp, and buffer source as a dependency
+    use {'hrsh7th/nvim-cmp', requires = {
+      'hrsh7th/vim-vsnip',
+      'hrsh7th/cmp-buffer',
+      'hrsh7th/cmp-nvim-lsp'
+    }}
+
+    --use {'nvim-lua/completion-nvim', requires = {'hrsh7th/vim-vsnip', 'hrsh7th/vim-vsnip-integ'}}
 
     use 'neovim/nvim-lspconfig'
-
-    use 'nvim-lua/completion-nvim'
 
     use 'airblade/vim-gitgutter'
 
@@ -98,8 +107,139 @@ local M = packer.startup {
 
 local wk = require('which-key')
 
+-- WARNING: the sequence can not changed without looking into all codes
+-- windwp/nvim-autopairs {{{
+local npairs = require('nvim-autopairs')
+npairs.setup {
+  fast_wrap = {},
+  check_ts = true
+}
+
+local Rule = require('nvim-autopairs.rule')
+local cond = require('nvim-autopairs.conds')
+
+npairs.add_rules(require('nvim-autopairs.rules.endwise-lua'))
+
+npairs.add_rules({
+  Rule("$", "$",{"tex", "latex", "markdown"})
+    -- don't add a pair if the next character is %
+    --:with_pair(cond.not_after_regex_check("%%"))
+    -- don't add a pair if  the previous character is xxx
+    --:with_pair(cond.not_before_regex_check("xxx", 3))
+    :with_move(cond.not_before_text_check('$'))
+    -- don't delete if the next character is xx
+    --:with_del(cond.not_after_regex_check("xx"))
+    -- disable  add newline when press <cr>
+    --:with_cr(cond.none())
+  }
+)
+
+npairs.add_rules {
+  Rule(' ', ' ')
+    :with_pair(function(opts)
+      local pair = opts.line:sub(opts.col -1, opts.col)
+      return vim.tbl_contains({ '()', '{}', '[]' }, pair)
+    end)
+    :with_move(cond.none())
+    :with_cr(cond.none())
+    :with_del(function(opts)
+      local col = vim.api.nvim_win_get_cursor(0)[2]
+      local context = opts.line:sub(col - 1, col + 2)
+      return vim.tbl_contains({ '(  )', '{  }', '[  ]' }, context)
+    end),
+  Rule('', ' )')
+    :with_pair(cond.none())
+    :with_move(function(opts) return opts.char == ')' end)
+    :with_cr(cond.none())
+    :with_del(cond.none())
+    :use_key(')'),
+  Rule('', ' }')
+    :with_pair(cond.none())
+    :with_move(function(opts) return opts.char == '}' end)
+    :with_cr(cond.none())
+    :with_del(cond.none())
+    :use_key('}'),
+  Rule('', ' ]')
+    :with_pair(cond.none())
+    :with_move(function(opts) return opts.char == ']' end)
+    :with_cr(cond.none())
+    :with_del(cond.none())
+    :use_key(']'),
+}
+-- }}}
+-- hrsh7th/nvim-cmp {{{
+local cmp = require'cmp'
+
+local check_back_space = function()
+  local col = vim.fn.col '.' - 1
+  return col == 0 or vim.fn.getline('.'):sub(col, col):match '%s' ~= nil
+end
+
+local t = function(str)
+    return vim.api.nvim_replace_termcodes(str, true, true, true)
+end
+
+cmp.setup {
+  snippet = {
+    expand = function(args)
+      vim.fn["vsnip#anonymous"](args.body)
+    end,
+  },
+  mapping = {
+    ['<C-d>'] = cmp.mapping.scroll_docs(-4),
+    ['<C-u>'] = cmp.mapping.scroll_docs(4),
+    ['<C-Space>'] = cmp.mapping.complete(),
+    ['<CR>'] = cmp.mapping.confirm({
+      behavior = cmp.ConfirmBehavior.Replace,
+      select = true,
+    }),
+    ["<Tab>"] = cmp.mapping(function(fallback)
+      if vim.fn.pumvisible() == 1 then
+        vim.fn.feedkeys(t("<C-n>"), "n")
+      elseif vim.fn['vsnip#available'](1) == 1 then
+        vim.fn.feedkeys(t("<Plug>(vsnip-expand-or-jump)"), "")
+      elseif check_back_space() then
+        vim.fn.feedkeys(t("<Tab>"), "n")
+      else
+        fallback()
+      end
+    end, {
+        "i",
+        "s",
+      }),
+    ["<S-Tab>"] = cmp.mapping(function(fallback)
+      if vim.fn.pumvisible() == 1 then
+        vim.fn.feedkeys(t("<C-p>"), "n")
+      elseif vim.fn['vsnip#jumpable'](-1) == 1 then
+        vim.fn.feedkeys(t("<Plug>vsnip-jump-prev"), "")
+      else
+        fallback()
+      end
+    end, {
+        "i",
+        "s",
+      }),
+  },
+  sources = {
+    { name = 'nvim_lsp' },
+    { name = 'buffer' }
+  }
+}
+-- The nvim-cmp almost supports LSP's capabilities so You should advertise it to LSP servers..
+local capabilities = vim.lsp.protocol.make_client_capabilities()
+capabilities = require('cmp_nvim_lsp').update_capabilities(capabilities)
+
+-- you need setup cmp first put this after cmp.setup()
+require("nvim-autopairs.completion.cmp").setup({
+  map_cr = true, --  map <CR> on insert mode
+  map_complete = true, -- it will auto insert `(` after select function or method item
+  auto_select = true -- automatically select the first item
+})
+
+-- }}}
 -- neovim/nvim-lspconfig {{{
--- https://github.com/neovim/nvim-lspconfig/blob/master/CONFIG.md#clangd
+
+-- sumneko lua lsp {{{
 local system_name
 if vim.fn.has("mac") == 1 then
   system_name = "macOS"
@@ -148,112 +288,60 @@ require'lspconfig'.sumneko_lua.setup {
       },
     },
   },
+  capabilities = capabilities
 }
+-- }}}
 
+-- https://github.com/neovim/nvim-lspconfig/blob/master/CONFIG.md#clangd
 require'lspconfig'.clangd.setup{
   cmd = { "clangd-11", "--background-index" },
+  capabilities = capabilities
 }
 -- }}}
--- nvim-lua/completion-nvim {{{
-cmd('autocmd FileType '..
-  'haskell,python,vim,cpp,c,javascript,lua,markdown '..
-  'lua require"completion".on_attach()')
+-- nvim-lua/completion-nvim (unused) {{{
+--cmd('autocmd FileType '..
+--  'haskell,python,vim,cpp,c,javascript,lua,markdown '..
+--  'lua require"completion".on_attach()')
 
-map('i', '<C-space>', '<Plug>(completion_trigger)', {noremap = false})
+--map('i', '<C-space>', '<Plug>(completion_trigger)', {noremap = false})
 
-opt('completeopt', 'menuone,noinsert,noselect')
---cmd [[set shortmess+=c]]
+--opt('completeopt', 'menuone,noinsert,noselect')
+----cmd [[set shortmess+=c]]
 
---g.completion_enable_auto_popup = 1
-g.completion_enable_snippet = 'vim-vsnip'
---g.completion_timer_cycle = 80
+----g.completion_enable_auto_popup = 1
+--g.completion_enable_snippet = 'vim-vsnip'
+----g.completion_timer_cycle = 80
 
-g.completion_trigger_keyword_length = 2
-g.completion_trigger_on_delete = 1
---g.completion_enable_server_trigger = 1
+--g.completion_trigger_keyword_length = 2
+--g.completion_trigger_on_delete = 1
+----g.completion_enable_server_trigger = 1
 
--- sumneko uses triggerCharacters ['\n', '\t', ' ', ...], it will cause
--- completion to trigger on space in VSCode, triggerCharacters are processed
--- differently, so it will not popup on space
-autocmd('CompletionTriggerCharacter', {
-  'BufEnter *.c,*.cpp let g:completion_enable_server_trigger = 1',
-  'BufEnter *.lua let g:completion_trigger_character = [".", ":"]'..
-    '|let g:completion_enable_server_trigger = 0'
-})
+---- sumneko uses triggerCharacters ['\n', '\t', ' ', ...], it will cause
+---- completion to trigger on space in VSCode, triggerCharacters are processed
+---- differently, so it will not popup on space
+--autocmd('CompletionTriggerCharacter', {
+--  'BufEnter *.c,*.cpp let g:completion_enable_server_trigger = 1',
+--  'BufEnter *.lua let g:completion_trigger_character = [".", ":"]'..
+--    '|let g:completion_enable_server_trigger = 0'
+--})
 
-g.completion_chain_complete_list = {
-  default = {
-    default = {
-      {complete_items = {'lsp'}},
-      {complete_items = {'snippet'}},
-      {complete_items = {'path'}, triggered_only = {'/'}},
-      {mode = 'keyn'}
-    },
-    comment = {
-      {mode = 'keyn'}
-    }
-  }
-}
---g.completion_auto_change_source = 0
+--g.completion_chain_complete_list = {
+--  default = {
+--    default = {
+--      {complete_items = {'lsp'}},
+--      {complete_items = {'snippet'}},
+--      {complete_items = {'path'}, triggered_only = {'/'}},
+--      {mode = 'keyn'}
+--    },
+--    comment = {
+--      {mode = 'keyn'}
+--    }
+--  }
+--}
+----g.completion_auto_change_source = 0
 
-map('i', '<c-j>', '<Plug>(completion_next_source)', {noremap = false})
-map('i', '<c-k>', '<Plug>(completion_prev_source)', {noremap = false})
--- }}}
--- hrsh7th/vim-vsnip {{{
-map('i', '<Tab>', [[pumvisible() ? '<C-n>' : vsnip#available(1)  ? '<Plug>(vsnip-expand-or-jump)' : '<Tab>']],
-  {expr = true, noremap = false})
-map('s', '<Tab>', [[vsnip#available(1)  ? '<Plug>(vsnip-expand-or-jump)' : '<Tab>']],
-  {expr = true, noremap = false})
-
-map('i', '<S-Tab>', [[pumvisible() ? '<C-p>' : vsnip#jumpable(-1)  ? '<Plug>(vsnip-jump-prev)' : '<S-Tab>']],
-  {expr = true, noremap = false})
-map('s', '<S-Tab>', [[vsnip#jumpable(-1)  ? '<Plug>(vsnip-jump-prev)' : '<S-Tab>']],
-  {expr = true, noremap = false})
-g.vsnip_snippet_dir = '~/.local/share/nvim/site/pack/packer/start/friendly-snippets/snippets/'
-
--- }}}
--- windwp/nvim-autopairs {{{
-local npairs = require('nvim-autopairs')
-npairs.setup()
-local Rule = require('nvim-autopairs.rule')
-local cond = require('nvim-autopairs.conds')
-
-npairs.add_rules({
-  Rule("$", "$",{"tex", "latex", "markdown"})
-    -- don't add a pair if the next character is %
-    --:with_pair(cond.not_after_regex_check("%%"))
-    -- don't add a pair if  the previous character is xxx
-    --:with_pair(cond.not_before_regex_check("xxx", 3))
-    :with_move(cond.not_before_text_check('$'))
-    -- don't delete if the next character is xx
-    --:with_del(cond.not_after_regex_check("xx"))
-    -- disable  add newline when press <cr>
-    --:with_cr(cond.none())
-  }
-)
-
--- skip it, if you use another global object
-_G.MUtils = MUtils == nil and {} or MUtils
-
-vim.g.completion_confirm_key = ""
-
-MUtils.completion_confirm=function()
-  if vim.fn.pumvisible() ~= 0  then
-    if vim.fn.complete_info()["selected"] ~= -1 then
-      require'completion'.confirmCompletion()
-      return npairs.esc("<c-y>")
-    else
-      return npairs.esc("<cr><cr>")
-      --vim.api.nvim_select_popupmenu_item(0 , false , false ,{})
-      --require'completion'.confirmCompletion()
-      --return npairs.esc("<c-n><c-y>")
-    end
-  else
-    return npairs.autopairs_cr()
-  end
-end
-
-map('i', '<cr>','v:lua.MUtils.completion_confirm()', {expr = true})
+--map('i', '<c-j>', '<Plug>(completion_next_source)', {noremap = false})
+--map('i', '<c-k>', '<Plug>(completion_prev_source)', {noremap = false})
 -- }}}
 -- nvim-treesitter/nvim-treesitter {{{
 -- take about 95ms to load this part
@@ -265,32 +353,13 @@ require'nvim-treesitter.configs'.setup {
   indent = {
     enable = true,
   },
+  autopairs = { enable = true }
 }
 if vim.fn.has('win32') then
   require'nvim-treesitter.install'.compilers = { "clang" }
 end
 -- }}}
 
--- kien/rainbow_parentheses.vim {{{
-g.rbpt_colorpairs = {
-  {'brown',       'RoyalBlue3' },
-  {'Darkblue',    'SeaGreen3'  },
-  {'darkgray',    'DarkOrchid3'},
-  {'darkgreen',   'firebrick3' },
-  {'darkcyan',    'RoyalBlue3' },
-  {'darkred',     'SeaGreen3'  },
-  {'brown',       'firebrick3' },
-  {'darkmagenta', 'DarkOrchid3'},
-  {'Darkblue',    'firebrick3' },
-  {'darkgreen',   'RoyalBlue3' },
-  {'darkcyan',    'SeaGreen3'  },
-  {'darkred',     'DarkOrchid3'},
-  {'red',         'firebrick3' },
-}
-
-g.rbpt_max = 16
-g.rbpt_loadcmd_toggle = 0
--- }}}
 -- mhinz/vim-startify {{{
 g.startify_fortune_use_unicode = 1
 g.startify_files_number = 15
@@ -388,7 +457,7 @@ g.nvim_tree_width = 40
 g.nvim_tree_auto_close = 1
 g.nvim_tree_indent_markers = 1
 g.nvim_tree_git_hl = 1
-g.nvim_tree_highlight_opened_files = 1
+--g.nvim_tree_highlight_opened_files = 0
 g.nvim_tree_group_empty = 1
 g.nvim_tree_hijack_cursor = 1
 g.nvim_tree_special_files = {
@@ -501,7 +570,7 @@ dap.configurations.lua = {
 }
 
 dap.adapters.nlua = function(callback, config)
-  callback({ type = 'server', host = config.host or "127.0.0.1", port = config.port or 8088 })
+  callback({ type = 'server', host = config.host or '127.0.0.1', port = config.port or 8088 })
 end
 
 return M

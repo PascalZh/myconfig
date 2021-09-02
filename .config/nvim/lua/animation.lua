@@ -1,14 +1,14 @@
 if (not vim.g.animation_fps) then
-  vim.g.animation_fps = 120
+  vim.g.animation_fps = 90
 end
 if (not vim.g.animation_duration) then
   vim.g.animation_duration = 300
 end
 if (not vim.g.animation_ease_func) then
-  vim.g.animation_ease_func = "quad"
+  vim.g.animation_ease_func = 'double_sine'
 end
 
-local M = {DEBUG = false}
+local M = { DEBUG = false }
 
 ---@return number time in milliseconds
 local function time()
@@ -52,19 +52,19 @@ end
 ---@param options table support ease_func, duration and delay options
 function Animate:animate(start_state, end_state, update, options)
   local options = options or {}
-  local ease_func
-  if (options.ease_func) then
-    if (type(options.ease_func) == 'string') then
-      ease_func = Animate.ease_funcs[options.ease_func]
-    elseif (type(options.ease_func) == 'function') then
-      ease_func = options.ease_func
-    end
-  else
-    ease_func = Animate.ease_funcs[vim.g.animation_ease_func]
-  end
-  local duration = options.duration or vim.g.animation_duration
 
   local function task()
+    local duration = options.duration or vim.g.animation_duration
+    local ease_func
+    if (options.ease_func) then
+      if (type(options.ease_func) == 'string') then
+        ease_func = Animate.ease_funcs[options.ease_func]
+      elseif (type(options.ease_func) == 'function') then
+        ease_func = options.ease_func
+      end
+    else
+      ease_func = Animate.ease_funcs[vim.g.animation_ease_func]
+    end
     if (type(start_state) == 'function') then
       start_state = start_state()
     end
@@ -77,9 +77,9 @@ function Animate:animate(start_state, end_state, update, options)
     local cur_state = start_state
     local interval = 1000 / vim.g.animation_fps
     local delay = options.delay or interval
+    dprint(string.format('duration = %s, start_state = %s, end_state = %s', duration, start_state, end_state))
 
     local start_time
-
     timer:start(delay, interval, vim.schedule_wrap(function ()
       if (not start_time) then
         start_time = time()
@@ -100,7 +100,8 @@ function Animate:animate(start_state, end_state, update, options)
 
       -- calcute next_state corresponds to current time, and update
       local next_state = ease_func(delta_state, duration, elapsed_time) + start_state
-      dprint(vim.inspect{elapsed_time, next_state, duration, start_state, delta_state})
+      dprint(string.format('{ elapsed_time, computed_next_state } = {% 6.1f, % 8.2f }', elapsed_time, next_state))
+
       cur_state = update(cur_state, next_state)
     end))
   end
@@ -218,11 +219,16 @@ local function ease_func_sine(y_, t_, t)
   return y_ * 0.5 * (1 - math.cos(math.pi * u))
 end
 
+local function ease_func_double_sine(y_, t_, t)
+  return ease_func_sine(y_, t_, ease_func_sine(y_, t_, t) / y_ * t_)
+end
+
 Animate.ease_funcs = {
   linear = ease_func_linear,
   quad = ease_func_quad,
   cubic = ease_func_cubic,
-  sine = ease_func_sine
+  sine = ease_func_sine,
+  double_sine = ease_func_double_sine
 }
 
 -- }}}
