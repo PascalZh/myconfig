@@ -58,6 +58,8 @@ local M = packer.startup {
 
     use 'arthurxavierx/vim-caser'
 
+    use 'notomo/gesture.nvim'
+
     -- Code
     use {'hrsh7th/vim-vsnip', 'rafamadriz/friendly-snippets' }
 
@@ -97,9 +99,15 @@ local M = packer.startup {
     use {'lervag/vimtex', ft = {'tex', 'latex'}}
     use 'plasticboy/vim-markdown'
 
-    use {'dstein64/vim-startuptime', config = function () vim.g.startuptime_self = 1 end}
+    use {'dstein64/vim-startuptime', config = function ()
+      vim.g.startuptime_self = 1
+      --vim.g.startuptime_exe_args = {'-u', 'NONE'}
+    end}
 
     use 'folke/which-key.nvim'
+
+    -- Game
+    use 'vim/killersheep'
 
   end,
   config = packer_config
@@ -121,23 +129,16 @@ local cond = require('nvim-autopairs.conds')
 npairs.add_rules(require('nvim-autopairs.rules.endwise-lua'))
 
 npairs.add_rules({
-  Rule("$", "$",{"tex", "latex", "markdown"})
-    -- don't add a pair if the next character is %
-    --:with_pair(cond.not_after_regex_check("%%"))
-    -- don't add a pair if  the previous character is xxx
-    --:with_pair(cond.not_before_regex_check("xxx", 3))
+  Rule("$", "$", {"tex", "latex", "markdown"})
     :with_move(cond.not_before_text_check('$'))
-    -- don't delete if the next character is xx
-    --:with_del(cond.not_after_regex_check("xx"))
-    -- disable  add newline when press <cr>
-    --:with_cr(cond.none())
+    :with_move(function (opts) return opts.char == '$' end)
   }
 )
 
 npairs.add_rules {
   Rule(' ', ' ')
     :with_pair(function(opts)
-      local pair = opts.line:sub(opts.col -1, opts.col)
+      local pair = opts.line:sub(opts.col - 1, opts.col)
       return vim.tbl_contains({ '()', '{}', '[]' }, pair)
     end)
     :with_move(cond.none())
@@ -572,5 +573,12 @@ dap.configurations.lua = {
 dap.adapters.nlua = function(callback, config)
   callback({ type = 'server', host = config.host or '127.0.0.1', port = config.port or 8088 })
 end
+
+cmd [[
+" or if you would like to use right click
+nnoremap <RightMouse> <Nop>
+nnoremap <silent> <RightDrag> <Cmd>lua require("gesture").draw()<CR>
+nnoremap <silent> <RightRelease> <Cmd>lua require("gesture").finish()<CR>
+]]
 
 return M

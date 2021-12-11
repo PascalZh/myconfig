@@ -25,7 +25,7 @@ g.netrw_suppress_gx_mesg = 0
 -- TUI {{{
 opt('termguicolors', true)
 -- Color Scheme {{{
-local color_list = {'one', 'dracula', 'NeoSolarized', 'default'}
+local color_list = {'one', 'dracula', 'NeoSolarized'}
 cmd('colorscheme '..color_list[
    1 + math.floor(fn.localtime() / (7 * 24 * 60 * 60) % #color_list)
 ])
@@ -146,6 +146,8 @@ nmap(';<space>', '<Cmd>nohlsearch<CR>')
 nmap(';;', 'za')
 imap('j', 'easy_jk#map_j()', {noremap = false, expr = true})
 imap('k', 'easy_jk#map_k()', {noremap = false, expr = true})
+
+nmap('<leader>p', '"*p') nmap('<leader>P', '"*P')
 
 nmap('<leader>ev', '<Cmd>lua require"config.edit_vimrc"()<CR>')
 

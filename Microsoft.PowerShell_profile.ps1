@@ -1,4 +1,4 @@
-Import-Module posh-git
+# Import-Module posh-git
 Import-Module oh-my-posh
 Set-PoshPrompt -Theme paradox
 
@@ -16,3 +16,9 @@ function Git-Diff { git diff @args }
 New-Alias -Name gcm -Value Git-Commit -Force -Option AllScope
 New-Alias -Name gl -Value Git-Lslog -Force -Option AllScope
 New-Alias -Name gd -Value Git-Diff -Force -Option AllScope
+
+# Chocolatey profile
+$ChocolateyProfile = "$env:ChocolateyInstall\helpers\chocolateyProfile.psm1"
+if (Test-Path($ChocolateyProfile)) {
+  Import-Module "$ChocolateyProfile"
+}

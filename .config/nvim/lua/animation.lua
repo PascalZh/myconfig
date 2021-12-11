@@ -1,23 +1,33 @@
 if (not vim.g.animation_fps) then
+  -- 90Hz is OK in my machine, but 60Hz is not enough
+  -- It doesn't mean the true fps, you should try it in your machine
   vim.g.animation_fps = 90
 end
 if (not vim.g.animation_duration) then
-  vim.g.animation_duration = 300
+  vim.g.animation_duration = 350
 end
 if (not vim.g.animation_ease_func) then
-  vim.g.animation_ease_func = 'double_sine'
+  vim.g.animation_ease_func = 'quad'
 end
 
 local M = { DEBUG = false }
 
 ---@return number time in milliseconds
 local function time()
-  return vim.fn.reltimefloat(vim.fn.reltime()) * 1000
+  return vim.loop.hrtime() / 1000000
 end
 
 local function dprint(str)
   if (M.DEBUG) then
     print(str)
+  end
+end
+
+local prev_state = 0
+local function dprint_state(elapsed_time, next_state)
+  if (M.DEBUG) then
+    dprint(string.format('{ elapsed_time, next_state, diff_state } = {% 6.1f, % 8.2f, % 4.2f }', elapsed_time, next_state, next_state - prev_state))
+    prev_state = next_state
   end
 end
 
@@ -100,7 +110,7 @@ function Animate:animate(start_state, end_state, update, options)
 
       -- calcute next_state corresponds to current time, and update
       local next_state = ease_func(delta_state, duration, elapsed_time) + start_state
-      dprint(string.format('{ elapsed_time, computed_next_state } = {% 6.1f, % 8.2f }', elapsed_time, next_state))
+      dprint_state(elapsed_time, next_state)
 
       cur_state = update(cur_state, next_state)
     end))
@@ -197,39 +207,29 @@ end
 
 -- Ease functions {{{
 
+Animate.ease_funcs = {}
+
 ---@param y_ number end state - start state
 ---@param t_ number duration
 ---@param t  number current time
-local function ease_func_linear(y_, t_, t)
+function Animate.ease_funcs.linear(y_, t_, t)
   return y_ * (t / t_)
 end
 
-local function ease_func_quad(y_, t_, t)
+function Animate.ease_funcs.quad(y_, t_, t)
   local u = t / t_
   return - y_ * u * (u - 2)
 end
 
-local function ease_func_cubic(y_, t_, t)
+function Animate.ease_funcs.cubic(y_, t_, t)
   local v = t / t_ - 1
   return y_ * (v * v * v + 1)
 end
 
-local function ease_func_sine(y_, t_, t)
+function Animate.ease_funcs.sine(y_, t_, t)
   local u = t / t_
   return y_ * 0.5 * (1 - math.cos(math.pi * u))
 end
-
-local function ease_func_double_sine(y_, t_, t)
-  return ease_func_sine(y_, t_, ease_func_sine(y_, t_, t) / y_ * t_)
-end
-
-Animate.ease_funcs = {
-  linear = ease_func_linear,
-  quad = ease_func_quad,
-  cubic = ease_func_cubic,
-  sine = ease_func_sine,
-  double_sine = ease_func_double_sine
-}
 
 -- }}}
 
