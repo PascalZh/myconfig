@@ -5,6 +5,10 @@ setfenv(1, env)
 local packer = require('packer')
 
 local packer_config = {
+  profile = {
+    enable = true,
+    threshold = 1 -- the amount in ms that a plugins load time must be over for it to be included in the profile
+  },
   display = {
     open_fn = require('packer.util').float,
   },
@@ -17,12 +21,14 @@ local M = packer.startup {
   function (use)
     use {'wbthomason/packer.nvim'}
 
-    -- Library
+    -- Neovim Library {{{
     use 'nvim-lua/plenary.nvim'
+    -- }}}
 
-    -- UI
-    use 'itchyny/lightline.vim'
-    use {'mengelbrecht/lightline-bufferline', requires = {'ryanoasis/vim-devicons'}}
+    -- UI {{{
+
+    --use 'itchyny/lightline.vim'
+    --use {'mengelbrecht/lightline-bufferline', requires = {'ryanoasis/vim-devicons'}}
 
     use 'rakr/vim-one'
     use {'dracula/vim', as = 'dracula'}
@@ -30,19 +36,20 @@ local M = packer.startup {
 
     use {'kien/rainbow_parentheses.vim', config = function ()
       -- TODO not compatible with treesitter
-      vim.cmd [[
-      au VimEnter * RainbowParenthesesActivate
-      au Syntax * RainbowParenthesesLoadRound
-      au Syntax * RainbowParenthesesLoadSquare
-      au Syntax * RainbowParenthesesLoadBraces
-      ]]
+      --vim.cmd [[
+      --au VimEnter * RainbowParenthesesActivate
+      --au Syntax * RainbowParenthesesLoadRound
+      --au Syntax * RainbowParenthesesLoadSquare
+      --au Syntax * RainbowParenthesesLoadBraces
+      --]]
       vim.g.rbpt_max = 10
     end}
     --use { 'jose-elias-alvarez/buftabline.nvim', requires = {'kyazdani42/nvim-web-devicons'} }
+    -- }}}
 
-    -- Editting
+    -- Editting/Keyboard {{{
     use 'windwp/nvim-autopairs'
-    use 'mg979/vim-visual-multi'
+    use {'mg979/vim-visual-multi', keys = '<C-n>'}
 
     use {'tpope/vim-surround', 'tpope/vim-repeat'}
 
@@ -60,8 +67,13 @@ local M = packer.startup {
 
     use 'notomo/gesture.nvim'
 
-    -- Code
     use {'hrsh7th/vim-vsnip', 'rafamadriz/friendly-snippets' }
+
+    use 'folke/which-key.nvim'
+
+    -- }}}
+
+    -- Code/IDE {{{
 
     -- Install nvim-cmp, and buffer source as a dependency
     use {'hrsh7th/nvim-cmp', requires = {
@@ -74,40 +86,78 @@ local M = packer.startup {
 
     use 'neovim/nvim-lspconfig'
 
-    use 'airblade/vim-gitgutter'
+    use {'airblade/vim-gitgutter', disable = true}
+    use {
+      'lewis6991/gitsigns.nvim',
+      requires = {
+        'nvim-lua/plenary.nvim'
+      },
+      config = function()
+        require('gitsigns').setup()
+      end
+    }
 
     use 'nvim-treesitter/nvim-treesitter'
 
-    use 'enomsg/vim-haskellConcealPlus'
-    use 'neovimhaskell/haskell-vim'
+    -- develop nvim plugins
+    use {'mfussenegger/nvim-dap', config = function ()
+      local dap = require"dap"
+      dap.configurations.lua = {
+        {
+          type = 'nlua',
+          request = 'attach',
+          name = "Attach to running Neovim instance",
+        }
+      }
 
-    use 'dag/vim-fish'
-
-    -- IDE
+      dap.adapters.nlua = function(callback, config)
+        callback({ type = 'server', host = config.host or '127.0.0.1', port = config.port or 8088 })
+      end
+    end}
     use {'jbyuki/one-small-step-for-vimkind', requires = 'mfussenegger/nvim-dap'}
+    -- }}}
 
-    -- Other
-
+    -- Tools {{{
     use 'mhinz/vim-grepper'
-
-    use 'mhinz/vim-startify'
-
-    use {'kyazdani42/nvim-tree.lua', requires = {'kyazdani42/nvim-web-devicons'}}
-
-    use 'mbbill/fencview'
-
-    use {'lervag/vimtex', ft = {'tex', 'latex'}}
-    use 'plasticboy/vim-markdown'
 
     use {'dstein64/vim-startuptime', config = function ()
       vim.g.startuptime_self = 1
       --vim.g.startuptime_exe_args = {'-u', 'NONE'}
     end}
 
-    use 'folke/which-key.nvim'
 
-    -- Game
-    use 'vim/killersheep'
+    --use 'mhinz/vim-startify'
+
+    use {'kyazdani42/nvim-tree.lua',
+      requires = {'kyazdani42/nvim-web-devicons'},
+      cmd = {'NvimTreeFocus', 'NvimTreeToggle'},
+      config = function()
+        require'nvim-tree'.setup {
+          auto_close = true,
+          hijack_cursor = true,
+          update_focused_file = {
+            enable      = true,
+            update_cwd  = true,
+            ignore_list = {}
+          },
+          view = {
+            width = 40
+          }
+        }
+      end}
+
+    use 'mbbill/fencview'
+    -- }}}
+
+    -- Language Support {{{
+    use {'lervag/vimtex', ft = {'tex', 'latex'}}
+    use 'plasticboy/vim-markdown'
+    use 'enomsg/vim-haskellConcealPlus'
+    use 'neovimhaskell/haskell-vim'
+
+    use 'dag/vim-fish'
+
+    -- }}}
 
   end,
   config = packer_config
@@ -123,6 +173,7 @@ npairs.setup {
   check_ts = true
 }
 
+-- autopairs rules {{{
 local Rule = require('nvim-autopairs.rule')
 local cond = require('nvim-autopairs.conds')
 
@@ -167,6 +218,8 @@ npairs.add_rules {
     :with_del(cond.none())
     :use_key(']'),
 }
+-- }}}
+
 -- }}}
 -- hrsh7th/nvim-cmp {{{
 local cmp = require'cmp'
@@ -230,12 +283,15 @@ cmp.setup {
 local capabilities = vim.lsp.protocol.make_client_capabilities()
 capabilities = require('cmp_nvim_lsp').update_capabilities(capabilities)
 
--- you need setup cmp first put this after cmp.setup()
-require("nvim-autopairs.completion.cmp").setup({
-  map_cr = true, --  map <CR> on insert mode
-  map_complete = true, -- it will auto insert `(` after select function or method item
-  auto_select = true -- automatically select the first item
-})
+-- you need setup cmp first put this after cmp.setup() {{{
+
+-- If you want insert `(` after select function or method item
+local cmp_autopairs = require('nvim-autopairs.completion.cmp')
+cmp.event:on( 'confirm_done', cmp_autopairs.on_confirm_done({  map_char = { tex = '' } }))
+-- add a lisp filetype (wrap my-function), FYI: Hardcoded = { "clojure", "clojurescript", "fennel", "janet" }
+cmp_autopairs.lisp[#cmp_autopairs.lisp+1] = "racket"
+
+-- }}}
 
 -- }}}
 -- neovim/nvim-lspconfig {{{
@@ -257,8 +313,7 @@ table.insert(runtime_path, "lua/?.lua")
 table.insert(runtime_path, "lua/?/init.lua")
 
 local sumneko_root_path = fn.expand('$HOME/Programs/lua-language-server')
-local sumneko_binary = sumneko_root_path..'/bin/'..
-  system_name..'/lua-language-server'
+local sumneko_binary = sumneko_root_path..'/'..system_name..'/lua-language-server'
 
 local lua_globals = {'vim'}
 for k, v in pairs(require('config.inject_env')) do
@@ -454,13 +509,11 @@ g.vim_markdown_new_list_item_indent = 2
 
 -- kyazdani42/nvim-tree.lua {{{
 --g.nvim_tree_follow = 0
-g.nvim_tree_width = 40
-g.nvim_tree_auto_close = 1
-g.nvim_tree_indent_markers = 1
-g.nvim_tree_git_hl = 1
+--g.nvim_tree_width = 40
+--g.nvim_tree_indent_markers = 1
+--g.nvim_tree_git_hl = 1
 --g.nvim_tree_highlight_opened_files = 0
 g.nvim_tree_group_empty = 1
-g.nvim_tree_hijack_cursor = 1
 g.nvim_tree_special_files = {
   ['README.md'] = true, ['Makefile'] = true, ['MAKEFILE'] = true,
   ['CMakeLists.txt'] = true
@@ -560,19 +613,6 @@ wk.setup {
     v = { "j", "k" },
   },
 }
-
-local dap = require"dap"
-dap.configurations.lua = {
-  {
-    type = 'nlua',
-    request = 'attach',
-    name = "Attach to running Neovim instance",
-  }
-}
-
-dap.adapters.nlua = function(callback, config)
-  callback({ type = 'server', host = config.host or '127.0.0.1', port = config.port or 8088 })
-end
 
 cmd [[
 " or if you would like to use right click

@@ -2,6 +2,7 @@
 
 # :terminal :! in neovim need the following environment set to work normally.
 set -x LC_ALL "en_US.UTF-8"
+bash /opt/ros/noetic/setup.bash
 
 function P_wsl_ip
   echo (ip route | grep default | awk '{print $3}')

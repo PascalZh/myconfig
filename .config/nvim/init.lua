@@ -9,11 +9,14 @@ if fn.empty(fn.glob(install_path)) > 0 then
   fn.system({'git', 'clone', 'https://github.com/wbthomason/packer.nvim', install_path})
   execute 'packadd packer.nvim'
 end
+autocmd('packer_user_config', {
+  'BufWritePost plugins.lua source <afile> | PackerCompile'
+})
 -- }}}
 
-require('plugins')
-require('statusline')
-require('highlight')
+require('config.plugins')
+require('config.statusline')
+require('config.highlight')
 
 local wk = require('which-key')
 local window = {o, wo}
@@ -52,7 +55,7 @@ opt('showtabline', 2)
 opt('showmode', false)
 
 opt('winblend', 15, window)
-opt('signcolumn', 'auto:1-4', window)
+opt('signcolumn', 'yes:2', window)
 
 opt('cursorline', true, window)
 opt('cursorcolumn', false, window)
@@ -76,7 +79,12 @@ opt('inccommand', 'split')
 opt('mouse', 'a')
 -- }}}
 
-cmd [[autocmd TermOpen * startinsert]]
+autocmd('TUI', {'TermOpen * startinsert'})
+
+autocmd('ImSwitch', {
+  'InsertEnter * lua MUtils.im_select.insert_enter()',
+  'InsertLeavePre * lua MUtils.im_select.insert_leave_pre()'
+})
 
 -- Format {{{
 -- `formatoptions` is set by ftplugin/*.vim in neovim runtime folder and other
@@ -103,7 +111,7 @@ if fn.exists('$WSL_DISTRO_NAME') then
 		cache_enabled = 0,
 	}
 end
---opt('clipboard', 'unnamed,unnamedplus') -- always use yanking to paste in other place
+opt('clipboard', 'unnamedplus') -- always use yanking to paste in other place
 -- }}}
 -- Spell {{{
 opt('spell', false, window)
@@ -147,9 +155,7 @@ nmap(';;', 'za')
 imap('j', 'easy_jk#map_j()', {noremap = false, expr = true})
 imap('k', 'easy_jk#map_k()', {noremap = false, expr = true})
 
-nmap('<leader>p', '"*p') nmap('<leader>P', '"*P')
-
-nmap('<leader>ev', '<Cmd>lua require"config.edit_vimrc"()<CR>')
+nmap('<leader>ev', '<Cmd>lua require"edit_vimrc".start()<CR>')
 
 nmap('<leader>G', '<Cmd>Grepper -tool git<CR>')
 nvmap('<leader>g', '<Plug>(GrepperOperator)', {noremap = false})
@@ -209,7 +215,7 @@ vmap('<', '<gv')
 vmap('>', '>gv')
 
 -- This mapping doesn't work when open nvim in PowerShell.
-nvmap('<C-/>', '<Plug>NERDCommenterToggle', {noremap = false})
+nvmap('<C-k>', '<Plug>NERDCommenterToggle', {noremap = false})
 
 -- Debug mappings {{{
 nmap('<F5>', ":lua require'dap'.continue()<CR>")

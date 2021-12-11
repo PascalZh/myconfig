@@ -4,6 +4,10 @@ local cmd = vim.cmd
 local o_s = vim.o
 local map_key = vim.api.nvim_set_keymap
 
+local Job = require'plenary.job'
+local shell = vim.o.shell
+local shellcmdflag = vim.o.shellcmdflag
+
 M.prefix = {
   autocmd = 'My',
   statusline_func = 'MyStatusLineFunc_',
@@ -48,4 +52,38 @@ MUtils.toggle_background = function ()
   end
 end
 
+MUtils.im_select = {
+  opt = {normal_imkey = '1033'}
+}
+
+MUtils.im_select.insert_leave_pre = function ()
+
+  MUtils.im_select.cancel_switch_to_normal_imkey_job = false
+
+  Job:new({
+    command = shell,
+    args = {shellcmdflag, 'im-select.exe'},
+    on_stdout = function (j, return_val)
+
+      MUtils.im_select.last_imkey = return_val
+
+      if not MUtils.im_select.cancel_switch_to_normal_imkey_job then
+        Job:new({command = shell,
+          args = {shellcmdflag, 'im-select.exe '..MUtils.im_select.opt.normal_imkey}}):start()
+      end
+
+    end
+  }):start()
+end
+
+MUtils.im_select.insert_enter = function ()
+
+  MUtils.im_select.cancel_switch_to_normal_imkey_job = true
+
+  Job:new({command = shell,
+    args = {shellcmdflag, 'im-select.exe '..
+    (MUtils.im_select.last_imkey or MUtils.im_select.opt.normal_imkey)}}):start()
+end
+
 return M
+
