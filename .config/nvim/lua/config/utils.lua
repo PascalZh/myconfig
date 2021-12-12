@@ -2,7 +2,7 @@ _G.MUtils = MUtils == nil and {} or MUtils
 local M = {}
 local cmd = vim.cmd
 local o_s = vim.o
-local map_key = vim.api.nvim_set_keymap
+local _map_key = vim.api.nvim_set_keymap
 
 local Job = require'plenary.job'
 local shell = vim.o.shell
@@ -34,15 +34,28 @@ function M.autocmd(group, cmds, clear)
   cmd 'augroup END'
 end
 
-function M.map(modes, lhs, rhs, opts)
+-- By default noremap
+function M.map_key(modes, lhs, rhs, opts)
   opts = opts or {}
-  opts.noremap = opts.noremap == nil and true or opts.noremap
-  if type(modes) == 'string' then modes = {modes} end
+  opts.noremap = true
 
+  modes = type(modes) == 'string' and {modes} or modes
   for _, mode in ipairs(modes) do
-    map_key(mode, lhs, rhs, opts)
+    _map_key(mode, lhs, rhs, opts)
   end
 end
+
+function M.remap_key(modes, lhs, rhs, opts)
+  opts = opts or {}
+  opts.noremap = flase
+
+  modes = type(modes) == 'string' and {modes} or modes
+  for _, mode in ipairs(modes) do
+    _map_key(mode, lhs, rhs, opts)
+  end
+end
+
+---------------------------------- MUtils --------------------------------------
 
 MUtils.toggle_background = function ()
   if vim.o.background == 'dark' then
@@ -52,6 +65,7 @@ MUtils.toggle_background = function ()
   end
 end
 
+-- im_select {{{
 MUtils.im_select = {
   opt = {normal_imkey = '1033'}
 }
@@ -83,6 +97,15 @@ MUtils.im_select.insert_enter = function ()
   Job:new({command = shell,
     args = {shellcmdflag, 'im-select.exe '..
     (MUtils.im_select.last_imkey or MUtils.im_select.opt.normal_imkey)}}):start()
+end
+-- }}}
+
+MUtils.highlight = {}
+
+function MUtils.highlight.on_yank(args)
+  if (vim.b.visual_multi == nil) then
+    vim.highlight.on_yank(args)
+  end
 end
 
 return M

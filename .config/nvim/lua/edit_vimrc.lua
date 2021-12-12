@@ -8,6 +8,8 @@ local anim = Animate:new()
     '\n0vsplit '..globpath(p, 'lua/config/plugins.lua'))
   :resize_vertically_delta(function () return math.floor(vim.o.columns/2) end,
     { delay = 200 })
+  :cmd('0split '..globpath(p, 'lua/config/ui.lua'))
+  :resize_delta(function () return math.floor((vim.o.lines-4)/2) end, { delay = 200 })
 
 local function edit_vimrc()
   anim:start()

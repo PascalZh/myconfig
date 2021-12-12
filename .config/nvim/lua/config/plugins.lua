@@ -14,6 +14,7 @@ local packer_config = {
   },
   git = {
     clone_timeout = 5 * 60,
+    --default_url_format = 'https://hub.fastgit.org/%s'
   },
 }
 
@@ -21,29 +22,65 @@ local M = packer.startup {
   function (use)
     use {'wbthomason/packer.nvim'}
 
+    use 'PascalZh/vim-color-explorer'
+
     -- Neovim Library {{{
     use 'nvim-lua/plenary.nvim'
     -- }}}
 
     -- UI {{{
 
+    use {"lukas-reineke/indent-blankline.nvim", config = function ()
+      vim.g.indent_blankline_filetype_exclude = {
+        'help', 'qf', 'NvimTree', 'Outline', 'startuptime', 'packer',
+        'ColorExplorer' }
+      vim.opt.termguicolors = true
+      vim.cmd [[highlight IndentBlanklineIndent1 guifg=#E06C75 gui=nocombine]]
+      vim.cmd [[highlight IndentBlanklineIndent2 guifg=#E5C07B gui=nocombine]]
+      vim.cmd [[highlight IndentBlanklineIndent3 guifg=#98C379 gui=nocombine]]
+      vim.cmd [[highlight IndentBlanklineIndent4 guifg=#56B6C2 gui=nocombine]]
+      vim.cmd [[highlight IndentBlanklineIndent5 guifg=#61AFEF gui=nocombine]]
+      vim.cmd [[highlight IndentBlanklineIndent6 guifg=#C678DD gui=nocombine]]
+
+      vim.opt.list = true
+      -- vim.opt.listchars:append("space:⋅")
+      vim.opt.listchars:append("eol:↴")
+
+      require("indent_blankline").setup {
+        space_char_blankline = " ",
+        char_highlight_list = {
+          "IndentBlanklineIndent1",
+          "IndentBlanklineIndent2",
+          "IndentBlanklineIndent3",
+          "IndentBlanklineIndent4",
+          "IndentBlanklineIndent5",
+          "IndentBlanklineIndent6",
+        },
+      }
+    end}
+
+    use {
+      'romgrk/barbar.nvim',
+      requires = {'kyazdani42/nvim-web-devicons'}
+    }
+
     --use 'itchyny/lightline.vim'
     --use {'mengelbrecht/lightline-bufferline', requires = {'ryanoasis/vim-devicons'}}
 
+    use {
+      'nvim-lualine/lualine.nvim',
+      requires = {'kyazdani42/nvim-web-devicons', opt = true}
+    }
+
     use 'rakr/vim-one'
     use {'dracula/vim', as = 'dracula'}
-    use 'PascalZh/NeoSolarized'
+    use 'overcache/NeoSolarized'
 
-    use {'kien/rainbow_parentheses.vim', config = function ()
-      -- TODO not compatible with treesitter
-      --vim.cmd [[
-      --au VimEnter * RainbowParenthesesActivate
-      --au Syntax * RainbowParenthesesLoadRound
-      --au Syntax * RainbowParenthesesLoadSquare
-      --au Syntax * RainbowParenthesesLoadBraces
-      --]]
-      vim.g.rbpt_max = 10
-    end}
+    use {"p00f/nvim-ts-rainbow", opt = true,
+      after = "nvim-treesitter",
+      event = "BufRead"
+    }
+
     --use { 'jose-elias-alvarez/buftabline.nvim', requires = {'kyazdani42/nvim-web-devicons'} }
     -- }}}
 
@@ -65,6 +102,8 @@ local M = packer.startup {
 
     use 'arthurxavierx/vim-caser'
 
+    use 'hrsh7th/vim-eft'
+
     use 'notomo/gesture.nvim'
 
     use {'hrsh7th/vim-vsnip', 'rafamadriz/friendly-snippets' }
@@ -74,6 +113,11 @@ local M = packer.startup {
     -- }}}
 
     -- Code/IDE {{{
+
+    use {'simrat39/symbols-outline.nvim', config = function ()
+      vim.cmd('au FileType Outline setlocal nowrap | setlocal nolist | setlocal signcolumn=no')
+      vim.g.symbols_outline = { width = 50 }
+    end}
 
     -- Install nvim-cmp, and buffer source as a dependency
     use {'hrsh7th/nvim-cmp', requires = {
@@ -97,7 +141,29 @@ local M = packer.startup {
       end
     }
 
-    use 'nvim-treesitter/nvim-treesitter'
+    use {'nvim-treesitter/nvim-treesitter', config = function ()
+      require'nvim-treesitter.configs'.setup {
+        --ensure_installed = "all",
+        highlight = {
+          enable = true,  -- false will disable the whole extension
+        },
+        indent = {
+          enable = true,
+        },
+        autopairs = { enable = true },
+          rainbow = {
+            enable = true,
+            -- disable = { "jsx", "cpp" }, list of languages you want to disable the plugin for
+            extended_mode = true, -- Also highlight non-bracket delimiters like html tags, boolean or table: lang -> boolean
+            max_file_lines = nil, -- Do not enable for files with more than n lines, int
+            -- colors = {}, -- table of hex strings
+            -- termcolors = {} -- table of colour name strings
+          }
+      }
+      if vim.fn.has('win32') == 1 then
+        require'nvim-treesitter.install'.compilers = { "clang" }
+      end
+    end}
 
     -- develop nvim plugins
     use {'mfussenegger/nvim-dap', config = function ()
@@ -120,6 +186,10 @@ local M = packer.startup {
     -- Tools {{{
     use 'mhinz/vim-grepper'
 
+    use {'gelguy/wilder.nvim', config = function ()
+      vim.cmd[[call wilder#setup({'modes': [':', '/', '?']})]]
+    end}
+
     use {'dstein64/vim-startuptime', config = function ()
       vim.g.startuptime_self = 1
       --vim.g.startuptime_exe_args = {'-u', 'NONE'}
@@ -137,12 +207,12 @@ local M = packer.startup {
           hijack_cursor = true,
           update_focused_file = {
             enable      = true,
-            update_cwd  = true,
+            update_cwd  = false,
             ignore_list = {}
           },
-          view = {
-            width = 40
-          }
+          --view = {
+          --  width = 40
+          --}
         }
       end}
 
@@ -224,13 +294,13 @@ npairs.add_rules {
 -- hrsh7th/nvim-cmp {{{
 local cmp = require'cmp'
 
-local check_back_space = function()
-  local col = vim.fn.col '.' - 1
-  return col == 0 or vim.fn.getline('.'):sub(col, col):match '%s' ~= nil
+local has_words_before = function()
+  local line, col = unpack(vim.api.nvim_win_get_cursor(0))
+  return col ~= 0 and vim.api.nvim_buf_get_lines(0, line - 1, line, true)[1]:sub(col, col):match("%s") == nil
 end
 
-local t = function(str)
-    return vim.api.nvim_replace_termcodes(str, true, true, true)
+local feedkey = function(key, mode)
+  vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes(key, true, true, true), mode, true)
 end
 
 cmp.setup {
@@ -240,39 +310,31 @@ cmp.setup {
     end,
   },
   mapping = {
-    ['<C-d>'] = cmp.mapping.scroll_docs(-4),
-    ['<C-u>'] = cmp.mapping.scroll_docs(4),
+    ['<C-d>'] = cmp.mapping.scroll_docs(4),
+    ['<C-u>'] = cmp.mapping.scroll_docs(-4),
     ['<C-Space>'] = cmp.mapping.complete(),
     ['<CR>'] = cmp.mapping.confirm({
       behavior = cmp.ConfirmBehavior.Replace,
       select = true,
     }),
     ["<Tab>"] = cmp.mapping(function(fallback)
-      if vim.fn.pumvisible() == 1 then
-        vim.fn.feedkeys(t("<C-n>"), "n")
+      if cmp.visible() then
+        cmp.select_next_item()
       elseif vim.fn['vsnip#available'](1) == 1 then
-        vim.fn.feedkeys(t("<Plug>(vsnip-expand-or-jump)"), "")
-      elseif check_back_space() then
-        vim.fn.feedkeys(t("<Tab>"), "n")
+        feedkey("<Plug>(vsnip-expand-or-jump)", "")
+      elseif has_words_before() then
+        cmp.complete()
       else
         fallback()
       end
-    end, {
-        "i",
-        "s",
-      }),
+    end, { "i", "s" }),
     ["<S-Tab>"] = cmp.mapping(function(fallback)
-      if vim.fn.pumvisible() == 1 then
-        vim.fn.feedkeys(t("<C-p>"), "n")
+      if cmp.visible() then
+        cmp.select_prev_item()
       elseif vim.fn['vsnip#jumpable'](-1) == 1 then
-        vim.fn.feedkeys(t("<Plug>vsnip-jump-prev"), "")
-      else
-        fallback()
+        feedkey("<Plug>(vsnip-jump-prev)", "")
       end
-    end, {
-        "i",
-        "s",
-      }),
+    end, { "i", "s" }),
   },
   sources = {
     { name = 'nvim_lsp' },
@@ -287,7 +349,7 @@ capabilities = require('cmp_nvim_lsp').update_capabilities(capabilities)
 
 -- If you want insert `(` after select function or method item
 local cmp_autopairs = require('nvim-autopairs.completion.cmp')
-cmp.event:on( 'confirm_done', cmp_autopairs.on_confirm_done({  map_char = { tex = '' } }))
+cmp.event:on( 'confirm_done', cmp_autopairs.on_confirm_done({ map_char = { tex = '' } }))
 -- add a lisp filetype (wrap my-function), FYI: Hardcoded = { "clojure", "clojurescript", "fennel", "janet" }
 cmp_autopairs.lisp[#cmp_autopairs.lisp+1] = "racket"
 
@@ -399,37 +461,21 @@ require'lspconfig'.clangd.setup{
 --map('i', '<c-j>', '<Plug>(completion_next_source)', {noremap = false})
 --map('i', '<c-k>', '<Plug>(completion_prev_source)', {noremap = false})
 -- }}}
--- nvim-treesitter/nvim-treesitter {{{
--- take about 95ms to load this part
-require'nvim-treesitter.configs'.setup {
-  --ensure_installed = "all",
-  highlight = {
-    enable = true,  -- false will disable the whole extension
-  },
-  indent = {
-    enable = true,
-  },
-  autopairs = { enable = true }
-}
-if vim.fn.has('win32') then
-  require'nvim-treesitter.install'.compilers = { "clang" }
-end
--- }}}
 
--- mhinz/vim-startify {{{
-g.startify_fortune_use_unicode = 1
-g.startify_files_number = 15
-g.startify_change_to_vcs_root = 0
--- g.startify_enable_unsafe = 1
-g.startify_lists = {
-  { type = 'bookmarks', header = {'   Bookmarks'}      },
-  { type = 'files'    , header = {'   MRU'}            },
-  { type = 'commands' , header = {'   Commands'}       },
-}
-g.startify_bookmarks = {}
-g.startify_commands = {
-  ':help startify',
-}
+-- mhinz/vim-startify (unused) {{{
+--g.startify_fortune_use_unicode = 1
+--g.startify_files_number = 15
+--g.startify_change_to_vcs_root = 0
+---- g.startify_enable_unsafe = 1
+--g.startify_lists = {
+--  { type = 'bookmarks', header = {'   Bookmarks'}      },
+--  { type = 'files'    , header = {'   MRU'}            },
+--  { type = 'commands' , header = {'   Commands'}       },
+--}
+--g.startify_bookmarks = {}
+--g.startify_commands = {
+--  ':help startify',
+--}
 -- {'Vim Reference', 'h ref'},
 -- {h = 'h ref'},
 -- {m = {'My magical function', 'call Magic()'}},
@@ -556,8 +602,6 @@ local function make_caser_mappings(prefix, table)
       wk.register({[lhs] = {'<Plug>Caser'..mapping[3], mapping[1]}}, {prefix = prefix, noremap = false})
       wk.register({[lhs] = {'<Plug>CaserV'..mapping[3], mapping[1]}}, {prefix = prefix, mode = 'v', noremap = false})
     end
-    wk.register({[string.sub(prefix, 2)] = { '<Nop>', "Case Coercion"}}, {prefix = string.sub(prefix, 1, 1)})
-    wk.register({[string.sub(prefix, 2)] = { '<Nop>', "Case Coercion"}}, {prefix = string.sub(prefix, 1, 1), mode = 'v'})
   end
 end
 local caser_table = {
@@ -573,6 +617,7 @@ local caser_table = {
   {'dot.case',                            {'.'      }, 'DotCase'       },
 }
 make_caser_mappings('<leader>k', caser_table)
+wk.register({k = {name = 'Caser Coersion'}}, {prefix='<leader>'})
 -- }}}
 
 -- jose-elias-alvarez/buftabline.nvim (unused) {{{
@@ -597,10 +642,10 @@ make_caser_mappings('<leader>k', caser_table)
 -- }}}
 -- chaoren/vim-wordmotion {{{
 g.wordmotion_nomap = 1
-map({'n', 'x'}, 'w',   '<Plug>WordMotion_w', {noremap = false})
-map({'n', 'x'}, 'e',   '<Plug>WordMotion_e', {noremap = false})
-map({'n', 'x'}, 'b',   '<Plug>WordMotion_b', {noremap = false})
-map({'n', 'x'}, 'ge',  '<Plug>WordMotion_ge', {noremap = false})
+nvremap_key('w',   '<Plug>WordMotion_w')
+nvremap_key('e',   '<Plug>WordMotion_e')
+nvremap_key('b',   '<Plug>WordMotion_b')
+nvremap_key('ge',  '<Plug>WordMotion_ge')
 -- }}}
 
 wk.setup {
@@ -611,6 +656,7 @@ wk.setup {
     -- most people should not need to change this
     i = { "j", "k", ";" },
     v = { "j", "k" },
+    n = { 'v' }
   },
 }
 
