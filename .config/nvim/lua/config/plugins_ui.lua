@@ -38,8 +38,7 @@ table.insert(M, {
       tabline = {},
       extensions = {}
     }
-  end
-})
+  end})
 
 table.insert(M, {"lukas-reineke/indent-blankline.nvim",
   config = function ()
@@ -68,8 +67,7 @@ table.insert(M, {"lukas-reineke/indent-blankline.nvim",
         "IndentBlanklineIndent6",
       },
     }
-  end
-})
+  end})
 
 table.insert(M, {
   'romgrk/barbar.nvim',
@@ -80,11 +78,8 @@ table.insert(M, 'rakr/vim-one')
 
 table.insert(M, {'dracula/vim', as = 'dracula'})
 
-table.insert(M, {
-  "p00f/nvim-ts-rainbow", opt = true,
-  after = "nvim-treesitter",
-  event = "BufRead"
-})
+table.insert(M, {"p00f/nvim-ts-rainbow", opt = true, after = "nvim-treesitter",
+  event = "BufRead"})
 
 table.insert(M, {'junegunn/goyo.vim', 'junegunn/limelight.vim'})
 
@@ -173,3 +168,4 @@ table.insert(M, {'junegunn/goyo.vim', 'junegunn/limelight.vim'})
 -- }}}
 
 return M
+

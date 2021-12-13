@@ -37,12 +37,12 @@ local color_list = {'one', 'NeoSolarized', 'dracula'}
 cmd('colorscheme '..color_list[
   1 + math.floor(fn.localtime() / (7 * 24 * 60 * 60) % #color_list)])
 -- Fold
-opt('foldtext', "repeat('>',v:foldlevel).printf('%3d',v:foldend-v:foldstart+1).' '.getline(v:foldstart).' ...'", window)
+opt('foldtext', "repeat('〇 ',v:foldlevel).printf('%3d',v:foldend-v:foldstart+1).' '.getline(v:foldstart).' ...'", window)
 opt('fillchars', 'fold: ', window)
 
 autocmd('FoldSetting', {
   'FileType vim,racket,javascript,lua '..
-    'setlocal foldmethod=marker foldlevel=99 | normal zM',
+    'setlocal foldmethod=marker | normal zM',
 })
 
 autocmd('TUI', {
@@ -52,8 +52,7 @@ autocmd('TUI', {
     'lua MUtils.highlight.on_yank {higroup="IncSearch", timeout=222}',
 })
 
--- Common UI settings
-
+-- Common UI settings {{{
 opt('showtabline', 2)
 
 opt('showmode', false)
@@ -81,6 +80,8 @@ opt('wildmode', 'full')
 
 opt('inccommand', 'split')
 opt('mouse', 'a')
+-- }}}
+
 -- }}}
 -- Format {{{
 -- `formatoptions` is set by ftplugin/*.vim in neovim runtime folder and other
