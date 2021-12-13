@@ -23,119 +23,172 @@ local M = packer.startup {
     use {'wbthomason/packer.nvim'}
 
     use 'PascalZh/vim-color-explorer'
+    use 'PascalZh/NeoSolarized'
 
-    -- Neovim Library {{{
+    -- Neovim Library
     use 'nvim-lua/plenary.nvim'
-    -- }}}
 
-    -- UI {{{
+    for _, plugin in ipairs(require'config.plugins_ui') do
+      use(plugin)
+    end
 
-    use {"lukas-reineke/indent-blankline.nvim", config = function ()
-      vim.g.indent_blankline_filetype_exclude = {
-        'help', 'qf', 'NvimTree', 'Outline', 'startuptime', 'packer',
-        'ColorExplorer' }
-      vim.opt.termguicolors = true
-      vim.cmd [[highlight IndentBlanklineIndent1 guifg=#E06C75 gui=nocombine]]
-      vim.cmd [[highlight IndentBlanklineIndent2 guifg=#E5C07B gui=nocombine]]
-      vim.cmd [[highlight IndentBlanklineIndent3 guifg=#98C379 gui=nocombine]]
-      vim.cmd [[highlight IndentBlanklineIndent4 guifg=#56B6C2 gui=nocombine]]
-      vim.cmd [[highlight IndentBlanklineIndent5 guifg=#61AFEF gui=nocombine]]
-      vim.cmd [[highlight IndentBlanklineIndent6 guifg=#C678DD gui=nocombine]]
-
-      vim.opt.list = true
-      -- vim.opt.listchars:append("space:⋅")
-      vim.opt.listchars:append("eol:↴")
-
-      require("indent_blankline").setup {
-        space_char_blankline = " ",
-        char_highlight_list = {
-          "IndentBlanklineIndent1",
-          "IndentBlanklineIndent2",
-          "IndentBlanklineIndent3",
-          "IndentBlanklineIndent4",
-          "IndentBlanklineIndent5",
-          "IndentBlanklineIndent6",
-        },
-      }
-    end}
-
-    use {
-      'romgrk/barbar.nvim',
-      requires = {'kyazdani42/nvim-web-devicons'}
-    }
-
-    --use 'itchyny/lightline.vim'
-    --use {'mengelbrecht/lightline-bufferline', requires = {'ryanoasis/vim-devicons'}}
-
-    use {
-      'nvim-lualine/lualine.nvim',
-      requires = {'kyazdani42/nvim-web-devicons', opt = true}
-    }
-
-    use 'rakr/vim-one'
-    use {'dracula/vim', as = 'dracula'}
-    use 'overcache/NeoSolarized'
-
-    use {"p00f/nvim-ts-rainbow", opt = true,
-      after = "nvim-treesitter",
-      event = "BufRead"
-    }
-
-    --use { 'jose-elias-alvarez/buftabline.nvim', requires = {'kyazdani42/nvim-web-devicons'} }
-    -- }}}
-
-    -- Editting/Keyboard {{{
-    use 'windwp/nvim-autopairs'
-    use {'mg979/vim-visual-multi', keys = '<C-n>'}
-
-    use {'tpope/vim-surround', 'tpope/vim-repeat'}
-
-    use {'preservim/nerdcommenter', config = function () vim.g.NERDDefaultAlign = 'left' end}
-
-    use 'godlygeek/tabular'
-
-    use {'junegunn/goyo.vim', 'junegunn/limelight.vim'}
-    --use 'junegunn/vim-peekaboo'
-    use 'terryma/vim-expand-region'
-
-    use 'chaoren/vim-wordmotion'
-
-    use 'arthurxavierx/vim-caser'
-
-    use 'hrsh7th/vim-eft'
-
-    use 'notomo/gesture.nvim'
-
-    use {'hrsh7th/vim-vsnip', 'rafamadriz/friendly-snippets' }
-
-    use 'folke/which-key.nvim'
-
-    -- }}}
+    for _, plugin in ipairs(require'config.plugins_editor') do
+      use(plugin)
+    end
 
     -- Code/IDE {{{
 
-    use {'simrat39/symbols-outline.nvim', config = function ()
-      vim.cmd('au FileType Outline setlocal nowrap | setlocal nolist | setlocal signcolumn=no')
-      vim.g.symbols_outline = { width = 50 }
-    end}
+    use {
+      'simrat39/symbols-outline.nvim',
+      config = function ()
+        vim.cmd('au FileType Outline setlocal nowrap | setlocal nolist | setlocal signcolumn=no')
+        vim.g.symbols_outline = { width = 50 }
+      end}
 
     -- Install nvim-cmp, and buffer source as a dependency
     use {'hrsh7th/nvim-cmp', requires = {
       'hrsh7th/vim-vsnip',
       'hrsh7th/cmp-buffer',
       'hrsh7th/cmp-nvim-lsp'
-    }}
+    }, config = function ()
+        -- hrsh7th/nvim-cmp {{{
+        local cmp = require'cmp'
+
+        local has_words_before = function()
+          local line, col = unpack(vim.api.nvim_win_get_cursor(0))
+          return col ~= 0 and vim.api.nvim_buf_get_lines(0, line - 1, line, true)[1]:sub(col, col):match("%s") == nil
+        end
+
+        local feedkey = function(key, mode)
+          vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes(key, true, true, true), mode, true)
+        end
+
+        cmp.setup {
+          snippet = {
+            expand = function(args)
+              vim.fn["vsnip#anonymous"](args.body)
+            end,
+          },
+          mapping = {
+            ['<C-d>'] = cmp.mapping.scroll_docs(4),
+            ['<C-u>'] = cmp.mapping.scroll_docs(-4),
+            ['<C-Space>'] = cmp.mapping.complete(),
+            ['<CR>'] = cmp.mapping.confirm({
+              behavior = cmp.ConfirmBehavior.Replace,
+              select = true,
+            }),
+            ["<Tab>"] = cmp.mapping(function(fallback)
+              if cmp.visible() then
+                cmp.select_next_item()
+              elseif vim.fn['vsnip#available'](1) == 1 then
+                feedkey("<Plug>(vsnip-expand-or-jump)", "")
+              elseif has_words_before() then
+                cmp.complete()
+              else
+                fallback()
+              end
+            end, { "i", "s" }),
+            ["<S-Tab>"] = cmp.mapping(function(fallback)
+              if cmp.visible() then
+                cmp.select_prev_item()
+              elseif vim.fn['vsnip#jumpable'](-1) == 1 then
+                feedkey("<Plug>(vsnip-jump-prev)", "")
+              end
+            end, { "i", "s" }),
+          },
+          sources = {
+            { name = 'nvim_lsp' },
+            { name = 'buffer' }
+          }
+        }
+        -- The nvim-cmp almost supports LSP's capabilities so You should advertise it to LSP servers..
+        MUtils.capabilities = vim.lsp.protocol.make_client_capabilities()
+        MUtils.capabilities = require('cmp_nvim_lsp').update_capabilities(MUtils.capabilities)
+
+        -- you need setup cmp first put this after cmp.setup() {{{
+        -- If you want insert `(` after select function or method item
+        local cmp_autopairs = require('nvim-autopairs.completion.cmp')
+        cmp.event:on( 'confirm_done', cmp_autopairs.on_confirm_done({ map_char = { tex = '' } }))
+        -- add a lisp filetype (wrap my-function), FYI: Hardcoded = { "clojure", "clojurescript", "fennel", "janet" }
+        cmp_autopairs.lisp[#cmp_autopairs.lisp+1] = "racket"
+        -- }}}
+
+        -- }}}
+      end}
 
     --use {'nvim-lua/completion-nvim', requires = {'hrsh7th/vim-vsnip', 'hrsh7th/vim-vsnip-integ'}}
 
-    use 'neovim/nvim-lspconfig'
+    use {
+      'neovim/nvim-lspconfig',
+      after = 'nvim-cmp',
+      config = function ()
+-- neovim/nvim-lspconfig {{{
+
+-- sumneko lua lsp {{{
+local system_name
+if vim.fn.has("mac") == 1 then
+  system_name = "macOS"
+elseif vim.fn.has("unix") == 1 then
+  system_name = "Linux"
+elseif vim.fn.has('win32') == 1 then
+  system_name = "Windows"
+else
+  print("Unsupported system for sumneko")
+end
+
+local runtime_path = vim.split(package.path, ';')
+table.insert(runtime_path, "lua/?.lua")
+table.insert(runtime_path, "lua/?/init.lua")
+
+local sumneko_root_path = vim.fn.expand('$HOME/Programs/lua-language-server')
+local sumneko_binary = sumneko_root_path..'/'..system_name..'/lua-language-server'
+
+local lua_globals = {'vim'}
+for k, v in pairs(require('config.inject_env')) do
+  table.insert(lua_globals, k)
+end
+
+require'lspconfig'.sumneko_lua.setup {
+  cmd = {sumneko_binary, "-E", sumneko_root_path .. "/main.lua"};
+  settings = {
+    Lua = {
+      runtime = {
+        -- Tell the language server which version of Lua you're using (most likely LuaJIT in the case of Neovim)
+        version = 'LuaJIT',
+        -- Setup your lua path
+        path = runtime_path,
+      },
+      diagnostics = {
+        -- Get the language server to recognize the `vim` global
+        globals = lua_globals,
+      },
+      workspace = {
+        -- Make the server aware of Neovim runtime files
+        library = vim.api.nvim_get_runtime_file("", true),
+      },
+      -- Do not send telemetry data containing a randomized but unique identifier
+      telemetry = {
+        enable = false,
+      },
+    },
+  },
+  capabilities = MUtils.capabilities
+}
+-- }}}
+
+-- https://github.com/neovim/nvim-lspconfig/blob/master/CONFIG.md#clangd
+require'lspconfig'.clangd.setup{
+  cmd = { "clangd-11", "--background-index" },
+  capabilities = MUtils.capabilities
+}
+-- }}}
+      end
+    }
 
     use {'airblade/vim-gitgutter', disable = true}
     use {
       'lewis6991/gitsigns.nvim',
-      requires = {
-        'nvim-lua/plenary.nvim'
-      },
+      requires = { 'nvim-lua/plenary.nvim' },
       config = function()
         require('gitsigns').setup()
       end
@@ -151,14 +204,18 @@ local M = packer.startup {
           enable = true,
         },
         autopairs = { enable = true },
-          rainbow = {
-            enable = true,
-            -- disable = { "jsx", "cpp" }, list of languages you want to disable the plugin for
-            extended_mode = true, -- Also highlight non-bracket delimiters like html tags, boolean or table: lang -> boolean
-            max_file_lines = nil, -- Do not enable for files with more than n lines, int
-            -- colors = {}, -- table of hex strings
-            -- termcolors = {} -- table of colour name strings
-          }
+        rainbow = {
+          enable = true,
+          -- disable = { "jsx", "cpp" }, list of languages you want to disable the plugin for
+          extended_mode = true, -- Also highlight non-bracket delimiters like html tags, boolean or table: lang -> boolean
+          max_file_lines = nil, -- Do not enable for files with more than n lines, int
+          -- colors = {}, -- table of hex strings
+          -- termcolors = {} -- table of colour name strings
+        },
+        matchup = {
+          enable = true,              -- mandatory, false will disable the whole extension
+          -- disable = { "c", "ruby" },  -- optional, list of language that will be disabled
+        },
       }
       if vim.fn.has('win32') == 1 then
         require'nvim-treesitter.install'.compilers = { "clang" }
@@ -229,193 +286,14 @@ local M = packer.startup {
 
     -- }}}
 
+    if MUtils.packer_bootstrap then
+      require('packer').sync()
+    end
   end,
   config = packer_config
 }
 
-local wk = require('which-key')
-
 -- WARNING: the sequence can not changed without looking into all codes
--- windwp/nvim-autopairs {{{
-local npairs = require('nvim-autopairs')
-npairs.setup {
-  fast_wrap = {},
-  check_ts = true
-}
-
--- autopairs rules {{{
-local Rule = require('nvim-autopairs.rule')
-local cond = require('nvim-autopairs.conds')
-
-npairs.add_rules(require('nvim-autopairs.rules.endwise-lua'))
-
-npairs.add_rules({
-  Rule("$", "$", {"tex", "latex", "markdown"})
-    :with_move(cond.not_before_text_check('$'))
-    :with_move(function (opts) return opts.char == '$' end)
-  }
-)
-
-npairs.add_rules {
-  Rule(' ', ' ')
-    :with_pair(function(opts)
-      local pair = opts.line:sub(opts.col - 1, opts.col)
-      return vim.tbl_contains({ '()', '{}', '[]' }, pair)
-    end)
-    :with_move(cond.none())
-    :with_cr(cond.none())
-    :with_del(function(opts)
-      local col = vim.api.nvim_win_get_cursor(0)[2]
-      local context = opts.line:sub(col - 1, col + 2)
-      return vim.tbl_contains({ '(  )', '{  }', '[  ]' }, context)
-    end),
-  Rule('', ' )')
-    :with_pair(cond.none())
-    :with_move(function(opts) return opts.char == ')' end)
-    :with_cr(cond.none())
-    :with_del(cond.none())
-    :use_key(')'),
-  Rule('', ' }')
-    :with_pair(cond.none())
-    :with_move(function(opts) return opts.char == '}' end)
-    :with_cr(cond.none())
-    :with_del(cond.none())
-    :use_key('}'),
-  Rule('', ' ]')
-    :with_pair(cond.none())
-    :with_move(function(opts) return opts.char == ']' end)
-    :with_cr(cond.none())
-    :with_del(cond.none())
-    :use_key(']'),
-}
--- }}}
-
--- }}}
--- hrsh7th/nvim-cmp {{{
-local cmp = require'cmp'
-
-local has_words_before = function()
-  local line, col = unpack(vim.api.nvim_win_get_cursor(0))
-  return col ~= 0 and vim.api.nvim_buf_get_lines(0, line - 1, line, true)[1]:sub(col, col):match("%s") == nil
-end
-
-local feedkey = function(key, mode)
-  vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes(key, true, true, true), mode, true)
-end
-
-cmp.setup {
-  snippet = {
-    expand = function(args)
-      vim.fn["vsnip#anonymous"](args.body)
-    end,
-  },
-  mapping = {
-    ['<C-d>'] = cmp.mapping.scroll_docs(4),
-    ['<C-u>'] = cmp.mapping.scroll_docs(-4),
-    ['<C-Space>'] = cmp.mapping.complete(),
-    ['<CR>'] = cmp.mapping.confirm({
-      behavior = cmp.ConfirmBehavior.Replace,
-      select = true,
-    }),
-    ["<Tab>"] = cmp.mapping(function(fallback)
-      if cmp.visible() then
-        cmp.select_next_item()
-      elseif vim.fn['vsnip#available'](1) == 1 then
-        feedkey("<Plug>(vsnip-expand-or-jump)", "")
-      elseif has_words_before() then
-        cmp.complete()
-      else
-        fallback()
-      end
-    end, { "i", "s" }),
-    ["<S-Tab>"] = cmp.mapping(function(fallback)
-      if cmp.visible() then
-        cmp.select_prev_item()
-      elseif vim.fn['vsnip#jumpable'](-1) == 1 then
-        feedkey("<Plug>(vsnip-jump-prev)", "")
-      end
-    end, { "i", "s" }),
-  },
-  sources = {
-    { name = 'nvim_lsp' },
-    { name = 'buffer' }
-  }
-}
--- The nvim-cmp almost supports LSP's capabilities so You should advertise it to LSP servers..
-local capabilities = vim.lsp.protocol.make_client_capabilities()
-capabilities = require('cmp_nvim_lsp').update_capabilities(capabilities)
-
--- you need setup cmp first put this after cmp.setup() {{{
-
--- If you want insert `(` after select function or method item
-local cmp_autopairs = require('nvim-autopairs.completion.cmp')
-cmp.event:on( 'confirm_done', cmp_autopairs.on_confirm_done({ map_char = { tex = '' } }))
--- add a lisp filetype (wrap my-function), FYI: Hardcoded = { "clojure", "clojurescript", "fennel", "janet" }
-cmp_autopairs.lisp[#cmp_autopairs.lisp+1] = "racket"
-
--- }}}
-
--- }}}
--- neovim/nvim-lspconfig {{{
-
--- sumneko lua lsp {{{
-local system_name
-if vim.fn.has("mac") == 1 then
-  system_name = "macOS"
-elseif vim.fn.has("unix") == 1 then
-  system_name = "Linux"
-elseif vim.fn.has('win32') == 1 then
-  system_name = "Windows"
-else
-  print("Unsupported system for sumneko")
-end
-
-local runtime_path = vim.split(package.path, ';')
-table.insert(runtime_path, "lua/?.lua")
-table.insert(runtime_path, "lua/?/init.lua")
-
-local sumneko_root_path = fn.expand('$HOME/Programs/lua-language-server')
-local sumneko_binary = sumneko_root_path..'/'..system_name..'/lua-language-server'
-
-local lua_globals = {'vim'}
-for k, v in pairs(require('config.inject_env')) do
-  table.insert(lua_globals, k)
-end
-
-require'lspconfig'.sumneko_lua.setup {
-  cmd = {sumneko_binary, "-E", sumneko_root_path .. "/main.lua"};
-  settings = {
-    Lua = {
-      runtime = {
-        -- Tell the language server which version of Lua you're using (most likely LuaJIT in the case of Neovim)
-        version = 'LuaJIT',
-        -- Setup your lua path
-        path = runtime_path,
-      },
-      diagnostics = {
-        -- Get the language server to recognize the `vim` global
-        globals = lua_globals,
-      },
-      workspace = {
-        -- Make the server aware of Neovim runtime files
-        library = vim.api.nvim_get_runtime_file("", true),
-      },
-      -- Do not send telemetry data containing a randomized but unique identifier
-      telemetry = {
-        enable = false,
-      },
-    },
-  },
-  capabilities = capabilities
-}
--- }}}
-
--- https://github.com/neovim/nvim-lspconfig/blob/master/CONFIG.md#clangd
-require'lspconfig'.clangd.setup{
-  cmd = { "clangd-11", "--background-index" },
-  capabilities = capabilities
-}
--- }}}
 -- nvim-lua/completion-nvim (unused) {{{
 --cmd('autocmd FileType '..
 --  'haskell,python,vim,cpp,c,javascript,lua,markdown '..
@@ -581,20 +459,21 @@ autocmd('Surround', { -- use BufEnter instead of FileType here to allow comments
     utils.prefix.func .. 'SurroundMarker()'
 })
 cmd('function! ' .. utils.prefix.func .. 'SurroundMarker()\n' ..
-[[
+  [[
   let l:start_marker = " \1comments: \1 {{{"
   let l:end_marker = " }}}"
   if &cms != ""
-    let l:start_marker = printf(&cms, l:start_marker)
-    let l:end_marker = printf(&cms, l:end_marker)
+  let l:start_marker = printf(&cms, l:start_marker)
+  let l:end_marker = printf(&cms, l:end_marker)
   endif
   return l:start_marker."\n\r\n".l:end_marker
-endfunction
-]]
+  endfunction
+  ]]
 )
 -- }}}
 -- arthurxavierx/vim-caser {{{
 --g.caser_prefix = 'gc'
+local wk = MUtils.get_which_key()
 g.caser_no_mappings = 1
 local function make_caser_mappings(prefix, table)
   for _, mapping in ipairs(table) do
@@ -647,18 +526,6 @@ nvremap_key('e',   '<Plug>WordMotion_e')
 nvremap_key('b',   '<Plug>WordMotion_b')
 nvremap_key('ge',  '<Plug>WordMotion_ge')
 -- }}}
-
-wk.setup {
-  operators = {},
-  triggers_blacklist = {
-    -- list of mode / prefixes that should never be hooked by WhichKey
-    -- this is mostly relevant for key maps that start with a native binding
-    -- most people should not need to change this
-    i = { "j", "k", ";" },
-    v = { "j", "k" },
-    n = { 'v' }
-  },
-}
 
 cmd [[
 " or if you would like to use right click

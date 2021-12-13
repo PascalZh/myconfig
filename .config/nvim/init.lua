@@ -4,20 +4,16 @@ setfenv(1, env)
 
 -- packer.nvim related {{{
 local install_path = fn.stdpath('data')..'/site/pack/packer/start/packer.nvim'
-
 if fn.empty(fn.glob(install_path)) > 0 then
-  fn.system({'git', 'clone', 'https://github.com/wbthomason/packer.nvim', install_path})
-  execute 'packadd packer.nvim'
+  MUtils.packer_bootstrap = fn.system({'git', 'clone', '--depth', '1', 'https://github.com/wbthomason/packer.nvim', install_path})
 end
+
 autocmd('packer_user_config', {
   'BufWritePost plugins.lua source <afile> | PackerCompile'
 })
 -- }}}
 
-require('config.plugins')
-require('config.ui')
-
-local wk = require('which-key')
+local wk = MUtils.get_which_key()
 local window = {o, wo}
 local buffer = {o, bo}
 
@@ -39,7 +35,7 @@ opt('termguicolors', true)
 --cmd[[colorscheme NeoSolarized]]
 local color_list = {'one', 'NeoSolarized', 'dracula'}
 cmd('colorscheme '..color_list[
-   1 + math.floor(fn.localtime() / (7 * 24 * 60 * 60) % #color_list)])
+  1 + math.floor(fn.localtime() / (7 * 24 * 60 * 60) % #color_list)])
 -- Fold
 opt('foldtext', "repeat('>',v:foldlevel).printf('%3d',v:foldend-v:foldstart+1).' '.getline(v:foldstart).' ...'", window)
 opt('fillchars', 'fold: ', window)
@@ -71,8 +67,8 @@ opt('cursorcolumn', false, window)
 opt('number', true, window)
 opt('relativenumber', true, window)
 
-opt('list', false, window)
---opt('listchars', 'tab:  ,eol:$,trail:*,extends:#', window)
+opt('list', true, window)
+opt('listchars', 'tab:»⋅,nbsp:+,trail:⋅,extends:→,precedes:←', window)
 
 opt('scrolloff', 7, window)  -- Minimum lines to keep above and below cursor
 
@@ -97,19 +93,19 @@ opt('expandtab', true, buffer)
 opt('shiftwidth', 2, buffer)
 -- }}}
 -- Clipboard {{{
-if fn.exists('$WSL_DISTRO_NAME') then
-	g.clipboard = {
-		name= 'win32yank',
-		copy= {
-			['+'] = 'win32yank.exe -i --crlf',
-			['*'] = 'win32yank.exe -i --crlf',
-		},
-		paste= {
-			['+'] = 'win32yank.exe -o --lf',
-			['*'] = 'win32yank.exe -o --lf',
-		},
-		cache_enabled = 0,
-	}
+if fn.exists('$WSL_DISTRO_NAME') == 1 then
+  g.clipboard = {
+    name= 'win32yank',
+    copy= {
+      ['+'] = 'win32yank.exe -i --crlf',
+      ['*'] = 'win32yank.exe -i --crlf',
+    },
+    paste= {
+      ['+'] = 'win32yank.exe -o --lf',
+      ['*'] = 'win32yank.exe -o --lf',
+    },
+    cache_enabled = 0,
+  }
 end
 -- disable the following option because it is slowing down daily commands like
 -- s, dd
@@ -312,4 +308,8 @@ g.neovide_cursor_animation_length = 0.15
 
 -- possible value: railgun, torpedo, pixiedust, sonicboom, ripple, wireframe
 g.neovide_cursor_vfx_mode = "ripple"
+
 opt('guifont', ':h13')
+
+require('config.plugins')
+

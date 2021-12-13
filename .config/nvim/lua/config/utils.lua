@@ -4,7 +4,6 @@ local cmd = vim.cmd
 local o_s = vim.o
 local _map_key = vim.api.nvim_set_keymap
 
-local Job = require'plenary.job'
 local shell = vim.o.shell
 local shellcmdflag = vim.o.shellcmdflag
 
@@ -47,7 +46,7 @@ end
 
 function M.remap_key(modes, lhs, rhs, opts)
   opts = opts or {}
-  opts.noremap = flase
+  opts.noremap = false
 
   modes = type(modes) == 'string' and {modes} or modes
   for _, mode in ipairs(modes) do
@@ -66,11 +65,13 @@ MUtils.toggle_background = function ()
 end
 
 -- im_select {{{
+-- A module to switch input method in normal mode
 MUtils.im_select = {
   opt = {normal_imkey = '1033'}
 }
 
 MUtils.im_select.insert_leave_pre = function ()
+  local Job = require'plenary.job'
 
   MUtils.im_select.cancel_switch_to_normal_imkey_job = false
 
@@ -91,6 +92,7 @@ MUtils.im_select.insert_leave_pre = function ()
 end
 
 MUtils.im_select.insert_enter = function ()
+  local Job = require'plenary.job'
 
   MUtils.im_select.cancel_switch_to_normal_imkey_job = true
 
@@ -106,6 +108,14 @@ function MUtils.highlight.on_yank(args)
   if (vim.b.visual_multi == nil) then
     vim.highlight.on_yank(args)
   end
+end
+
+MUtils.not_vscode = not vim.g.vscode
+
+MUtils.get_which_key = function ()
+  return MUtils.not_vscode and require'which-key' or {
+    register = function () end
+  }
 end
 
 return M
