@@ -12,7 +12,7 @@ end
 
 local M = { DEBUG = false }
 
----@return number time in milliseconds
+---@return number Time in milliseconds
 local function time()
   return vim.loop.hrtime() / 1000000
 end
@@ -31,6 +31,9 @@ local function dprint_state(elapsed_time, next_state)
   end
 end
 
+-- NOTICE that most methods of Animate will not execute immediately, instead it
+-- will push a task to the object. Animate:start will start the task queue from
+-- start.
 local Animate = {}
 
 function Animate:new()
@@ -51,6 +54,7 @@ function Animate:start()
   end
 end
 
+-- Any task must call _run_next_task at the end
 function Animate:_run_next_task()
   self.task_idx = self.task_idx + 1
   if (self.task_idx <= #self.task_queue) then
@@ -58,8 +62,8 @@ function Animate:_run_next_task()
   end
 end
 
----@param update fun(cur_state:number, next_state:number):number a function that update current state and do the actual 'animation'
----@param options table support ease_func, duration and delay options
+---@param update fun(cur_state:number, next_state:number):number A function that update current state and do the actual 'animation'
+---@param options table Support ease_func, duration and delay options
 function Animate:animate(start_state, end_state, update, options)
   local options = options or {}
 
@@ -121,7 +125,7 @@ function Animate:animate(start_state, end_state, update, options)
 end
 
 function Animate:call_func(func, options)
-  local options = options or {}
+  options = options or {}
 
   local function func_wrapper()
     func()
@@ -164,7 +168,7 @@ local function make_resize_update(cmd)
     if (diff ~= 0) then
       vim.cmd("execute '"..cmd..tostring(next_state).."'")
       return next_state
-      else
+    else
       return cur_state
     end
   end
@@ -174,7 +178,7 @@ local scroll_up_update = make_scroll_update("\\<C-e>")
 local scroll_down_update = make_scroll_update("\\<C-y>")
 
 local resize_update = make_resize_update("resize ")
-local resize_vertically_update = make_resize_update("vertical resize ")
+local vresize_update = make_resize_update("vertical resize ")
 -- }}}
 
 -- Common api {{{
@@ -195,14 +199,36 @@ function Animate:resize_delta(delta, options)
     options)
 end
 
-function Animate:resize_vertically_delta(delta, options)
+-- v means vertically
+function Animate:vresize_delta(delta, options)
   return self:animate(
     function () return vim.fn.winwidth(0) end,
     function () return vim.fn.winwidth(0) +
       ((type(delta) == 'function') and delta() or delta) end,
-    resize_vertically_update,
+    vresize_update,
     options)
 end
+
+-- @param size float A percentage of the view width or height
+-- @param file string Default: ''.
+-- @param direction string Could be 'leftabove', 'rightbelow', ... see :leftabove in the help of vim. Default: ''.
+function Animate:split(size, file, direction, options)
+  self:cmd((direction or '')..'0new | redraw')
+    :resize_delta(function () return math.floor(vim.o.lines * (size or 0.5)) - 2 end, options)
+  if file then self:cmd('e '..file..' | redraw') end
+  return self
+end
+
+-- @param size float A percentage of the view width or height
+-- @param file string Default: ''.
+-- @param direction string Could be 'leftabove', 'rightbelow', ... see :leftabove in the help of vim. Default: ''.
+function Animate:vsplit(size, file, direction, options)
+  self:cmd((direction or '')..'vertical 0new | redraw')
+    :vresize_delta(function () return math.floor(vim.o.columns * (size or 0.5)) end, options)
+  if file then self:cmd('e '..file..' | redraw') end
+  return self
+end
+
 -- }}}
 
 -- Ease functions {{{

@@ -14,9 +14,10 @@ local files = {
 for i, _ in ipairs(files) do
   files[i] = globpath(p, files[i])
 end
+
 local edit_all_cmd = ''
-for i, key in ipairs(files) do
-  edit_all_cmd = edit_all_cmd..'e '..key..'\n'
+for _, key in ipairs(files) do
+  edit_all_cmd = edit_all_cmd..'silent e '..key..'\n'
 end
 
 vim.cmd[[
@@ -34,33 +35,22 @@ local set_fold_cmd = [[setlocal foldexpr=MyFoldExpr(v:lnum)
 setlocal foldmethod=expr
 ]]
 
-local function half_width()
-  return math.floor(vim.o.columns/2)
-end
-local function half_height()
-  return math.floor(vim.o.lines/2) - 2
-end
+-- Lessons:
+-- 1. don't run tabedit and 0split in just one cmd, seperate them into two cmds.
+-- 2. use redraw to increase stability
 
-local delay = 20
-local duration = 300
 local anim = Animate:new()
-  :cmd(edit_all_cmd)
+  :cmd('e '..files[8])
 
-  :cmd('tabedit '..files[1]..'\n'.. '0vsplit '..files[2]..'\n', {delay = 200})
-  :resize_vertically_delta(half_width, {delay = delay, duration = duration})
+  :cmd('tabedit '..files[1])
+  :vsplit(0.5, files[2])
+  :split(0.5, files[3])
 
-  :cmd('0split '..files[3])
-  :resize_delta(half_height, {delay = delay, duration = duration})
-
-  :cmd('tabedit '..files[4]..'\n'.. set_fold_cmd..'0vsplit '..files[5]..'\n'.. set_fold_cmd)
-  :resize_vertically_delta(half_width, {delay = delay, duration = duration})
-
-  :cmd('0split '..files[6]..'\n'.. set_fold_cmd)
-  :resize_delta(half_height, {delay = delay, duration = duration})
-
-  :cmd('wincmd h\n'..'0split '..files[7]..'\n'.. set_fold_cmd)
-  :resize_delta(half_height, {delay = delay, duration = duration})
-
+  :cmd('tabedit '..files[4]):cmd(set_fold_cmd)
+  :vsplit(0.5, files[5]):cmd(set_fold_cmd)
+  :split(0.5, files[6]):cmd(set_fold_cmd)
+  :cmd('wincmd h')
+  :split(0.5, files[7]):cmd(set_fold_cmd)
 
 local function edit_vimrc()
   anim:start()
