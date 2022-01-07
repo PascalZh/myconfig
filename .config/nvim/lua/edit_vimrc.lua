@@ -20,20 +20,21 @@ for _, key in ipairs(files) do
   edit_all_cmd = edit_all_cmd..'silent e '..key..'\n'
 end
 
-vim.cmd[[
-function MyFoldExpr(lnum)
-  if getline(a:lnum) =~ "config = function ()" 
-    return 'a1'
-  elseif getline(a:lnum-1) =~ "end})"
-    return 's1
-  else
-    return '='
-endfunction
-]]
+-- vim.cmd[[
+-- function MyFoldExpr(lnum)
+--   if getline(a:lnum) =~ "config = function ()" 
+--     return 'a1'
+--   elseif getline(a:lnum-1) =~ "end})"
+--     return 's1
+--   else
+--     return '='
+-- endfunction
+-- ]]
 
-local set_fold_cmd = [[setlocal foldexpr=MyFoldExpr(v:lnum)
-setlocal foldmethod=expr
-]]
+-- local set_fold_cmd = [[setlocal foldexpr=MyFoldExpr(v:lnum)
+-- setlocal foldmethod=expr
+-- ]]
+local set_fold_cmd = ""
 
 -- Lessons:
 -- 1. don't run tabedit and 0split in just one cmd, seperate them into two cmds.

@@ -1,7 +1,6 @@
 _G.MUtils = MUtils == nil and {} or MUtils
 local M = {}
 local cmd = vim.cmd
-local o_s = vim.o
 local _map_key = vim.api.nvim_set_keymap
 
 local shell = vim.o.shell
@@ -12,13 +11,6 @@ M.prefix = {
   statusline_func = 'MyStatusLineFunc_',
   func = 'My'
 }
-
-function M.opt(o, v, scopes)
-  scopes = scopes or {o_s}
-  for _, s in ipairs(scopes) do
-    s[o] = v
-  end
-end
 
 function M.autocmd(group, cmds, clear)
   clear = clear == nil and false or clear
@@ -57,10 +49,10 @@ end
 ---------------------------------- MUtils --------------------------------------
 
 MUtils.toggle_background = function ()
-  if vim.o.background == 'dark' then
-    vim.o.background = 'light'
+  if vim.opt.background == 'dark' then
+    vim.opt.background = 'light'
   else
-    vim.o.background = 'dark'
+    vim.opt.background = 'dark'
   end
 end
 
@@ -83,8 +75,10 @@ MUtils.im_select.insert_leave_pre = function ()
       MUtils.im_select.last_imkey = return_val
 
       if not MUtils.im_select.cancel_switch_to_normal_imkey_job then
-        Job:new({command = shell,
-          args = {shellcmdflag, 'im-select.exe '..MUtils.im_select.opt.normal_imkey}}):start()
+        Job:new({
+          command = shell,
+          args = {shellcmdflag, 'im-select.exe '..MUtils.im_select.opt.normal_imkey}
+        }):start()
       end
 
     end
@@ -96,9 +90,11 @@ MUtils.im_select.insert_enter = function ()
 
   MUtils.im_select.cancel_switch_to_normal_imkey_job = true
 
-  Job:new({command = shell,
+  Job:new({
+    command = shell,
     args = {shellcmdflag, 'im-select.exe '..
-    (MUtils.im_select.last_imkey or MUtils.im_select.opt.normal_imkey)}}):start()
+      (MUtils.im_select.last_imkey or MUtils.im_select.opt.normal_imkey)}
+  }):start()
 end
 -- }}}
 
@@ -108,14 +104,6 @@ function MUtils.highlight.on_yank(args)
   if (vim.b.visual_multi == nil) then
     vim.highlight.on_yank(args)
   end
-end
-
-MUtils.not_vscode = not vim.g.vscode
-
-MUtils.get_which_key = function ()
-  return MUtils.not_vscode and require'which-key' or {
-    register = function () end
-  }
 end
 
 return M

@@ -3,22 +3,22 @@ setmetatable(env, {__index = _G})
 setfenv(1, env)
 
 -- packer.nvim related {{{
-local install_path = fn.stdpath('data')..'/site/pack/packer/start/packer.nvim'
-if fn.empty(fn.glob(install_path)) > 0 then
-  MUtils.packer_bootstrap = fn.system({'git', 'clone', '--depth', '1', 'https://github.com/wbthomason/packer.nvim', install_path})
+local install_path = vim.fn.stdpath('data')..'/site/pack/packer/start/packer.nvim'
+if vim.fn.empty(vim.fn.glob(install_path)) > 0 then
+  MUtils.packer_bootstrap = vim.fn.system({'git', 'clone', '--depth', '1', 'https://github.com/wbthomason/packer.nvim', install_path})
 end
 
 autocmd('packer_user_config', {
-  'BufWritePost plugins.lua source <afile> | PackerCompile'
+  'BufWritePost plugins.lua echo "packer.nvim is compiling..." | source <afile> | PackerCompile'
 })
 -- }}}
 
-local wk = MUtils.get_which_key()
-local window = {o, wo}
-local buffer = {o, bo}
+require('config.plugins')
 
-g.netrw_browsex_viewer = 'cmd.exe /C start' -- TODO FIXME
-g.netrw_suppress_gx_mesg = 0
+local wk = require'which-key'
+
+vim.g.netrw_browsex_viewer = 'cmd.exe /C start' -- TODO FIXME
+vim.g.netrw_suppress_gx_mesg = 0
 
 autocmd('Term', {'TermOpen * startinsert'})
 
@@ -27,131 +27,62 @@ autocmd('ImSwitch', {
   'InsertLeavePre * lua MUtils.im_select.insert_leave_pre()'
 })
 
-opt('autochdir', true)
-
--- UI {{{
-opt('termguicolors', true)
--- Color Scheme
---cmd[[colorscheme NeoSolarized]]
-local color_list = {'one', 'NeoSolarized', 'dracula'}
-cmd('colorscheme '..color_list[
-  1 + math.floor(fn.localtime() / (7 * 24 * 60 * 60) % #color_list)])
--- Fold
-opt('foldtext', "repeat('〇 ',v:foldlevel).printf('%3d',v:foldend-v:foldstart+1).' '.getline(v:foldstart).' ...'", window)
-opt('fillchars', 'fold: ', window)
-
-autocmd('FoldSetting', {
-  'FileType vim,racket,javascript,lua '..
-    'setlocal foldmethod=marker | normal zM',
-})
-
-autocmd('TUI', {
-  'FileType haskell,python,vim,cpp,c,javascript,lua '..
-    'setlocal colorcolumn=81 | hi ColorColumn ctermbg=Green guibg=Green',
-  'TextYankPost * '..
-    'lua MUtils.highlight.on_yank {higroup="IncSearch", timeout=222}',
-})
-
--- Common UI settings {{{
-opt('showtabline', 2)
-
-opt('showmode', false)
-
-opt('winblend', 15, window)
-opt('signcolumn', 'yes:2', window)
-
-opt('cursorline', true, window)
-opt('cursorcolumn', false, window)
-
-opt('number', true, window)
-opt('relativenumber', true, window)
-
-opt('list', true, window)
-opt('listchars', 'tab:»⋅,nbsp:+,trail:⋅,extends:→,precedes:←', window)
-
-opt('scrolloff', 7, window)  -- Minimum lines to keep above and below cursor
-
-opt('conceallevel', 2, window)
-
-opt('splitright', true)
-opt('splitbelow', true)
-
-opt('wildmode', 'full')
-
-opt('inccommand', 'split')
-opt('mouse', 'a')
--- }}}
-
--- }}}
--- Format {{{
--- `formatoptions` is set by ftplugin/*.vim in neovim runtime folder and other
--- plugins' folder, I don't know how to override them. TODO
-opt('textwidth', 80, buffer)
--- }}}
--- Tab {{{
-opt('tabstop', 2, buffer)
-opt('expandtab', true, buffer)
-opt('shiftwidth', 2, buffer)
--- }}}
--- Clipboard {{{
-if fn.exists('$WSL_DISTRO_NAME') == 1 then
-  g.clipboard = {
-    name= 'win32yank',
-    copy= {
-      ['+'] = 'win32yank.exe -i --crlf',
-      ['*'] = 'win32yank.exe -i --crlf',
-    },
-    paste= {
-      ['+'] = 'win32yank.exe -o --lf',
-      ['*'] = 'win32yank.exe -o --lf',
-    },
-    cache_enabled = 0,
-  }
-end
--- disable the following option because it is slowing down daily commands like
--- s, dd
---opt('clipboard', 'unnamedplus') -- always use yanking to paste in other place
--- }}}
--- Spell {{{
-opt('spell', false, window)
-autocmd('Spell', {
-  [[FileType markdown,tex setlocal spell]]
-})
-opt('spelllang', 'en,cjk', buffer)
--- }}}
--- Miscellaneous {{{
-opt('timeoutlen', 500) -- also controls the delay of which-key
-opt('updatetime', 500) -- also controls the delay of gitgutter
-
-opt('virtualedit', 'onemore')
-
-opt('wrap', false, window)
-
-opt('smartindent', true, buffer)
-
-opt('history', 1000)
-
--- search
-opt('ignorecase', true)
-opt('smartcase', true)
--- }}}
-
-cmd [[command! Zenmode execute "Goyo | Limelight"]]
+vim.opt.autochdir = true
 
 --------------------------------- Mappings -------------------------------------
 local silent = {silent = true}
 local expr = {expr = true}
-g.mapleader = " "
+vim.g.mapleader = " "
 
+-- map * to search selected text in visual mode
 xmap_key('*', [[y/\V<C-R>=escape(escape(@",'\'),'/')<CR><CR>]])
+
 -- DO NOT USE <Cmd>...<CR>
 xmap_key('X', ':call exchange_selected_text#delete()<CR>', silent)
 iremap_key('j', 'easy_jk#map_j()', expr)
 iremap_key('k', 'easy_jk#map_k()', expr)
-nmap_key('<C-j>', 'J')
+
+imap_key('<C-f>', '<C-g>u<Esc>$[s1z=`]i<C-g>u')  -- Fix previous language mispells
+
+nmap_key('<C-a>', ':%y+ <CR>')
+
+-- Terminal mappings {{{
+map_key('t', 'jk', '<C-\\><C-n>')
+map_key('t', 'kj', '<C-\\><C-n>')
+-- TODO: map JK to hide terminal
+
+-- }}}
+
+-- Common mappings {{{
+
+-- Don't copy the replaced text after pasting in visual mode
+vmap_key('p', '"_dP')
+
+-- Allow moving the cursor through wrapped lines with j, k, <Up> and <Down>
+-- http://www.reddit.com/r/vim/comments/2k4cbr/problem_with_gj_and_gk/
+-- empty mode is same as using :map
+-- also don't use g[j|k] when in operator pending mode, so it doesn't alter d, y or c behaviour
+nvomap_key("j", 'v:count || mode(1)[0:1] == "no" ? "j" : "gj"', { expr = true })
+nvomap_key("k", 'v:count || mode(1)[0:1] == "no" ? "k" : "gk"', { expr = true })
+nvomap_key("<Down>", 'v:count || mode(1)[0:1] == "no" ? "j" : "gj"', { expr = true })
+nvomap_key("<Up>", 'v:count || mode(1)[0:1] == "no" ? "k" : "gk"', { expr = true })
+
+nmap_key('<Esc>', '<Cmd>nohlsearch<CR>')
+
+--map_key('n', '<Tab>', '<Cmd>bnext<CR>')
+--map_key('n', '<S-Tab>', '<Cmd>bNext<CR>')
+--nmap_key(';;', 'za')
+
+nmap_key('<C-s>',  '<Cmd>w<CR>')
+imap_key('<C-s>',  '<Cmd>w<CR>')
+
+vmap_key('<', '<gv')
+vmap_key('>', '>gv')
+
+-- }}}
 
 -- better f/t/;{{{
-cmd [[
+vim.cmd [[
 nmap ; <Plug>(eft-repeat)
 xmap ; <Plug>(eft-repeat)
 
@@ -186,6 +117,10 @@ nvmap_key('<leader>t<space>', ':Tabularize ')
 nvmap_key('<leader>tt', ':Tabularize /')
 nvmap_key('<leader>ta', ':Tabularize argument_list<CR>')
 wk.register({t = {name = "Tabularize"}}, {prefix='<leader>'})
+
+nmap_key('<leader>/', '<Plug>NERDCommenterToggle')
+wk.register({c = {name = "NERD Commenter"}}, {prefix = '<leader>'})
+
 -- }}}
 
 -- Toggle mappings(begin with ,) {{{
@@ -209,10 +144,10 @@ nremap_key('<PageUp>', '<C-b>')
 -- }}}
 
 -- Window commands: jump/resize/quit/... {{{
-nmap_key('H', '<C-w>h')
-nmap_key('J', '<C-w>j')
-nmap_key('K', '<C-w>k')
-nmap_key('L', '<C-w>l')
+nmap_key('<C-h>', '<C-w>h')
+nmap_key('<C-j>', '<C-w>j')
+nmap_key('<C-k>', '<C-w>k')
+nmap_key('<C-l>', '<C-w>l')
 
 local delta_resize = 6
 nmap_key('<C-w><', string.rep('<C-w><', delta_resize * 2))
@@ -221,27 +156,6 @@ nmap_key('<C-w>+', string.rep('<C-w>+', delta_resize))
 nmap_key('<C-w>-', string.rep('<C-w>-', delta_resize))
 
 nmap_key('<C-q>', '<C-w>q')
--- }}}
-
--- Common mappings {{{
---nmap_key(';<space>', '<Cmd>nohlsearch<CR>')
-nmap_key('<leader><space>', '<Cmd>nohlsearch<CR>')
-
---map_key('n', '<Tab>', '<Cmd>bnext<CR>')
---map_key('n', '<S-Tab>', '<Cmd>bNext<CR>')
---nmap_key(';;', 'za')
-
-nmap_key('<C-l>', 'i<C-g>u<Esc>$[s1z=`]a<C-g>u<Esc>')  -- TODO some hidden bugs?
-imap_key('<C-l>', '<C-g>u<Esc>$[s1z=`]i<C-g>u');
-
-nmap_key('<C-s>',  '<Cmd>w<CR>')
-imap_key('<C-s>',  '<Cmd>w<CR>')
-
-vmap_key('<', '<gv')
-vmap_key('>', '>gv')
-
-nvremap_key('<C-k>', '<Plug>NERDCommenterToggle')
-wk.register({c = {name = "NERD Commenter"}}, {prefix = '<leader>'})
 -- }}}
 
 -- Debug mappings {{{
@@ -260,7 +174,7 @@ wk.register({d = {name = "Debug Adapter Protocol"}}, {prefix = '<leader>'})
 
 wk.register({h = {name = "Gitsigns"}}, {prefix = '<leader>'})
 
--- BarBar mappings {{{
+-- BarBar buffer line mappings {{{
 -- Move to previous/next
 nremap_key('<leader>[', ':BufferPrevious<CR>')
 nremap_key('<leader>]', ':BufferNext<CR>')
@@ -302,15 +216,126 @@ wk.register({b = {name = "BarBar Buffer Operation"}}, {prefix = '<leader>'})
 
 autocmd('LaTex', {'FileType tex,markdown imap ;d $'})
 
+-- UI {{{
+vim.opt.termguicolors = true
+-- Color Scheme
+--cmd[[colorscheme NeoSolarized]]
+local color_list = {'dracula', 'NeoSolarized', 'one'}
+if not vim.g.vscode then
+  vim.cmd('colorscheme '..
+    color_list[1 + math.floor(vim.fn.localtime() / (7 * 24 * 60 * 60) % #color_list)])
+end
+-- Fold
+vim.opt.foldtext = "repeat('〇 ',v:foldlevel).printf('%3d',v:foldend-v:foldstart+1).' '.getline(v:foldstart).' ...'"
+vim.opt.fillchars = 'fold: '
+
+autocmd('FoldSetting', {
+  'FileType vim,racket,javascript,lua '..
+    'setlocal foldmethod=marker | normal zM',
+})
+
+autocmd('TUI', {
+  'FileType haskell,python,vim,cpp,c,javascript,lua '..
+    'setlocal colorcolumn=81 | hi ColorColumn ctermbg=Green guibg=Green',
+  'TextYankPost * '..
+    'lua MUtils.highlight.on_yank {higroup="IncSearch", timeout=222}',
+})
+
+-- Common UI settings {{{
+vim.opt.showtabline = 2
+
+vim.opt.showmode = false
+
+vim.opt.winblend = 15
+vim.opt.signcolumn = 'yes:2'
+
+vim.opt.cursorline = true
+vim.opt.cursorcolumn = false
+
+vim.opt.number = true
+vim.opt.relativenumber = true
+
+vim.opt.list = true
+vim.opt.listchars = 'tab:»⋅,nbsp:+,trail:⋅,extends:→,precedes:←'
+
+vim.opt.scrolloff = 7  -- Minimum lines to keep above and below cursor
+
+vim.opt.conceallevel = 2
+
+vim.opt.splitright = true
+vim.opt.splitbelow = true
+
+vim.opt.wildmode = 'full'
+
+vim.opt.inccommand = 'split'
+vim.opt.mouse = 'a'
+-- }}}
+
+-- }}}
+-- Format {{{
+-- `formatoptions` is set by ftplugin/*.vim in neovim runtime folder and other
+-- plugins' folder, I don't know how to override them. TODO
+vim.opt.textwidth = 80
+-- }}}
+-- Tab {{{
+vim.opt.tabstop = 2
+vim.opt.expandtab = true
+vim.opt.shiftwidth = 2
+-- }}}
+-- Clipboard {{{
+if vim.fn.exists('$WSL_DISTRO_NAME') == 1 then
+  vim.g.clipboard = {
+    name= 'win32yank',
+    copy= {
+      ['+'] = 'win32yank.exe -i --crlf',
+      ['*'] = 'win32yank.exe -i --crlf',
+    },
+    paste= {
+      ['+'] = 'win32yank.exe -o --lf',
+      ['*'] = 'win32yank.exe -o --lf',
+    },
+    cache_enabled = 0,
+  }
+end
+-- disable the following option because it is slowing down daily commands like
+-- s, dd
+--opt('clipboard', 'unnamedplus') -- always use yanking to paste in other place
+-- }}}
+-- Spell {{{
+vim.opt.spell = false
+autocmd('Spell', {
+  [[FileType markdown,tex setlocal spell]]
+})
+vim.opt.spelllang = 'en,cjk'
+-- }}}
+-- Miscellaneous {{{
+vim.opt.timeoutlen = 500 -- also controls the delay of which-key
+vim.opt.updatetime = 500 -- also controls the delay of gitgutter
+
+vim.opt.virtualedit = 'onemore'
+
+vim.opt.wrap = false
+
+vim.opt.smartindent = true
+
+vim.opt.history = 1000
+
+-- search
+vim.opt.ignorecase = true
+vim.opt.smartcase = true
+-- }}}
+
+vim.cmd [[command! Zenmode execute "Goyo | Limelight"]]
+
 -------------------------------- for neovide -----------------------------------
-g.neovide_refresh_rate = 90
-g.neovide_remember_window_size = true
-g.neovide_cursor_animation_length = 0.15
+vim.cmd[[
+let g:neovide_refresh_rate = 90
+let g:neovide_remember_window_size = v:true
+let g:neovide_cursor_animation_length = 0.15
 
--- possible value: railgun, torpedo, pixiedust, sonicboom, ripple, wireframe
-g.neovide_cursor_vfx_mode = "ripple"
+" possible value: railgun, torpedo, pixiedust, sonicboom, ripple, wireframe
+let g:neovide_cursor_vfx_mode = "ripple"
 
-opt('guifont', ':h13')
-
-require('config.plugins')
+set guifont=:h13
+]]
 
