@@ -1,16 +1,16 @@
-if (not vim.g.animation_fps) then
+if not vim.g.animation_fps then
   -- 90Hz is OK in my machine, but 60Hz is not enough
   -- It doesn't mean the true fps, you should try it in your machine
   vim.g.animation_fps = 90
 end
-if (not vim.g.animation_duration) then
+if not vim.g.animation_duration then
   vim.g.animation_duration = 350
 end
-if (not vim.g.animation_ease_func) then
+if not vim.g.animation_ease_func then
   vim.g.animation_ease_func = 'quad'
 end
 
-local M = { DEBUG = false }
+local M = {DEBUG = false}
 
 ---@return number Time in milliseconds
 local function time()
@@ -18,7 +18,7 @@ local function time()
 end
 
 local function dprint(str)
-  if (M.DEBUG) then
+  if M.DEBUG then
     print(str)
   end
 end
@@ -196,7 +196,8 @@ function Animate:resize_delta(delta, options)
     function () return vim.fn.winheight(0) +
       ((type(delta) == 'function') and delta() or delta) end,
     resize_update,
-    options)
+    options
+  )
 end
 
 -- v means vertically
@@ -206,7 +207,8 @@ function Animate:vresize_delta(delta, options)
     function () return vim.fn.winwidth(0) +
       ((type(delta) == 'function') and delta() or delta) end,
     vresize_update,
-    options)
+    options
+  )
 end
 
 -- @param size float A percentage of the view width or height

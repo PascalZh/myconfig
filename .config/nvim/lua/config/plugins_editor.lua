@@ -1,8 +1,10 @@
 local M = {}
-local not_vscode = function () return not vim.g.vscode end
+local not_vscode = function() return not vim.g.vscode end
 
-table.insert(M, {'windwp/nvim-autopairs', after = 'nvim-treesitter',
-  config = function ()
+table.insert(M, {
+  'windwp/nvim-autopairs',
+  after = 'nvim-treesitter',
+  config = function()
     local npairs = require('nvim-autopairs')
     npairs.setup {
       fast_wrap = {},
@@ -15,12 +17,11 @@ table.insert(M, {'windwp/nvim-autopairs', after = 'nvim-treesitter',
 
     npairs.add_rules(require('nvim-autopairs.rules.endwise-lua'))
 
-    npairs.add_rules({
+    npairs.add_rules {
       Rule("$", "$", {"tex", "latex", "markdown"})
         :with_move(cond.not_before_text_check('$'))
         :with_move(function (opts) return opts.char == '$' end)
     }
-    )
 
     npairs.add_rules {
       Rule(' ', ' ')
@@ -55,33 +56,35 @@ table.insert(M, {'windwp/nvim-autopairs', after = 'nvim-treesitter',
         :use_key(']'),
     }
     -- }}}
-  end})
+  end
+})
 
-vim.g.loaded_matchit = 1  -- disable matchit
+vim.g.loaded_matchit = 1 -- disable matchit
 table.insert(M, 'andymass/vim-matchup')
 
-table.insert(M, {'mg979/vim-visual-multi',
-  cond = not_vscode, keys = {'<C-n>', '<C-Up>', '<C-Down>'},
-  config = function ()
+table.insert(M, {
+  'mg979/vim-visual-multi',
+  cond = not_vscode,
+  keys = {'<C-n>', '<C-Up>', '<C-Down>'},
+  config = function()
     vim.g.VM_theme = 'iceblue'
     vim.g.VM_maps = {
       ['Move Right'] = '<M-S-l>',
-      ['Move Left'] = '<M-S-h>',
+      ['Move Left'] = '<M-S-h>'
     }
-  end})
+  end
+})
 
 table.insert(M, 'tpope/vim-repeat')
 
-table.insert(M, {'tpope/vim-surround',
-  config = function ()
-    local utils = require'config.utils'
-    vim.g['surround_'..string.byte('m')] = '-- \1\1 {{{\n\r\n-- }}}'
+table.insert(M, {
+  'tpope/vim-surround',
+  config = function()
+    local utils = require 'config.utils'
+    vim.g['surround_' .. string.byte('m')] = '-- \1\1 {{{\n\r\n-- }}}'
     utils.autocmd('Surround', { -- use BufEnter instead of FileType here to allow commentstring to be set
-      [[BufEnter * let b:surround_{char2nr("m")} = ]] ..
-        utils.prefix.func .. 'SurroundMarker()'
-    })
-    vim.cmd('function! ' .. utils.prefix.func .. 'SurroundMarker()\n' ..
-      [[
+    [[BufEnter * let b:surround_{char2nr("m")} = ]] .. utils.prefix.func .. 'SurroundMarker()'})
+    vim.cmd('function! ' .. utils.prefix.func .. 'SurroundMarker()\n' .. [[
         let l:start_marker = " \1comments: \1 {{{"
         let l:end_marker = " }}}"
         if &ft == "matlab"
@@ -93,74 +96,104 @@ table.insert(M, {'tpope/vim-surround',
         endif
         return l:start_marker."\n\r\n".l:end_marker
       endfunction
-      ]]
-    )
-  end})
+      ]])
+  end
+})
 
-table.insert(M, {'preservim/nerdcommenter', config = function () vim.g.NERDDefaultAlign = 'left' end})
+table.insert(M, {
+  'preservim/nerdcommenter',
+  config = function()
+    vim.g.NERDDefaultAlign = 'left'
+  end
+})
 
 table.insert(M, 'godlygeek/tabular')
 
---use 'junegunn/vim-peekaboo'
+-- use 'junegunn/vim-peekaboo'
 table.insert(M, 'terryma/vim-expand-region')
 
-table.insert(M, {'chaoren/vim-wordmotion',
-  config = function ()
+table.insert(M, {
+  'chaoren/vim-wordmotion',
+  config = function()
     vim.g.wordmotion_nomap = 1
     local nvremap_key = require'config.inject_env'.nvremap_key
-    nvremap_key('w',   '<Plug>WordMotion_w')
-    nvremap_key('e',   '<Plug>WordMotion_e')
-    nvremap_key('b',   '<Plug>WordMotion_b')
-    nvremap_key('ge',  '<Plug>WordMotion_ge')
-  end})
+    nvremap_key('w', '<Plug>WordMotion_w')
+    nvremap_key('e', '<Plug>WordMotion_e')
+    nvremap_key('b', '<Plug>WordMotion_b')
+    nvremap_key('ge', '<Plug>WordMotion_ge')
+  end
+})
 
-table.insert(M, {'arthurxavierx/vim-caser', after = 'which-key.nvim',
-  config = function ()
-    local wk = require'which-key'
+table.insert(M, {
+  'arthurxavierx/vim-caser',
+  after = 'which-key.nvim',
+  config = function()
+    local wk = require 'which-key'
     vim.g.caser_no_mappings = 1
     local function make_caser_mappings(prefix, table)
       for _, mapping in ipairs(table) do
         for _, lhs in ipairs(mapping[2]) do
-          wk.register({[lhs] = {'<Plug>Caser'..mapping[3], mapping[1]}}, {prefix = prefix, noremap = false})
-          wk.register({[lhs] = {'<Plug>CaserV'..mapping[3], mapping[1]}}, {prefix = prefix, mode = 'v', noremap = false})
+          wk.register({
+            [lhs] = {'<Plug>Caser' .. mapping[3], mapping[1]}
+          }, {
+            prefix = prefix,
+            noremap = false
+          })
+          wk.register({
+            [lhs] = {'<Plug>CaserV' .. mapping[3], mapping[1]}
+          }, {
+            prefix = prefix,
+            mode = 'v',
+            noremap = false
+          })
         end
       end
     end
-    local caser_table = {
-      {'MixedCase or PascalCase',             {'m', 'p' }, 'MixedCase'     },
-      {'camelCase',                           {'c'      }, 'CamelCase'     },
-      {'snake_case',                          {'_', 's' }, 'SnakeCase'     },
-      {'UPPER_CASE',                          {'u', 'U' }, 'UpperCaser'    },
-      {'Title Case',                          {'t'      }, 'TitleCase'     },
-      {'Sentence case',                       {'S'      }, 'SentenceCase'  },
-      {'space case',                          {'<space>'}, 'SpaceCaser'    },
-      {'dash-case or kebab-case',             {'-', 'k' }, 'KebabCase'     },
-      {'Title-Dash-Case or Title-Kebab-Case', {'K'      }, 'TitleKebabCase'},
-      {'dot.case',                            {'.'      }, 'DotCase'       },
-    }
+    local caser_table = {{'MixedCase or PascalCase', {'m', 'p'}, 'MixedCase'}, {'camelCase', {'c'}, 'CamelCase'},
+                         {'snake_case', {'_', 's'}, 'SnakeCase'}, {'UPPER_CASE', {'u', 'U'}, 'UpperCaser'},
+                         {'Title Case', {'t'}, 'TitleCase'}, {'Sentence case', {'S'}, 'SentenceCase'},
+                         {'space case', {'<space>'}, 'SpaceCaser'},
+                         {'dash-case or kebab-case', {'-', 'k'}, 'KebabCase'},
+                         {'Title-Dash-Case or Title-Kebab-Case', {'K'}, 'TitleKebabCase'},
+                         {'dot.case', {'.'}, 'DotCase'}}
     make_caser_mappings('<leader>k', caser_table)
-    wk.register({k = {name = 'Caser Coersion'}}, {prefix='<leader>'})
-    wk.register({k = {name = 'Caser Coersion'}}, {prefix='<leader>', mode='v'})
-  end})
+    wk.register({
+      k = {
+        name = 'Caser Coersion'
+      }
+    }, {
+      prefix = '<leader>'
+    })
+    wk.register({
+      k = {
+        name = 'Caser Coersion'
+      }
+    }, {
+      prefix = '<leader>',
+      mode = 'v'
+    })
+  end
+})
 
 table.insert(M, 'hrsh7th/vim-eft')
 
 table.insert(M, 'notomo/gesture.nvim')
 
-table.insert(M, {'folke/which-key.nvim',
-  config = function ()
+table.insert(M, {
+  'folke/which-key.nvim',
+  config = function()
     require'which-key'.setup {
       operators = {},
       triggers_blacklist = {
         -- list of mode / prefixes that should never be hooked by WhichKey
         -- this is mostly relevant for key maps that start with a native binding
         -- most people should not need to change this
-        i = { "j", "k", ";" },
-        v = { "j", "k" },
-        n = { 'v' }
-      },
+        i = {"j", "k", ";"},
+        v = {"j", "k"},
+        n = {'v'}
+      }
     }
-  end})
+  end
+})
 
 return M
-

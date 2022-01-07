@@ -49,8 +49,6 @@ nmap_key('<C-a>', ':%y+ <CR>')
 -- Terminal mappings {{{
 map_key('t', 'jk', '<C-\\><C-n>')
 map_key('t', 'kj', '<C-\\><C-n>')
--- TODO: map JK to hide terminal
-
 -- }}}
 
 -- Common mappings {{{
@@ -120,7 +118,6 @@ wk.register({t = {name = "Tabularize"}}, {prefix='<leader>'})
 
 nmap_key('<leader>/', '<Plug>NERDCommenterToggle')
 wk.register({c = {name = "NERD Commenter"}}, {prefix = '<leader>'})
-
 -- }}}
 
 -- Toggle mappings(begin with ,) {{{
@@ -338,4 +335,3 @@ let g:neovide_cursor_vfx_mode = "ripple"
 
 set guifont=:h13
 ]]
-

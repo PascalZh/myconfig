@@ -1,9 +1,11 @@
 local M = {}
-local not_vscode = function () return not vim.g.vscode end
+local not_vscode = function() return not vim.g.vscode end
 
-table.insert(M, {'nvim-lualine/lualine.nvim',
-  cond = not_vscode, requires = {'kyazdani42/nvim-web-devicons'},
-  config = function ()
+table.insert(M, {
+  'nvim-lualine/lualine.nvim',
+  cond = not_vscode,
+  requires = {'kyazdani42/nvim-web-devicons'},
+  config = function()
 
     local function statusline_encoding()
       local fenc = vim.o.fileencoding
@@ -14,16 +16,25 @@ table.insert(M, {'nvim-lualine/lualine.nvim',
       options = {
         icons_enabled = true,
         theme = 'material',
-        component_separators = { left = '', right = ''},
-        section_separators = { left = '', right = ''},
+        component_separators = {
+          left = '',
+          right = ''
+        },
+        section_separators = {
+          left = '',
+          right = ''
+        },
         disabled_filetypes = {'NvimTree', 'Outline'},
-        always_divide_middle = true,
+        always_divide_middle = true
       },
       sections = {
         lualine_a = {'mode'},
         lualine_b = {'branch', 'diff', 'diagnostics'},
         lualine_c = {'filename'},
-        lualine_x = {statusline_encoding, 'fileformat', {'filetype', icon_only = true}},
+        lualine_x = {statusline_encoding, 'fileformat', {
+          'filetype',
+          icon_only = true
+        }},
         lualine_y = {'progress'},
         lualine_z = {'location'}
       },
@@ -38,13 +49,15 @@ table.insert(M, {'nvim-lualine/lualine.nvim',
       tabline = {},
       extensions = {}
     }
-  end})
+  end
+})
 
-table.insert(M, {"lukas-reineke/indent-blankline.nvim", cond = not_vscode,
-  config = function ()
-    vim.g.indent_blankline_filetype_exclude = {
-      'help', 'qf', 'NvimTree', 'Outline', 'startuptime', 'packer',
-      'ColorExplorer' }
+table.insert(M, {
+  "lukas-reineke/indent-blankline.nvim",
+  cond = not_vscode,
+  config = function()
+    vim.g.indent_blankline_filetype_exclude = {'help', 'qf', 'NvimTree', 'Outline', 'startuptime', 'packer',
+                                               'ColorExplorer'}
     vim.cmd [[highlight IndentBlanklineIndent1 guifg=#E06C75 gui=nocombine]]
     vim.cmd [[highlight IndentBlanklineIndent2 guifg=#E5C07B gui=nocombine]]
     vim.cmd [[highlight IndentBlanklineIndent3 guifg=#98C379 gui=nocombine]]
@@ -58,35 +71,32 @@ table.insert(M, {"lukas-reineke/indent-blankline.nvim", cond = not_vscode,
 
     require("indent_blankline").setup {
       space_char_blankline = " ",
-      char_highlight_list = {
-        "IndentBlanklineIndent1",
-        "IndentBlanklineIndent2",
-        "IndentBlanklineIndent3",
-        "IndentBlanklineIndent4",
-        "IndentBlanklineIndent5",
-        "IndentBlanklineIndent6",
-      },
+      char_highlight_list = {"IndentBlanklineIndent1", "IndentBlanklineIndent2", "IndentBlanklineIndent3",
+                             "IndentBlanklineIndent4", "IndentBlanklineIndent5", "IndentBlanklineIndent6"}
     }
-  end})
+  end
+})
 
-table.insert(M, {'romgrk/barbar.nvim',
-  cond = not_vscode, requires = {'kyazdani42/nvim-web-devicons'}})
+table.insert(M, {
+  'romgrk/barbar.nvim',
+  cond = not_vscode,
+  requires = {'kyazdani42/nvim-web-devicons'}
+})
 
 table.insert(M, {'rakr/vim-one'})
 
 table.insert(M, {'dracula/vim', as = 'dracula'})
 
-table.insert(M, {"p00f/nvim-ts-rainbow",
-  after = "nvim-treesitter", event = "BufRead"})
+table.insert(M, {"p00f/nvim-ts-rainbow", after = "nvim-treesitter", event = "BufRead"})
 
 table.insert(M, {'junegunn/goyo.vim', cond = not_vscode})
 table.insert(M, {'junegunn/limelight.vim', cond = not_vscode})
 
---use 'itchyny/lightline.vim'
---use {'mengelbrecht/lightline-bufferline', requires = {'ryanoasis/vim-devicons'}}
+-- use 'itchyny/lightline.vim'
+-- use {'mengelbrecht/lightline-bufferline', requires = {'ryanoasis/vim-devicons'}}
 
 -- lightline config (unused) {{{
---g.lightline = {
+-- g.lightline = {
 --  enable = {
 --    statusline = 1,
 --    tabline = 1,
@@ -130,40 +140,40 @@ table.insert(M, {'junegunn/limelight.vim', cond = not_vscode})
 --  },
 --  separator = { left = '', right = '' },
 --  subseparator = { left = '│', right = '│' },
---}
+-- }
 
---cmd [[
---function! MyReadonly()
+-- cmd [[
+-- function! MyReadonly()
 --  return &readonly ? '' : ''
---endfunction
---function! MyFiletype()
+-- endfunction
+-- function! MyFiletype()
 --  return winwidth(0) > 70 ? (strlen(&filetype) ? WebDevIconsGetFileTypeSymbol() : 'no ft') : ''
---endfunction
---function! MyFileformat()
+-- endfunction
+-- function! MyFileformat()
 --  return winwidth(0) > 70 ? (WebDevIconsGetFileFormatSymbol()) : ''
---endfunction
---function! CocCurrentFunction()
+-- endfunction
+-- function! CocCurrentFunction()
 --  return get(b:, 'coc_current_function', '')
---endfunction
---function! MyFenc()
+-- endfunction
+-- function! MyFenc()
 --  return &fenc == 'utf-8'?'':&fenc
---endfunction
---func! MyTreesitter()
+-- endfunction
+-- func! MyTreesitter()
 --  let ret=nvim_treesitter#statusline({'indicator_size': float2nr(winwidth(0) * 0.8)})
 --  return ret == v:null ? '' : ret
---endf
---]]
+-- endf
+-- ]]
 
---g['lightline#bufferline#show_number'] = 2
+-- g['lightline#bufferline#show_number'] = 2
 ----g['lightline#bufferline#composed_number_map'] = {
 ---- ['1'] =  '⑴', ['2'] =  '⑵', ['3'] =  '⑶', ['4'] =  '⑷', ['5'] =  '⑸',
 ---- ['6'] =  '⑹', ['7'] =  '⑺', ['8'] =  '⑻', ['9'] =  '⑼', ['10'] = '⑽',
 ---- ['11'] = '⑾', ['12'] = '⑿', ['13'] = '⒀', ['14'] = '⒁', ['15'] = '⒂',
 ---- ['16'] = '⒃', ['17'] = '⒄', ['18'] = '⒅', ['19'] = '⒆', ['20'] = '⒇'
 ----}
---g['lightline#bufferline#read_only'] = ' '
---g['lightline#bufferline#enable_devicons'] = 1
---g['lightline#bufferline#clickable'] = 1
+-- g['lightline#bufferline#read_only'] = ' '
+-- g['lightline#bufferline#enable_devicons'] = 1
+-- g['lightline#bufferline#clickable'] = 1
 -- }}}
 
 return M
