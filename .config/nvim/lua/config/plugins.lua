@@ -5,10 +5,10 @@ setfenv(1, env)
 local packer = require('packer')
 
 local packer_config = {
-  profile = {
-    enable = true,
-    threshold = 1 -- the amount in ms that a plugins load time must be over for it to be included in the profile
-  },
+  -- profile = {
+  --   enable = false,
+  --   threshold = 1 -- the amount in ms that a plugins load time must be over for it to be included in the profile
+  -- },
   display = {
     open_fn = require('packer.util').float,
   },
@@ -36,11 +36,11 @@ local M = packer.startup {
       use(plugin)
     end
 
-    for _, plugin in ipairs(require'config.plugins_ide') do
+    for _, plugin in ipairs(require'config.plugins_tool') do
       use(plugin)
     end
 
-    for _, plugin in ipairs(require'config.plugins_tool') do
+    for _, plugin in ipairs(require'config.plugins_ide') do
       use(plugin)
     end
 
@@ -189,7 +189,7 @@ local M = packer.startup {
 --}
 -- }}}
 
-cmd [[
+vim.cmd [[
 " or if you would like to use right click
 nnoremap <RightMouse> <Nop>
 nnoremap <silent> <RightDrag> <Cmd>lua require("gesture").draw()<CR>

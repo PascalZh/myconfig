@@ -1,4 +1,5 @@
 local M = {}
+local not_vscode = function () return not vim.g.vscode end
 
 table.insert(M, {'mhinz/vim-grepper',
   config = function ()
@@ -15,12 +16,12 @@ table.insert(M, {'mhinz/vim-grepper',
     ]]
   end})
 
-table.insert(M, {'gelguy/wilder.nvim',
+table.insert(M, {'gelguy/wilder.nvim', cond = not_vscode,
   config = function ()
     vim.cmd[[call wilder#setup({'modes': [':', '/', '?']})]]
   end})
 
-table.insert(M, {'dstein64/vim-startuptime',
+table.insert(M, {'dstein64/vim-startuptime', cond = not_vscode,
   config = function ()
     vim.g.startuptime_self = 1
     --vim.g.startuptime_exe_args = {'-u', 'NONE'}
@@ -28,7 +29,7 @@ table.insert(M, {'dstein64/vim-startuptime',
 
 --use 'mhinz/vim-startify'
 
-table.insert(M, {'kyazdani42/nvim-tree.lua',
+table.insert(M, {'kyazdani42/nvim-tree.lua', cond = not_vscode,
   requires = {'kyazdani42/nvim-web-devicons'},
   cmd = {'NvimTreeFocus', 'NvimTreeToggle'},
   config = function ()

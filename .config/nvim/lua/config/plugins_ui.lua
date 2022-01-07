@@ -1,8 +1,8 @@
 local M = {}
+local not_vscode = function () return not vim.g.vscode end
 
-table.insert(M, {
-  'nvim-lualine/lualine.nvim',
-  requires = {'kyazdani42/nvim-web-devicons'},
+table.insert(M, {'nvim-lualine/lualine.nvim',
+  cond = not_vscode, requires = {'kyazdani42/nvim-web-devicons'},
   config = function ()
 
     local function statusline_encoding()
@@ -13,7 +13,7 @@ table.insert(M, {
     require'lualine'.setup {
       options = {
         icons_enabled = true,
-        theme = 'auto',
+        theme = 'material',
         component_separators = { left = '', right = ''},
         section_separators = { left = '', right = ''},
         disabled_filetypes = {'NvimTree', 'Outline'},
@@ -40,7 +40,7 @@ table.insert(M, {
     }
   end})
 
-table.insert(M, {"lukas-reineke/indent-blankline.nvim",
+table.insert(M, {"lukas-reineke/indent-blankline.nvim", cond = not_vscode,
   config = function ()
     vim.g.indent_blankline_filetype_exclude = {
       'help', 'qf', 'NvimTree', 'Outline', 'startuptime', 'packer',
@@ -69,19 +69,18 @@ table.insert(M, {"lukas-reineke/indent-blankline.nvim",
     }
   end})
 
-table.insert(M, {
-  'romgrk/barbar.nvim',
-  requires = {'kyazdani42/nvim-web-devicons'}
-})
+table.insert(M, {'romgrk/barbar.nvim',
+  cond = not_vscode, requires = {'kyazdani42/nvim-web-devicons'}})
 
-table.insert(M, 'rakr/vim-one')
+table.insert(M, {'rakr/vim-one'})
 
 table.insert(M, {'dracula/vim', as = 'dracula'})
 
-table.insert(M, {"p00f/nvim-ts-rainbow", opt = true, after = "nvim-treesitter",
-  event = "BufRead"})
+table.insert(M, {"p00f/nvim-ts-rainbow",
+  after = "nvim-treesitter", event = "BufRead"})
 
-table.insert(M, {'junegunn/goyo.vim', 'junegunn/limelight.vim'})
+table.insert(M, {'junegunn/goyo.vim', cond = not_vscode})
+table.insert(M, {'junegunn/limelight.vim', cond = not_vscode})
 
 --use 'itchyny/lightline.vim'
 --use {'mengelbrecht/lightline-bufferline', requires = {'ryanoasis/vim-devicons'}}

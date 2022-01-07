@@ -1,17 +1,49 @@
 local M = {}
+local not_vscode = function () return not vim.g.vscode end
 
-table.insert(M, {'simrat39/symbols-outline.nvim',
+table.insert(M, {'simrat39/symbols-outline.nvim', cond = not_vscode,
   config = function ()
     vim.cmd('au FileType Outline setlocal nowrap | setlocal nolist | setlocal signcolumn=no')
     vim.g.symbols_outline = { width = 50 }
   end})
 
+table.insert(M, {'nvim-treesitter/nvim-treesitter', cond = not_vscode,
+  config = function ()
+    require'nvim-treesitter.configs'.setup {
+      --ensure_installed = "all",
+      highlight = {
+        enable = true,  -- false will disable the whole extension
+      },
+      indent = {
+        enable = true,
+      },
+      autopairs = { enable = true },
+      rainbow = {
+        enable = true,
+        -- disable = { "jsx", "cpp" }, list of languages you want to disable the plugin for
+        extended_mode = true, -- Also highlight non-bracket delimiters like html tags, boolean or table: lang -> boolean
+        max_file_lines = nil, -- Do not enable for files with more than n lines, int
+        -- colors = {}, -- table of hex strings
+        -- termcolors = {} -- table of colour name strings
+      },
+      matchup = {
+        enable = true,              -- mandatory, false will disable the whole extension
+        -- disable = { "c", "ruby" },  -- optional, list of language that will be disabled
+      },
+    }
+    if vim.fn.has('win32') == 1 then
+      require'nvim-treesitter.install'.compilers = { "clang" }
+    end
+  end})
+
+table.insert(M, {'hrsh7th/vim-vsnip', cond = not_vscode})
+table.insert(M, {'rafamadriz/friendly-snippets', cond = not_vscode})
+
+table.insert(M, {'hrsh7th/cmp-buffer', after = 'nvim-cmp' })
+table.insert(M, {'hrsh7th/cmp-nvim-lsp', cond = not_vscode })
 table.insert(M, {'hrsh7th/nvim-cmp',
-  requires = {
-    'hrsh7th/vim-vsnip',
-    'hrsh7th/cmp-buffer',
-    'hrsh7th/cmp-nvim-lsp'
-  }, config = function ()
+  after = { 'nvim-autopairs', 'cmp-nvim-lsp' },
+  config = function ()
     -- hrsh7th/nvim-cmp {{{
     local cmp = require'cmp'
 
@@ -143,42 +175,15 @@ table.insert(M, {'neovim/nvim-lspconfig', after = 'nvim-cmp',
 
 -- table.insert(M, {'airblade/vim-gitgutter'})
 
-table.insert(M, {'lewis6991/gitsigns.nvim', requires = { 'nvim-lua/plenary.nvim' },
+table.insert(M, {'lewis6991/gitsigns.nvim',
+  cond = not_vscode,
+  requires = { 'nvim-lua/plenary.nvim' },
   config = function ()
     require('gitsigns').setup()
   end})
 
-table.insert(M, {'nvim-treesitter/nvim-treesitter',
-  config = function ()
-    require'nvim-treesitter.configs'.setup {
-      --ensure_installed = "all",
-      highlight = {
-        enable = true,  -- false will disable the whole extension
-      },
-      indent = {
-        enable = true,
-      },
-      autopairs = { enable = true },
-      rainbow = {
-        enable = true,
-        -- disable = { "jsx", "cpp" }, list of languages you want to disable the plugin for
-        extended_mode = true, -- Also highlight non-bracket delimiters like html tags, boolean or table: lang -> boolean
-        max_file_lines = nil, -- Do not enable for files with more than n lines, int
-        -- colors = {}, -- table of hex strings
-        -- termcolors = {} -- table of colour name strings
-      },
-      matchup = {
-        enable = true,              -- mandatory, false will disable the whole extension
-        -- disable = { "c", "ruby" },  -- optional, list of language that will be disabled
-      },
-    }
-    if vim.fn.has('win32') == 1 then
-      require'nvim-treesitter.install'.compilers = { "clang" }
-    end
-  end})
-
 -- develop nvim plugins
-table.insert(M, {'mfussenegger/nvim-dap',
+table.insert(M, {'mfussenegger/nvim-dap', cond = not_vscode,
   config = function ()
     local dap = require"dap"
     dap.configurations.lua = {
@@ -194,7 +199,8 @@ table.insert(M, {'mfussenegger/nvim-dap',
     end
   end})
 
-table.insert(M, {'jbyuki/one-small-step-for-vimkind', requires = 'mfussenegger/nvim-dap'})
+table.insert(M, {'jbyuki/one-small-step-for-vimkind',
+  cond = not_vscode, requires = 'mfussenegger/nvim-dap'})
 
 -- Language support
 table.insert(M, {'lervag/vimtex', ft = {'tex', 'latex'}})

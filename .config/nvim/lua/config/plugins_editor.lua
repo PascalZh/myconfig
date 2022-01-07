@@ -1,6 +1,7 @@
 local M = {}
+local not_vscode = function () return not vim.g.vscode end
 
-table.insert(M, {'windwp/nvim-autopairs',
+table.insert(M, {'windwp/nvim-autopairs', after = 'nvim-treesitter',
   config = function ()
     local npairs = require('nvim-autopairs')
     npairs.setup {
@@ -59,7 +60,8 @@ table.insert(M, {'windwp/nvim-autopairs',
 vim.g.loaded_matchit = 1  -- disable matchit
 table.insert(M, 'andymass/vim-matchup')
 
-table.insert(M, {'mg979/vim-visual-multi', keys = '<C-n>',
+table.insert(M, {'mg979/vim-visual-multi',
+  cond = not_vscode, keys = {'<C-n>', '<C-Up>', '<C-Down>'},
   config = function ()
     vim.g.VM_theme = 'iceblue'
     vim.g.VM_maps = {
@@ -80,13 +82,16 @@ table.insert(M, {'tpope/vim-surround',
     })
     vim.cmd('function! ' .. utils.prefix.func .. 'SurroundMarker()\n' ..
       [[
-      let l:start_marker = " \1comments: \1 {{{"
-      let l:end_marker = " }}}"
-      if &cms != ""
-      let l:start_marker = printf(&cms, l:start_marker)
-      let l:end_marker = printf(&cms, l:end_marker)
-      endif
-      return l:start_marker."\n\r\n".l:end_marker
+        let l:start_marker = " \1comments: \1 {{{"
+        let l:end_marker = " }}}"
+        if &ft == "matlab"
+          let l:start_marker = "%".l:start_marker
+          let l:end_marker = "%".l:end_marker
+        elseif &cms =~ ".*%s.*"
+          let l:start_marker = printf(&cms, l:start_marker)
+          let l:end_marker = printf(&cms, l:end_marker)
+        endif
+        return l:start_marker."\n\r\n".l:end_marker
       endfunction
       ]]
     )
@@ -109,9 +114,9 @@ table.insert(M, {'chaoren/vim-wordmotion',
     nvremap_key('ge',  '<Plug>WordMotion_ge')
   end})
 
-table.insert(M, {'arthurxavierx/vim-caser',
+table.insert(M, {'arthurxavierx/vim-caser', after = 'which-key.nvim',
   config = function ()
-    local wk = MUtils.get_which_key()
+    local wk = require'which-key'
     vim.g.caser_no_mappings = 1
     local function make_caser_mappings(prefix, table)
       for _, mapping in ipairs(table) do
@@ -135,13 +140,12 @@ table.insert(M, {'arthurxavierx/vim-caser',
     }
     make_caser_mappings('<leader>k', caser_table)
     wk.register({k = {name = 'Caser Coersion'}}, {prefix='<leader>'})
+    wk.register({k = {name = 'Caser Coersion'}}, {prefix='<leader>', mode='v'})
   end})
 
 table.insert(M, 'hrsh7th/vim-eft')
 
 table.insert(M, 'notomo/gesture.nvim')
-
-table.insert(M, {'hrsh7th/vim-vsnip', 'rafamadriz/friendly-snippets', cond = not_vscode})
 
 table.insert(M, {'folke/which-key.nvim',
   config = function ()
