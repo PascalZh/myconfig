@@ -153,7 +153,7 @@ table.insert(M, {
     local sumneko_binary = sumneko_root_path .. '/' .. system_name .. '/lua-language-server'
 
     local lua_globals = {'vim'}
-    for k, v in pairs(require('config.inject_env')) do
+    for k, v in pairs(require('config.utils').map_helpers) do
       table.insert(lua_globals, k)
     end
 

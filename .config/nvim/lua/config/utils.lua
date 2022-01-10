@@ -46,6 +46,26 @@ function M.remap_key(modes, lhs, rhs, opts)
   end
 end
 
+M.map_helpers = {map_key = M.map_key, remap_key = M.remap_key}
+
+function M.map_helpers.imap_key(lhs, rhs, opts) M.map_key('i', lhs, rhs, opts) end
+function M.map_helpers.nmap_key(lhs, rhs, opts) M.map_key('n', lhs, rhs, opts) end
+function M.map_helpers.vmap_key(lhs, rhs, opts) M.map_key('v', lhs, rhs, opts) end
+function M.map_helpers.xmap_key(lhs, rhs, opts) M.map_key('v', lhs, rhs, opts) end
+function M.map_helpers.omap_key(lhs, rhs, opts) M.map_key('o', lhs, rhs, opts) end
+function M.map_helpers.nvmap_key(lhs, rhs, opts) M.map_key({'n', 'v'}, lhs, rhs, opts) end
+function M.map_helpers.nvomap_key(lhs, rhs, opts) M.map_key({'n', 'v', 'o'}, lhs, rhs, opts) end
+function M.map_helpers.lmap_key(lhs, rhs, opts) M.map_key('l', lhs, rhs, opts) end
+
+function M.map_helpers.iremap_key(lhs, rhs, opts) M.remap_key('i', lhs, rhs, opts) end
+function M.map_helpers.nremap_key(lhs, rhs, opts) M.remap_key('n', lhs, rhs, opts) end
+function M.map_helpers.vremap_key(lhs, rhs, opts) M.remap_key('v', lhs, rhs, opts) end
+function M.map_helpers.xremap_key(lhs, rhs, opts) M.remap_key('v', lhs, rhs, opts) end
+function M.map_helpers.oremap_key(lhs, rhs, opts) M.remap_key('o', lhs, rhs, opts) end
+function M.map_helpers.nvremap_key(lhs, rhs, opts) M.remap_key({'n', 'v'}, lhs, rhs, opts) end
+function M.map_helpers.nvoremap_key(lhs, rhs, opts) M.remap_key({'n', 'v', 'o'}, lhs, rhs, opts) end
+function M.map_helpers.lremap_key(lhs, rhs, opts) M.remap_key('l', lhs, rhs, opts) end
+
 ---------------------------------- MUtils --------------------------------------
 
 MUtils.toggle_background = function ()
@@ -107,4 +127,3 @@ function MUtils.highlight.on_yank(args)
 end
 
 return M
-

@@ -1,6 +1,13 @@
-local env = require('config.inject_env')
-setmetatable(env, {__index = _G})
-setfenv(1, env)
+local utils = require('config.utils')
+
+local install_path = vim.fn.stdpath('data')..'/site/pack/packer/start/packer.nvim'
+if vim.fn.empty(vim.fn.glob(install_path)) > 0 then
+  MUtils.packer_bootstrap = vim.fn.system({'git', 'clone', '--depth', '1', 'https://github.com/wbthomason/packer.nvim', install_path})
+end
+
+utils.autocmd('packer_user_config', {
+  'BufWritePost plugins.lua echo "packer.nvim is compiling..." | source <afile> | PackerCompile'
+})
 
 local packer = require('packer')
 

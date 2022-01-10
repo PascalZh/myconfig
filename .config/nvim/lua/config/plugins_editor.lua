@@ -116,7 +116,7 @@ table.insert(M, {
   'chaoren/vim-wordmotion',
   config = function()
     vim.g.wordmotion_nomap = 1
-    local nvremap_key = require'config.inject_env'.nvremap_key
+    local nvremap_key = require'config.utils'.map_helpers.nvremap_key
     nvremap_key('w', '<Plug>WordMotion_w')
     nvremap_key('e', '<Plug>WordMotion_e')
     nvremap_key('b', '<Plug>WordMotion_b')
