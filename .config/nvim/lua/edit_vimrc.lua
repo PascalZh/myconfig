@@ -1,4 +1,4 @@
-local Animate = require('animation').Animate
+local animation = require('animation')
 
 local globpath = vim.fn.globpath
 local p = vim.fn.stdpath('config')
@@ -34,27 +34,25 @@ end
 -- local set_fold_cmd = [[setlocal foldexpr=MyFoldExpr(v:lnum)
 -- setlocal foldmethod=expr
 -- ]]
-local set_fold_cmd = ""
 
 -- Lessons:
 -- 1. don't run tabedit and 0split in just one cmd, seperate them into two cmds.
 -- 2. use redraw to increase stability
 
-local anim = Animate:new()
-  :cmd('e '..files[8])
-
-  :cmd('tabedit '..files[1])
-  :vsplit(0.5, files[2])
-  :split(0.5, files[3])
-
-  :cmd('tabedit '..files[4]):cmd(set_fold_cmd)
-  :vsplit(0.5, files[5]):cmd(set_fold_cmd)
-  :split(0.5, files[6]):cmd(set_fold_cmd)
-  :cmd('wincmd h')
-  :split(0.5, files[7]):cmd(set_fold_cmd)
-
 local function edit_vimrc()
-  anim:start()
+
+  local duration = 200
+  animation.run(function ()
+    vim.cmd('tabedit '..files[1])
+    animation.co.vsplit(0.5, files[2], '', {duration = duration})
+    animation.co.split(0.5, files[3], '', {duration = duration})
+    vim.cmd('tabedit '..files[4])
+    animation.co.vsplit(0.5, files[5], '', {duration = duration*2/3})
+    animation.co.split(0.5, files[6], '', {duration = duration*2/3})
+    vim.cmd('wincmd h')
+    animation.co.split(0.5, files[7], '', {duration = duration*2/3})
+  end)
+
 end
 
 return {

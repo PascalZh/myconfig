@@ -12,8 +12,9 @@ end
 
 local M = {DEBUG = false}
 
+-- helper local functions {{{
 ---@return number Time in milliseconds
-local function time()
+local function time_ms()
   return vim.loop.hrtime() / 1000000
 end
 
@@ -23,129 +24,81 @@ local function dprint(str)
   end
 end
 
-local prev_state = 0
-local function dprint_state(elapsed_time, next_state)
+local function dprint_state(elapsed_time, cur_state, next_state)
   if (M.DEBUG) then
-    dprint(string.format('{ elapsed_time, next_state, diff_state } = {% 6.1f, % 8.2f, % 4.2f }', elapsed_time, next_state, next_state - prev_state))
-    prev_state = next_state
+    dprint(string.format('{ elapsed_time, cur_state, next_state} = {% 6.1f, % 8.2f, % 4.2f }', elapsed_time, cur_state, next_state))
   end
 end
 
--- NOTICE that most methods of Animate will not execute immediately, instead it
--- will push a task to the object. Animate:start will start the task queue from
--- start.
-local Animate = {}
-
-function Animate:new()
-  local obj = {
-    task_idx = 1,
-    task_queue = {},
-    epsilon = 0.01
-  }
-  self.__index = self
-  setmetatable(obj, self)
-  return obj
-end
-
-function Animate:start()
-  if (#self.task_queue > 0) then
-    self.task_idx = 1
-    self.task_queue[self.task_idx]()
+local function extend_opt(o)
+  o = o or {}
+  if (o.ease_func) then
+    if (type(o.ease_func) == 'string') then
+      o.ease_func = M.ease_funcs[o.ease_func]
+    elseif (type(o.ease_func) == 'function') then
+      o.ease_func = o.ease_func
+    end
+  else
+    o.ease_func = M.ease_funcs[vim.g.animation_ease_func]
   end
+  o.duration = o.duration or vim.g.animation_duration
+  o.fps = o.fps or vim.g.animation_fps
+  return o
 end
 
--- Any task must call _run_next_task at the end
-function Animate:_run_next_task()
-  self.task_idx = self.task_idx + 1
-  if (self.task_idx <= #self.task_queue) then
-    self.task_queue[self.task_idx]()
-  end
+-- }}}
+
+function M.run(func)
+  local co = coroutine.wrap(func)
+  co()
 end
+
+M.co = {} -- co module contains functions that should be called in a coroutine
 
 ---@param update fun(cur_state:number, next_state:number):number A function that update current state and do the actual 'animation'
----@param options table Support ease_func, duration and delay options
-function Animate:animate(start_state, end_state, update, options)
-  local options = options or {}
+---@param anim_opt table Support ease_func, duration and delay options
+function M.co.animate(start_state, end_state, update, anim_opt)
+  anim_opt = extend_opt(anim_opt)
+  local duration = anim_opt.duration
+  local ease_func = anim_opt.ease_func
+  local interval = 1000 / anim_opt.fps
+  local delay = anim_opt.delay or interval
 
-  local function task()
-    local duration = options.duration or vim.g.animation_duration
-    local ease_func
-    if (options.ease_func) then
-      if (type(options.ease_func) == 'string') then
-        ease_func = Animate.ease_funcs[options.ease_func]
-      elseif (type(options.ease_func) == 'function') then
-        ease_func = options.ease_func
-      end
+  local co = coroutine.running()
+
+  local timer = vim.loop.new_timer()
+
+  dprint(string.format('duration = %s, start_state = %s, end_state = %s', duration, start_state, end_state))
+
+  local delta_state = end_state - start_state
+  local cur_state = start_state
+  local start_time
+  timer:start(delay, interval, vim.schedule_wrap(function ()
+    if (not start_time) then  -- first iteration, save the start_time
+      start_time = time_ms()
+      return
+    end
+
+    local elapsed_time = time_ms() - start_time
+
+    -- stop the timer and start the next task in the queue
+    if (elapsed_time > duration) then
+      timer:stop()
+
+      update(cur_state, end_state)  -- ensure end_state is reached
+
+      coroutine.resume(co)
     else
-      ease_func = Animate.ease_funcs[vim.g.animation_ease_func]
-    end
-    if (type(start_state) == 'function') then
-      start_state = start_state()
-    end
-    if (type(end_state) == 'function') then
-      end_state = end_state()
-    end
-
-    local timer = vim.loop.new_timer()
-    local delta_state = end_state - start_state
-    local cur_state = start_state
-    local interval = 1000 / vim.g.animation_fps
-    local delay = options.delay or interval
-    dprint(string.format('duration = %s, start_state = %s, end_state = %s', duration, start_state, end_state))
-
-    local start_time
-    timer:start(delay, interval, vim.schedule_wrap(function ()
-      if (not start_time) then
-        start_time = time()
-        return
-      end
-
-      local elapsed_time = time() - start_time
-      -- stop the timer and start the next task in the queue
-      if (elapsed_time > duration) then
-        timer:stop()
-
-        if (math.abs(cur_state - end_state) > self.epsilon) then
-          update(cur_state, end_state)  -- ensure end_state is reached
-        end
-
-        self:_run_next_task()
-      end
-
       -- calcute next_state corresponds to current time, and update
       local next_state = ease_func(delta_state, duration, elapsed_time) + start_state
-      dprint_state(elapsed_time, next_state)
+
+      dprint_state(elapsed_time, cur_state, next_state)
 
       cur_state = update(cur_state, next_state)
-    end))
-  end
+    end
+  end))
 
-  self.task_queue[#self.task_queue+1] = task
-  return self
-end
-
-function Animate:call_func(func, options)
-  options = options or {}
-
-  local function func_wrapper()
-    func()
-    self:_run_next_task()
-  end
-
-  local task
-
-  if (options.delay) then
-    task = function () vim.defer_fn(func_wrapper, options.delay) end
-  else
-    task = func_wrapper
-  end
-
-  self.task_queue[#self.task_queue+1] = task
-  return self
-end
-
-function Animate:cmd(cmd, options)
-  return self:call_func(function () vim.cmd(cmd) end, options)
+  coroutine.yield()
 end
 
 -- Predefined 'update' functions {{{
@@ -181,112 +134,90 @@ local resize_update = make_resize_update("resize ")
 local vresize_update = make_resize_update("vertical resize ")
 -- }}}
 
--- Common api {{{
-function Animate:scroll_up(delta, options)
-  return self:animate(0, delta, scroll_up_update, options)
+-- Common api
+
+function M.co.scroll_up(delta, anim_opt)
+  M.co.animate(0, delta, scroll_up_update, anim_opt)
 end
 
-function Animate:scroll_down(delta, options)
-  return self:animate(0, delta, scroll_down_update, options)
+function M.co.scroll_down(delta, anim_opt)
+  M.co.animate(0, delta, scroll_down_update, anim_opt)
 end
 
-function Animate:resize_delta(delta, options)
-  return self:animate(
-    function () return vim.fn.winheight(0) end,
-    function () return vim.fn.winheight(0) +
-      ((type(delta) == 'function') and delta() or delta) end,
-    resize_update,
-    options
-  )
+function M.co.resize_delta(delta, anim_opt)
+  M.co.animate(vim.fn.winheight(0), vim.fn.winheight(0) + delta, resize_update, anim_opt)
 end
 
--- v means vertically
-function Animate:vresize_delta(delta, options)
-  return self:animate(
-    function () return vim.fn.winwidth(0) end,
-    function () return vim.fn.winwidth(0) +
-      ((type(delta) == 'function') and delta() or delta) end,
-    vresize_update,
-    options
-  )
+function M.co.vresize_delta(delta, anim_opt)
+  M.co.animate(vim.fn.winwidth(0), vim.fn.winwidth(0) + delta, vresize_update, anim_opt)
 end
 
 -- @param size float A percentage of the view width or height
 -- @param file string Default: ''.
 -- @param direction string Could be 'leftabove', 'rightbelow', ... see :leftabove in the help of vim. Default: ''.
-function Animate:split(size, file, direction, options)
-  self:cmd((direction or '')..'0new | redraw')
-    :resize_delta(function () return math.floor(vim.o.lines * (size or 0.5)) - 2 end, options)
-  if file then self:cmd('e '..file..' | redraw') end
-  return self
+function M.co.split(size, file, direction, anim_opt)
+  vim.cmd((direction or '')..' 0sp '..(file or ''))
+  M.co.resize_delta(math.floor(vim.o.lines * (size or 0.5)) - 2, anim_opt)
+  vim.cmd('redraw')
 end
 
 -- @param size float A percentage of the view width or height
 -- @param file string Default: ''.
 -- @param direction string Could be 'leftabove', 'rightbelow', ... see :leftabove in the help of vim. Default: ''.
-function Animate:vsplit(size, file, direction, options)
-  self:cmd((direction or '')..'vertical 0new | redraw')
-    :vresize_delta(function () return math.floor(vim.o.columns * (size or 0.5)) end, options)
-  if file then self:cmd('e '..file..' | redraw') end
-  return self
+function M.co.vsplit(size, file, direction, anim_opt)
+  vim.cmd((direction or '')..' 0vs '..(file or ''))
+  M.co.vresize_delta(math.floor(vim.o.columns * (size or 0.5)) - 2, anim_opt)
+  vim.cmd('redraw')
 end
 
--- }}}
+function M.scroll_up()
+  M.run(function ()
+    M.co.scroll_up(vim.fn.winheight(0))
+  end)
+end
+
+function M.scroll_up_half()
+  M.run(function ()
+    M.co.scroll_up(vim.fn.winheight(0)/2)
+  end)
+end
+
+function M.scroll_down() M.run(function () M.co.scroll_down(vim.fn.winheight(0)) end) end
+
+function M.scroll_down_half() M.run(function () M.co.scroll_down(vim.fn.winheight(0)/2) end) end
+
+function M.split(size, file, direction, anim_opt)
+  M.run(function () M.co.split(size, file, direction, anim_opt) end)
+end
+
+function M.vsplit(size, file, direction, anim_opt)
+  M.run(function () M.co.vsplit(size, file, direction, anim_opt) end)
+end
 
 -- Ease functions {{{
-
-Animate.ease_funcs = {}
+M.ease_funcs = {}
 
 ---@param y_ number end state - start state
 ---@param t_ number duration
 ---@param t  number current time
-function Animate.ease_funcs.linear(y_, t_, t)
+function M.ease_funcs.linear(y_, t_, t)
   return y_ * (t / t_)
 end
 
-function Animate.ease_funcs.quad(y_, t_, t)
+function M.ease_funcs.quad(y_, t_, t)
   local u = t / t_
   return - y_ * u * (u - 2)
 end
 
-function Animate.ease_funcs.cubic(y_, t_, t)
+function M.ease_funcs.cubic(y_, t_, t)
   local v = t / t_ - 1
   return y_ * (v * v * v + 1)
 end
 
-function Animate.ease_funcs.sine(y_, t_, t)
+function M.ease_funcs.sine(y_, t_, t)
   local u = t / t_
   return y_ * 0.5 * (1 - math.cos(math.pi * u))
 end
-
 -- }}}
 
--- Predefined Animate instances and module functions{{{
-local anim_scroll_up_half = Animate:new()
-  :scroll_up(function () return vim.fn.winheight(0) / 2 end)
-local anim_scroll_up = Animate:new()
-  :scroll_up(function () return vim.fn.winheight(0) end)
-
-local anim_scroll_down_half = Animate:new()
-  :scroll_down(function () return vim.fn.winheight(0) / 2 end)
-local anim_scroll_down = Animate:new()
-  :scroll_down(function () return vim.fn.winheight(0) end)
-
-function M.scroll_up_half()
-  anim_scroll_up_half:start()
-end
-function M.scroll_up()
-  anim_scroll_up:start()
-end
-
-function M.scroll_down_half()
-  anim_scroll_down_half:start()
-end
-function M.scroll_down()
-  anim_scroll_down:start()
-end
-
--- }}}
-
-M.Animate = Animate
 return M
