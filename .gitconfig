@@ -3,7 +3,11 @@
 	email = 1315521905@qq.com
 [core]
   editor = nvim
+  autocrlf = input
 [alias]
   lslog = log --graph --oneline --decorate
 [credential]
 	helper = store
+
+[init]
+	defaultBranch = main

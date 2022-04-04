@@ -6,7 +6,7 @@ if vim.fn.empty(vim.fn.glob(install_path)) > 0 then
 end
 
 utils.autocmd('packer_user_config', {
-  'BufWritePost plugins.lua echo "packer.nvim is compiling..." | source <afile> | PackerCompile'
+  'BufWritePost plugins.lua source <afile> | PackerCompile | echo "packer.nvim is compiling..."'
 })
 
 local packer = require('packer')

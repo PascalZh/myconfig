@@ -1,7 +1,8 @@
 # daily use
 
 # :terminal :! in neovim need the following environment set to work normally.
-set -x LC_ALL "en_US.UTF-8"
+set -gx LC_ALL "en_US.UTF-8"
+set -gx IDF_PATH "/home/laozhang/esp/esp-idf"
 bash /opt/ros/noetic/setup.bash
 
 function P_wsl_ip
@@ -12,25 +13,34 @@ function P_set_proxy
   set -gx http_proxy http://(P_wsl_ip):10809
 end
 
+function P_set_vcxsrv
+  set -gx DISPLAY (cat /etc/resolv.conf | grep nameserver | awk '{print $2}'):0
+end
+
+#P_set_vcxsrv
 P_set_proxy
 #set -x http_proxy http://192.168.31.88:8889
 #set -x https_proxy https://192.168.31.88:8888
-#set -a -x PATH /usr/local/lib/nodejs/node-v12.16.0-linux-x64/bin
-set -a -x PATH $HOME/.cargo/bin
+set -a -gx PATH $HOME/julia-1.7.2/bin
+set -gx JULIA_NUM_THREADS auto
+set -a -gx PATH $HOME/.cargo/bin
 
 if status --is-interactive
-  alias ll 'ls -alhF'
-  alias la 'ls -A'
-  alias l 'ls -CF'
+  #alias ll 'ls -alhF'
+  #alias la 'ls -A'
+  #alias l 'ls -CF'
+  alias ls 'exa'
+  alias ll 'exa --long -F -a'
+  alias l 'exa -F'
+  alias rm 'rm -i'
   # -a: --add; -g: --global
   abbr -a -g vim 'nvim'
   abbr -a -g pls 'sudo'
-  abbr -a -g rm 'rm -i'
   abbr -a -g t 'tree -h'
 
   abbr -a -g gs 'git status'
   abbr -a -g ga 'git add'
-  abbr -a -g gco 'git checkout --cached'
+  abbr -a -g gco 'git checkout'
   abbr -a -g gcm 'git commit -m'
   abbr -a -g gl 'git lslog'
   abbr -a -g gd 'git diff'
@@ -57,26 +67,27 @@ if status --is-interactive
   ~/program_files/leela-zero/build/best-network \
   --cpu-only --gtp --noponder -t 4 -p 1'
 
+  alias get_idf 'source $HOME/esp/esp-idf/export.fish'
 end
 
 function switch_wallpaper
   python3 -c \
   '
-  import argparse
-  import os
+import argparse
+import os
 
-  parser = argparse.ArgumentParser()
-  parser.add_argument("-p", "--period", type=int,
-  help="pass to watch -n PERIOD ...")
-  parser.add_argument("-s", "--stop", action="store_true",
-  help="stop the watch -n PERIOD ... process")
+parser = argparse.ArgumentParser()
+parser.add_argument("-p", "--period", type=int,
+help="pass to watch -n PERIOD ...")
+parser.add_argument("-s", "--stop", action="store_true",
+help="stop the watch -n PERIOD ... process")
 
-  args = parser.parse_args()
+args = parser.parse_args()
 
-  if args.period:
-    os.system(f"watch -n {args.period} feh --randomize --bg-fill ~/Pictures/wallpaper >/dev/null &")
-    elif args.stop:
-    os.system("ps -aux | grep \"watch -n [0-9]* feh --randomize --bg-fill\" | awk \"{print \$2}\" | xargs kill")
+if args.period:
+  os.system(f"watch -n {args.period} feh --randomize --bg-fill ~/Pictures/wallpaper >/dev/null &")
+elif args.stop:
+  os.system("ps -aux | grep \"watch -n [0-9]* feh --randomize --bg-fill\" | awk \"{print \$2}\" | xargs kill")
 else:
   os.system("feh --randomize --bg-fill ~/Pictures/wallpaper")
   ' $argv
@@ -151,8 +162,11 @@ function P_install_my_tools
 
   # Some useful command
   P_check_installed neofetch
+  P_check_installed screenfetch
   P_check_installed ack
   P_check_installed ncdu
+  P_check_installed cloc          # count line of codes
+  # btop          # replacement for htop
 
   # C++
 end
@@ -174,9 +188,11 @@ function P_compdb
 end
 
 function P_show_cheatsheet
-  echo "# Cheatsheet when I use ubuntu.
+  echo "# Cheatsheet of Linux system
 ### disable bold font in gnome-terminal, try tab to complete the long code below
-> dconf write /org/gnome/terminal/legacy/profiles:/:a372873d-7fcd-4f50-9566-6aa3c0870ea8/allow-bold  false
+```bash
+dconf write /org/gnome/terminal/legacy/profiles:/:a372873d-7fcd-4f50-9566-6aa3c0870ea8/allow-bold  false
+```
 
 "
 end

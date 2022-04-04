@@ -47,7 +47,7 @@ table.insert(M, {
       auto_close = true,
       hijack_cursor = true,
       update_focused_file = {
-        enable = true,
+        enable = false,
         update_cwd = false,
         ignore_list = {}
       }

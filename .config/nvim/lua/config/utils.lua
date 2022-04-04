@@ -13,7 +13,7 @@ M.prefix = {
 }
 
 function M.autocmd(group, cmds, clear)
-  clear = clear == nil and false or clear
+  clear = clear == nil and true or clear
   if type(cmds) == 'string' then cmds = {cmds} end
   cmd('augroup ' .. M.prefix.autocmd .. group)
   if clear then
@@ -85,7 +85,7 @@ MUtils.im_select = {
 MUtils.im_select.insert_leave_pre = function ()
   local Job = require'plenary.job'
 
-  MUtils.im_select.cancel_switch_to_normal_imkey_job = false
+  MUtils.im_select.is_insert_mode = false
 
   Job:new({
     command = shell,
@@ -94,7 +94,9 @@ MUtils.im_select.insert_leave_pre = function ()
 
       MUtils.im_select.last_imkey = return_val
 
-      if not MUtils.im_select.cancel_switch_to_normal_imkey_job then
+      -- If one leave the insert mode and quickly reenter the insert mode, then
+      -- it is unneccessary to switch to normal_imkey input method.
+      if not MUtils.im_select.is_insert_mode then
         Job:new({
           command = shell,
           args = {shellcmdflag, 'im-select.exe '..MUtils.im_select.opt.normal_imkey}
@@ -108,7 +110,7 @@ end
 MUtils.im_select.insert_enter = function ()
   local Job = require'plenary.job'
 
-  MUtils.im_select.cancel_switch_to_normal_imkey_job = true
+  MUtils.im_select.is_insert_mode = true
 
   Job:new({
     command = shell,
@@ -123,6 +125,14 @@ MUtils.highlight = {}
 function MUtils.highlight.on_yank(args)
   if (vim.b.visual_multi == nil) then
     vim.highlight.on_yank(args)
+  end
+end
+
+function MUtils.show_loaded_plugins()
+  for name, v in pairs(packer_plugins) do
+    if (v.loaded) then
+      print(name)
+    end
   end
 end
 

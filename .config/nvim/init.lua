@@ -129,6 +129,8 @@ vim.opt.smartcase = true
 -- }}}
 
 vim.cmd [[command! Zenmode execute "Goyo | Limelight"]]
+vim.cmd [[command! SP lua require'animation'.split()]]
+vim.cmd [[command! VS lua require'animation'.vsplit()]]
 
 -------------------------------- for neovide -----------------------------------
 vim.cmd[[

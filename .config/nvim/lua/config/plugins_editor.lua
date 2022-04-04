@@ -1,6 +1,8 @@
 local M = {}
 local not_vscode = function() return not vim.g.vscode end
 
+table.insert(M, {'chamindra/marvim'})
+
 table.insert(M, {
   'windwp/nvim-autopairs',
   after = 'nvim-treesitter',
@@ -117,10 +119,6 @@ table.insert(M, {
   config = function()
     vim.g.wordmotion_nomap = 1
     local nvremap_key = require'config.utils'.map_helpers.nvremap_key
-    nvremap_key('w', '<Plug>WordMotion_w')
-    nvremap_key('e', '<Plug>WordMotion_e')
-    nvremap_key('b', '<Plug>WordMotion_b')
-    nvremap_key('ge', '<Plug>WordMotion_ge')
   end
 })
 
