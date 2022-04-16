@@ -3,7 +3,7 @@
 # :terminal :! in neovim need the following environment set to work normally.
 set -gx LC_ALL "en_US.UTF-8"
 set -gx IDF_PATH "/home/laozhang/esp/esp-idf"
-bash /opt/ros/noetic/setup.bash
+#bash /opt/ros/noetic/setup.bash
 
 function P_wsl_ip
   echo (ip route | grep default | awk '{print $3}')
@@ -13,17 +13,20 @@ function P_set_proxy
   set -gx http_proxy http://(P_wsl_ip):10809
 end
 
-function P_set_vcxsrv
+function P_set_display_vcxsrv
   set -gx DISPLAY (cat /etc/resolv.conf | grep nameserver | awk '{print $2}'):0
 end
 
-#P_set_vcxsrv
+function P_set_display_wsl
+  set -gx DISPLAY :0
+end
+
 P_set_proxy
-#set -x http_proxy http://192.168.31.88:8889
-#set -x https_proxy https://192.168.31.88:8888
 set -a -gx PATH $HOME/julia-1.7.2/bin
 set -gx JULIA_NUM_THREADS auto
 set -a -gx PATH $HOME/.cargo/bin
+#set -a -x PATH /usr/local/lib/nodejs/node-v12.16.0-linux-x64/bin
+set -a -gx PATH $HOME/bin
 
 if status --is-interactive
   #alias ll 'ls -alhF'
@@ -131,7 +134,7 @@ function P_install_my_tools
 
     if grep -w "setup_nvim" /tmp/dialogtmp
       python3 -m pip install --user --upgrade pynvim
-      nvim
+      nvim +q
     end
 
     if grep -w "z_lua_for_fish" /tmp/dialogtmp
@@ -167,6 +170,7 @@ function P_install_my_tools
   P_check_installed ncdu
   P_check_installed cloc          # count line of codes
   # btop          # replacement for htop
+  P_check_installed dos2unix
 
   # C++
 end
