@@ -27,6 +27,7 @@ set -gx JULIA_NUM_THREADS auto
 set -a -gx PATH $HOME/.cargo/bin
 #set -a -x PATH /usr/local/lib/nodejs/node-v12.16.0-linux-x64/bin
 set -a -gx PATH $HOME/bin
+set -a -gx PATH $HOME/.local/bin
 
 if status --is-interactive
   #alias ll 'ls -alhF'
@@ -36,6 +37,8 @@ if status --is-interactive
   alias ll 'exa --long -F -a'
   alias l 'exa -F'
   alias rm 'rm -i'
+  alias cat 'bat --paging=never'
+
   # -a: --add; -g: --global
   abbr -a -g vim 'nvim'
   abbr -a -g pls 'sudo'
@@ -114,9 +117,8 @@ end
 
 function P_install_my_tools
 
-  P_check_installed dialog
-  P_check_installed curl
-  P_check_installed python3-pip
+  P_install dialog
+  P_install curl
 
   dialog --checklist "Install some common softwares" 0 0 5 \
   "get_nvim"        "get newest NVIM nightly(unstable) and put it in /usr/local/bin"         off \
@@ -133,12 +135,18 @@ function P_install_my_tools
     end
 
     if grep -w "setup_nvim" /tmp/dialogtmp
+      # install pip via get-pip.py
+      if not which pip 1>/dev/null
+        curl -sSL https://bootstrap.pypa.io/get-pip.py -o ~/get-pip.py
+        sudo python3 ~/get-pip.py
+      end
+
       python3 -m pip install --user --upgrade pynvim
       nvim +q
     end
 
     if grep -w "z_lua_for_fish" /tmp/dialogtmp
-      P_check_installed lua5.3
+      P_install lua5.3
       if test ! -d ~/.config/fish/conf.d
         mkdir ~/.config/fish/conf.d
       end
@@ -154,36 +162,55 @@ function P_install_my_tools
     end
 
     if grep -w "gui" /tmp/dialogtmp
-      P_check_installed feh
-      P_check_installed zathura  ; P_check_installed rofi
+      P_install feh
+      P_install zathura  ; P_install rofi
 
-      P_check_installed bspwm    ; P_check_installed sxhkd
-      P_check_installed compton
+      P_install bspwm    ; P_install sxhkd
+      P_install compton
     end
 
   end
 
   # Some useful command
-  P_check_installed neofetch
-  P_check_installed screenfetch
-  P_check_installed ack
-  P_check_installed ncdu
-  P_check_installed cloc          # count line of codes
+  P_install neofetch
+  #P_install screenfetch
+  P_install ack
+  P_install ncdu
+  P_install cloc          # count line of codes
   # btop          # replacement for htop
-  P_check_installed dos2unix
+  P_install dos2unix
+
+  # Useful new tools
+  P_install fd-find
+  P_install tldr
+  P_install bat
+
+  # Install delta
+  if test -z (apt -qq list delta 2>/dev/null)
+    curl -fLo ~/git-delta_0.12.1_amd64.deb https://github.com/dandavison/delta/releases/download/0.12.1/git-delta_0.12.1_amd64.deb
+    sudo dpkg -i ~/git-delta_0.12.1_amd64.deb
+  end
+  # Install btop
+  if not which btop 1>/dev/null
+    git clone https://github.com/aristocratos/btop.git ~/btop
+    cd ~/btop
+    sudo apt install coreutils sed git build-essential gcc-10 g++-10
+    make CXX=g++-10
+    sudo make install
+  end
 
   # C++
 end
 
-function P_check_installed
+function P_install
   if test -z $argv[1]
     return
   end
-  set info (apt -qq list $argv[1])
-  echo -e "P_check_installed: \033[34mapt -qq list $argv[1]\033[0m ==> $info"
-  if echo $info | grep -v installed > /dev/null
+  set info (apt -qq list $argv[1] 2>/dev/null)
+  echo -e "P_install:\033[32m apt -qq list $argv[1]\033[0m ==> $info"
+  if test -z $info
     echo -e "\033[33mInstalling $argv[1]\033[0m"
-    sudo apt install $argv[1]
+    sudo apt install -y $argv[1]
   end
 end
 

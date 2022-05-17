@@ -1,13 +1,25 @@
 [user]
-	name = PascalZh
-	email = 1315521905@qq.com
+  name = PascalZh
+  email = 1315521905@qq.com
 [core]
   editor = nvim
-	quotepath = false
-	autocrlf = input
+  quotepath = false
+  autocrlf = input
+  pager = delta
 [alias]
   lslog = log --graph --oneline --decorate
 [credential]
-	helper = store
+  helper = store
 [init]
-	defaultBranch = main
+  defaultBranch = main
+[interactive]
+  diffFilter = delta --color-only
+[delta]
+  navigate = true  # use n and N to move between diff sections
+  side-by-side = true
+  line-numbers = true
+  ;syntax-theme = Solarized
+[merge]
+  conflictstyle = diff3
+[diff]
+  colorMoved = default
