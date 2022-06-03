@@ -16,7 +16,7 @@ end
 vim.g.mapleader = " "
 
 -- map * to search selected text in visual mode
-xmap_key('*', [[y/\V<C-R>=escape(escape(@",'\'),'/')<CR><CR>]])
+--xmap_key('*', [[y/\V<C-R>=escape(escape(@",'\'),'/')<CR><CR>]])
 
 -- DO NOT USE <Cmd>...<CR>
 xmap_key('X', ':call exchange_selected_text#delete()<CR>', silent)
@@ -97,7 +97,7 @@ nvmap_key('<leader>tt', ':Tabularize /')
 nvmap_key('<leader>ta', ':Tabularize argument_list<CR>')
 wk.register({t = {name = "Tabularize"}}, {prefix='<leader>'})
 
-nmap_key('<leader>/', '<Plug>NERDCommenterToggle')
+nmap_key('<leader>k', '<Plug>NERDCommenterToggle')
 wk.register({c = {name = "NERD Commenter"}}, {prefix = '<leader>'})
 -- }}}
 
@@ -106,7 +106,7 @@ nmap_key(',e', '<Cmd>NvimTreeToggle<CR>')
 nmap_key(',l', '<Cmd>call quickfix_toggle#QuickfixToggle("ll")<cr>')
 nmap_key(',q', '<Cmd>call quickfix_toggle#QuickfixToggle("qf")<cr>')
 
-nmap_key(',bg', '<Cmd>lua MUtils.toggle_background()<CR>')
+nmap_key(',bg', '', {callback=utils.toggle_background})
 wk.register({b = {name = "Toggle Dark/Light Background"}}, {prefix = ','})
 
 nmap_key(',s', '<Cmd>SymbolsOutline<CR>')
@@ -192,4 +192,8 @@ nremap_key('<leader>bl', ':BufferOrderByLanguage<CR>')
 wk.register({b = {name = "BarBar Buffer Operation"}}, {prefix = '<leader>'})
 -- }}}
 
-utils.autocmd('LaTex', {'FileType tex,markdown imap ;d $'})
+utils.create_autocmd('FileType', {
+  pattern='tex,markdown',
+  callback=function() imap_key(';d', '$') end
+})
+

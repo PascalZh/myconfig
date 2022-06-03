@@ -158,7 +158,7 @@ table.insert(M, {
     table.insert(runtime_path, "lua/?.lua")
     table.insert(runtime_path, "lua/?/init.lua")
 
-    local sumneko_root_path = vim.fn.expand('$HOME/Programs/lua-language-server')
+    local sumneko_root_path = vim.fn.expand('$HOME/programs/lua-language-server')
     local sumneko_binary = sumneko_root_path .. '/' .. system_name .. '/lua-language-server'
 
     local lua_globals = {'vim'}

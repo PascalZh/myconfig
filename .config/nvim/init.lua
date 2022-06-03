@@ -3,15 +3,15 @@ local _, utils = xpcall(function() return require('config.utils') end, print)
 xpcall(function() require('config.plugins') end, print)
 xpcall(function() require('config.mappings') end, print)
 
+vim.g.do_filetype_lua = 1
+vim.g.did_load_filetypes = 0
 vim.g.netrw_browsex_viewer = 'cmd.exe /C start' -- TODO FIXME
 vim.g.netrw_suppress_gx_mesg = 0
 
-utils.autocmd('Term', {'TermOpen * startinsert'})
+utils.create_autocmd('TermOpen', {pattern='*', command='startinsert'})
 
-utils.autocmd('ImSwitch', {
-  'InsertEnter * lua MUtils.im_select.insert_enter()',
-  'InsertLeavePre * lua MUtils.im_select.insert_leave_pre()'
-})
+utils.create_autocmd('InsertEnter', {pattern='*', callback=utils.im_select.insert_enter})
+utils.create_autocmd('InsertLeavePre', {pattern='*', callback=utils.im_select.insert_leave_pre})
 
 vim.opt.autochdir = true
 
@@ -19,6 +19,7 @@ vim.opt.autochdir = true
 vim.opt.termguicolors = true
 -- Color Scheme
 --cmd[[colorscheme NeoSolarized]]
+vim.opt.laststatus = 3
 local color_list = {'dracula', 'NeoSolarized', 'one'}
 if not vim.g.vscode then
   xpcall(function()
@@ -29,19 +30,21 @@ if not vim.g.vscode then
   )
 end
 -- Fold
-vim.opt.foldtext = "repeat('〇 ',v:foldlevel).printf('%3d',v:foldend-v:foldstart+1).' '.getline(v:foldstart).' ...'"
-vim.opt.fillchars = 'fold: '
+vim.opt.foldtext = "repeat('〇 ',v:foldlevel).printf('%3d',v:foldend-v:foldstart+1).' '.getline(v:foldstart).' '"
+vim.opt.fillchars = 'fold:·'
 
-utils.autocmd('FoldSetting', {
-  'FileType vim,racket,javascript,lua '..
-    'setlocal foldmethod=marker | normal zM',
+utils.create_autocmd('FileType', {
+  pattern='vim,racket,javascript,lua',
+  command='setlocal foldmethod=marker | normal zM'
 })
 
-utils.autocmd('TUI', {
-  'FileType haskell,python,vim,cpp,c,javascript,lua '..
-    'setlocal colorcolumn=81 | hi ColorColumn ctermbg=Green guibg=Green',
-  'TextYankPost * '..
-    'lua MUtils.highlight.on_yank {higroup="IncSearch", timeout=222}',
+utils.create_autocmd('FileType', {
+  pattern='haskell,python,vim,cpp,c,javascript,lua',
+  command='setlocal colorcolumn=81 | hi ColorColumn ctermbg=Green guibg=Green'
+})
+utils.create_autocmd('TextYankPost', {
+  pattern='*',
+  callback=function() utils.highlight.on_yank {higroup="IncSearch", timeout=222} end,
 })
 
 -- Common UI settings {{{
@@ -100,14 +103,14 @@ if vim.fn.exists('$WSL_DISTRO_NAME') == 1 then
     cache_enabled = 0,
   }
 end
--- disable the following option because it is slowing down daily commands like
--- s, dd
+-- disable the following option because it is slowing down daily commands like s, dd
 --opt('clipboard', 'unnamedplus') -- always use yanking to paste in other place
 -- }}}
 -- Spell {{{
 vim.opt.spell = false
-utils.autocmd('Spell', {
-  [[FileType markdown,tex setlocal spell]]
+utils.create_autocmd('FileType', {
+  pattern='markdown,tex',
+  callback=function() vim.opt_local.spell = true end
 })
 vim.opt.spelllang = 'en,cjk'
 -- }}}
@@ -119,7 +122,7 @@ vim.opt.virtualedit = 'onemore'
 
 vim.opt.wrap = false
 
-vim.opt.smartindent = true
+--vim.opt.smartindent = true
 
 vim.opt.history = 1000
 

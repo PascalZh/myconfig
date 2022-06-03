@@ -66,7 +66,6 @@ table.insert(M, 'andymass/vim-matchup')
 
 table.insert(M, {
   'mg979/vim-visual-multi',
-  cond = not_vscode,
   keys = {'<C-n>', '<C-Up>', '<C-Down>'},
   config = function()
     vim.g.VM_theme = 'iceblue'
@@ -84,8 +83,13 @@ table.insert(M, {
   config = function()
     local utils = require 'config.utils'
     vim.g['surround_' .. string.byte('m')] = '-- \1\1 {{{\n\r\n-- }}}'
-    utils.autocmd('Surround', { -- use BufEnter instead of FileType here to allow commentstring to be set
-    [[BufEnter * let b:surround_{char2nr("m")} = ]] .. utils.prefix.func .. 'SurroundMarker()'})
+
+    -- use BufEnter instead of FileType here to allow commentstring to be set
+    utils.create_autocmd('BufEnter', {
+      pattern='*',
+      command='let b:surround_{char2nr("m")} = ' .. utils.prefix.func .. 'SurroundMarker()'
+    })
+
     vim.cmd('function! ' .. utils.prefix.func .. 'SurroundMarker()\n' .. [[
         let l:start_marker = " \1comments: \1 {{{"
         let l:end_marker = " }}}"

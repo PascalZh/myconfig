@@ -39,12 +39,10 @@ table.insert(M, {
 
 table.insert(M, {
   'kyazdani42/nvim-tree.lua',
-  cond = not_vscode,
   requires = {'kyazdani42/nvim-web-devicons'},
   cmd = {'NvimTreeFocus', 'NvimTreeToggle'},
   config = function()
     require'nvim-tree'.setup {
-      auto_close = true,
       hijack_cursor = true,
       update_focused_file = {
         enable = false,

@@ -6,8 +6,9 @@ if vim.fn.empty(vim.fn.glob(install_path)) > 0 then
   print("packer.nvim has been installed.")
 end
 
-utils.autocmd('packer_user_config', {
-  'BufWritePost plugins.lua source <afile> | PackerCompile | echo "packer.nvim is compiling..."'
+utils.create_autocmd('BufWritePost', {
+  pattern='plugins.lua',
+  command='source <afile> | PackerCompile | echo "packer.nvim is compiling..."'
 })
 
 local packer = require('packer')
@@ -22,7 +23,7 @@ local packer_config = {
   },
   git = {
     clone_timeout = 5 * 60,
-    --default_url_format = 'https://hub.fastgit.org/%s'
+    default_url_format = 'https://hub.fastgit.org/%s'
   },
 }
 

@@ -37,7 +37,7 @@ if status --is-interactive
   alias ll 'exa --long -F -a'
   alias l 'exa -F'
   alias rm 'rm -i'
-  alias cat 'bat --paging=never'
+  alias cat 'batcat --paging=never'
 
   # -a: --add; -g: --global
   abbr -a -g vim 'nvim'
@@ -186,16 +186,17 @@ function P_install_my_tools
   P_install bat
 
   # Install delta
-  if test -z (apt -qq list delta 2>/dev/null)
+  if not echo (apt -qq list delta 2>/dev/null) | grep installed
     curl -fLo ~/git-delta_0.12.1_amd64.deb https://github.com/dandavison/delta/releases/download/0.12.1/git-delta_0.12.1_amd64.deb
     sudo dpkg -i ~/git-delta_0.12.1_amd64.deb
   end
+
   # Install btop
   if not which btop 1>/dev/null
     git clone https://github.com/aristocratos/btop.git ~/btop
     cd ~/btop
-    sudo apt install coreutils sed git build-essential gcc-10 g++-10
-    make CXX=g++-10
+    sudo apt install coreutils sed git build-essential gcc-11 g++-11
+    make CXX=g++-11
     sudo make install
   end
 
@@ -208,7 +209,7 @@ function P_install
   end
   set info (apt -qq list $argv[1] 2>/dev/null)
   echo -e "P_install:\033[32m apt -qq list $argv[1]\033[0m ==> $info"
-  if test -z $info
+  if not echo $info | grep installed
     echo -e "\033[33mInstalling $argv[1]\033[0m"
     sudo apt install -y $argv[1]
   end
