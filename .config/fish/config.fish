@@ -53,6 +53,7 @@ if status --is-interactive
 
   abbr -a -g sai 'sudo apt install'
   abbr -a -g sar 'sudo apt remove'
+  abbr -a -g sau 'sudo apt update'
 
   abbr -a -g cff 'nvim ~/.config/fish/config.fish'
   abbr -a -g cfui 'nvim ~/.config/bspwm/bspwmrc ~/.config/sxhkd/sxhkdrc ~/.compton.conf'
@@ -123,6 +124,7 @@ function P_install_my_tools
   dialog --checklist "Install some common softwares" 0 0 5 \
   "get_nvim"        "get newest NVIM nightly(unstable) and put it in /usr/local/bin"         off \
   "setup_nvim"      "install pynvim and open nvim, you should run install commands manually" off \
+  "sumneko_lua_lsp" "install sumneko's lua language server protocol"                         off \
   "z_lua_for_fish"  "clone z.lua in ~/.local/share and install z.lua for fish"               off \
   "nodejs"          "show how to install nodejs"                                             off \
   "gui"             "install bspwm, rofi, zathura, feh, sxhkd, compton"                      off \
@@ -169,6 +171,13 @@ function P_install_my_tools
       P_install compton
     end
 
+    if grep -w "sumneko_lua_lsp" /tmp/dialogtmp
+      set package_name lua-language-server-3.5.6-linux-x64.tar.gz
+      curl --location https://github.com/sumneko/lua-language-server/releases/download/3.5.6/$package_name --output ~/$package_name
+      mkdir -p $HOME/.local/share/sumneko_lua_lsp
+      tar xf ~/$package_name --directory=$HOME/.local/share/sumneko_lua_lsp
+    end
+
   end
 
   # Some useful command
@@ -186,7 +195,7 @@ function P_install_my_tools
   P_install bat
 
   # Install delta
-  if not echo (apt -qq list delta 2>/dev/null) | grep installed
+  if not echo (apt -qq list git-delta 2>/dev/null) | grep installed
     curl -fLo ~/git-delta_0.12.1_amd64.deb https://github.com/dandavison/delta/releases/download/0.12.1/git-delta_0.12.1_amd64.deb
     sudo dpkg -i ~/git-delta_0.12.1_amd64.deb
   end
@@ -208,7 +217,7 @@ function P_install
     return
   end
   set info (apt -qq list $argv[1] 2>/dev/null)
-  echo -e "P_install:\033[32m apt -qq list $argv[1]\033[0m ==> $info"
+  echo -e "P_install:\033[32m apt -qq list $argv[1]\033[0m"
   if not echo $info | grep installed
     echo -e "\033[33mInstalling $argv[1]\033[0m"
     sudo apt install -y $argv[1]

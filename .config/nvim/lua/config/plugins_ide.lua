@@ -85,11 +85,11 @@ table.insert(M, {
           i = cmp.mapping.abort(),
           c = cmp.mapping.close(),
         }),
-        ['<CR>'] = cmp.mapping.confirm({ select = true }),
+        --['<CR>'] = cmp.mapping.confirm({ select = true }),
         ["<Tab>"] = cmp.mapping(function(fallback)
-          --if cmp.visible() then
-          --  cmp.select_next_item()
-          if vim.fn['vsnip#available'](1) == 1 then
+          if cmp.visible() then
+            cmp.select_next_item()
+          elseif vim.fn['vsnip#available'](1) == 1 then
             feedkey("<Plug>(vsnip-expand-or-jump)", "")
           elseif has_words_before() then
             cmp.complete()
@@ -98,9 +98,9 @@ table.insert(M, {
           end
         end, {"i", "s"}),
         ["<S-Tab>"] = cmp.mapping(function(fallback)
-          --if cmp.visible() then
-          --  cmp.select_prev_item()
-          if vim.fn['vsnip#jumpable'](-1) == 1 then
+          if cmp.visible() then
+            cmp.select_prev_item()
+          elseif vim.fn['vsnip#jumpable'](-1) == 1 then
             feedkey("<Plug>(vsnip-jump-prev)", "")
           end
         end, {"i", "s"})
@@ -128,7 +128,7 @@ table.insert(M, {
       }
     }))
     -- add a lisp filetype (wrap my-function), FYI: Hardcoded = { "clojure", "clojurescript", "fennel", "janet" }
-    cmp_autopairs.lisp[#cmp_autopairs.lisp + 1] = "racket"
+    --cmp_autopairs.lisp[#cmp_autopairs.lisp + 1] = "racket"
     -- }}}
 
     -- }}}
@@ -141,57 +141,47 @@ table.insert(M, {
   'neovim/nvim-lspconfig',
   after = 'nvim-cmp',
   config = function()
-
     -- sumneko lua lsp {{{
-    local system_name
-    if vim.fn.has("mac") == 1 then
-      system_name = "macOS"
-    elseif vim.fn.has("unix") == 1 then
-      system_name = "Linux"
-    elseif vim.fn.has('win32') == 1 then
-      system_name = "Windows"
-    else
-      print("Unsupported system for sumneko")
-    end
-
     local runtime_path = vim.split(package.path, ';')
     table.insert(runtime_path, "lua/?.lua")
     table.insert(runtime_path, "lua/?/init.lua")
 
-    local sumneko_root_path = vim.fn.expand('$HOME/programs/lua-language-server')
-    local sumneko_binary = sumneko_root_path .. '/' .. system_name .. '/lua-language-server'
+    local sumneko_root_path = vim.fn.expand('$HOME/.local/share/sumneko_lua_lsp')
+    local sumneko_binary = sumneko_root_path .. '/bin' .. '/lua-language-server'
 
     local lua_globals = {'vim'}
     for k, v in pairs(require('config.utils').map_helpers) do
       table.insert(lua_globals, k)
     end
 
-    require'lspconfig'.sumneko_lua.setup {
-      cmd = {sumneko_binary, "-E", sumneko_root_path .. "/main.lua"},
-      settings = {
-        Lua = {
-          runtime = {
-            -- Tell the language server which version of Lua you're using (most likely LuaJIT in the case of Neovim)
-            version = 'LuaJIT',
-            -- Setup your lua path
-            path = runtime_path
-          },
-          diagnostics = {
-            -- Get the language server to recognize the `vim` global
-            globals = lua_globals
-          },
-          workspace = {
-            -- Make the server aware of Neovim runtime files
-            library = vim.api.nvim_get_runtime_file("", true)
-          },
-          -- Do not send telemetry data containing a randomized but unique identifier
-          telemetry = {
-            enable = false
+    if vim.fn.isdirectory(sumneko_root_path) == 1 then
+      require'lspconfig'.sumneko_lua.setup {
+        cmd = {sumneko_binary, "-E", sumneko_root_path .. "/main.lua"},
+        settings = {
+          Lua = {
+            runtime = {
+              -- Tell the language server which version of Lua you're using (most likely LuaJIT in the case of Neovim)
+              version = 'LuaJIT',
+              -- Setup your lua path
+              path = runtime_path
+            },
+            diagnostics = {
+              -- Get the language server to recognize the `vim` global
+              globals = lua_globals
+            },
+            workspace = {
+              -- Make the server aware of Neovim runtime files
+              library = vim.api.nvim_get_runtime_file("", true)
+            },
+            -- Do not send telemetry data containing a randomized but unique identifier
+            telemetry = {
+              enable = false
+            }
           }
-        }
-      },
-      capabilities = MUtils.capabilities
-    }
+        },
+        capabilities = MUtils.capabilities
+      }
+    end
     -- }}}
 
     -- https://github.com/neovim/nvim-lspconfig/blob/master/CONFIG.md#clangd

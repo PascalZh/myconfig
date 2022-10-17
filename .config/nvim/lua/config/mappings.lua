@@ -97,7 +97,8 @@ nvmap_key('<leader>tt', ':Tabularize /')
 nvmap_key('<leader>ta', ':Tabularize argument_list<CR>')
 wk.register({t = {name = "Tabularize"}}, {prefix='<leader>'})
 
-nmap_key('<leader>k', '<Plug>NERDCommenterToggle')
+nvmap_key('<c-/>', '<Plug>NERDCommenterToggle')
+nvmap_key('<c-_>', '<Plug>NERDCommenterToggle') -- see https://vi.stackexchange.com/questions/26611/is-it-possible-to-map-control-forward-slash-with-vim
 wk.register({c = {name = "NERD Commenter"}}, {prefix = '<leader>'})
 -- }}}
 
@@ -191,9 +192,4 @@ nremap_key('<leader>bl', ':BufferOrderByLanguage<CR>')
 
 wk.register({b = {name = "BarBar Buffer Operation"}}, {prefix = '<leader>'})
 -- }}}
-
-utils.create_autocmd('FileType', {
-  pattern='tex,markdown',
-  callback=function() imap_key(';d', '$') end
-})
 
