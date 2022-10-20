@@ -5,7 +5,7 @@ table.insert(M, {
   'mhinz/vim-grepper',
   config = function()
     vim.g.grepper = {
-      tools = {'git', 'ack'},
+      tools = { 'git', 'ack' },
       prompt_text = '$c=> ',
       jump = 0,
       operator = {
@@ -39,26 +39,26 @@ table.insert(M, {
 
 table.insert(M, {
   'kyazdani42/nvim-tree.lua',
-  requires = {'kyazdani42/nvim-web-devicons'},
-  cmd = {'NvimTreeFocus', 'NvimTreeToggle'},
+  requires = { 'kyazdani42/nvim-web-devicons' },
+  cmd = { 'NvimTreeFocus', 'NvimTreeToggle' },
   config = function()
-    require'nvim-tree'.setup {
+    require 'nvim-tree'.setup {
       hijack_cursor = true,
       update_focused_file = {
         enable = false,
         update_cwd = false,
         ignore_list = {}
       },
-      nvim_tree_group_empty = 1,
-      nvim_tree_special_files = {
-        ['README.md'] = true,
-        ['Makefile'] = true,
-        ['MAKEFILE'] = true,
-        ['CMakeLists.txt'] = true
+      view = {
+        adaptive_size = true
+      },
+      renderer = {
+        group_empty = true,
+        highlight_opened_files = "all"
+      },
+      diagnostics = {
+        enable = true
       }
-      -- view = {
-      --  width = 40
-      -- }
     }
   end
 })
@@ -66,4 +66,3 @@ table.insert(M, {
 table.insert(M, 'mbbill/fencview')
 
 return M
-

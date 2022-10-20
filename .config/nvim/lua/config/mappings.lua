@@ -1,16 +1,16 @@
 local utils = require('config.utils')
 local env = utils.map_helpers
-setmetatable(env, {__index = _G})
+setmetatable(env, { __index = _G })
 setfenv(1, env)
 
-local silent = {silent = true}
-local expr = {expr = true}
+local silent = { silent = true }
+local expr = { expr = true }
 
 local wk
-if pcall(function() require'which-key' end) then
-  wk = require'which-key'
+if pcall(function() require 'which-key' end) then
+  wk = require 'which-key'
 else
-  wk = {register = function() end}
+  wk = { register = function() end }
 end
 
 vim.g.mapleader = " "
@@ -23,7 +23,7 @@ xmap_key('X', ':call exchange_selected_text#delete()<CR>', silent)
 iremap_key('j', 'easy_jk#map_j()', expr)
 iremap_key('k', 'easy_jk#map_k()', expr)
 
-imap_key('<C-f>', '<C-g>u<Esc>$[s1z=`]i<C-g>u')  -- Fix previous language mispells
+imap_key('<C-f>', '<C-g>u<Esc>$[s1z=`]i<C-g>u') -- Fix previous language mispells
 
 nmap_key('<C-a>', ':%y+ <CR>')
 
@@ -52,8 +52,8 @@ nmap_key('<Esc>', '<Cmd>nohlsearch<CR>')
 --map_key('n', '<S-Tab>', '<Cmd>bNext<CR>')
 --nmap_key(';;', 'za')
 
-nmap_key('<C-s>',  '<Cmd>w<CR>')
-imap_key('<C-s>',  '<Cmd>w<CR>')
+nmap_key('<C-s>', '<Cmd>w<CR>')
+imap_key('<C-s>', '<Cmd>w<CR>')
 
 vmap_key('<', '<gv')
 vmap_key('>', '>gv')
@@ -95,11 +95,11 @@ nmap_key('<leader>S', '<Cmd>Startify<CR>')
 nvmap_key('<leader>t<space>', ':Tabularize ')
 nvmap_key('<leader>tt', ':Tabularize /')
 nvmap_key('<leader>ta', ':Tabularize argument_list<CR>')
-wk.register({t = {name = "Tabularize"}}, {prefix='<leader>'})
+wk.register({ t = { name = "Tabularize" } }, { prefix = '<leader>' })
 
 nvmap_key('<c-/>', '<Plug>NERDCommenterToggle')
 nvmap_key('<c-_>', '<Plug>NERDCommenterToggle') -- see https://vi.stackexchange.com/questions/26611/is-it-possible-to-map-control-forward-slash-with-vim
-wk.register({c = {name = "NERD Commenter"}}, {prefix = '<leader>'})
+wk.register({ c = { name = "NERD Commenter" } }, { prefix = '<leader>' })
 -- }}}
 
 -- Toggle mappings(begin with ,) {{{
@@ -107,8 +107,8 @@ nmap_key(',e', '<Cmd>NvimTreeToggle<CR>')
 nmap_key(',l', '<Cmd>call quickfix_toggle#QuickfixToggle("ll")<cr>')
 nmap_key(',q', '<Cmd>call quickfix_toggle#QuickfixToggle("qf")<cr>')
 
-nmap_key(',bg', '', {callback=utils.toggle_background})
-wk.register({b = {name = "Toggle Dark/Light Background"}}, {prefix = ','})
+nmap_key(',bg', '', { callback = utils.toggle_background })
+wk.register({ b = { name = "Toggle Dark/Light Background" } }, { prefix = ',' })
 
 nmap_key(',s', '<Cmd>SymbolsOutline<CR>')
 -- }}}
@@ -148,10 +148,10 @@ nmap_key('<leader>dp', ":lua require'dap'.set_breakpoint(nil, nil, vim.fn.input(
 nmap_key('<leader>dr', ":lua require'dap'.repl.open()<CR>")
 nmap_key('<leader>dl', ":lua require'dap'.run_last()<CR>")
 
-wk.register({d = {name = "Debug Adapter Protocol"}}, {prefix = '<leader>'})
+wk.register({ d = { name = "Debug Adapter Protocol" } }, { prefix = '<leader>' })
 -- }}}
 
-wk.register({h = {name = "Gitsigns"}}, {prefix = '<leader>'})
+wk.register({ h = { name = "Gitsigns" } }, { prefix = '<leader>' })
 
 -- BarBar buffer line mappings {{{
 -- Move to previous/next
@@ -190,6 +190,5 @@ nremap_key('<leader>bl', ':BufferOrderByLanguage<CR>')
 -- :BarbarEnable - enables barbar (enabled by default)
 -- :BarbarDisable - very bad command, should never be used
 
-wk.register({b = {name = "BarBar Buffer Operation"}}, {prefix = '<leader>'})
+wk.register({ b = { name = "BarBar Buffer Operation" } }, { prefix = '<leader>' })
 -- }}}
-

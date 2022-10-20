@@ -1,14 +1,22 @@
 local utils = require('config.utils')
 
-local install_path = vim.fn.stdpath('data')..'/site/pack/packer/start/packer.nvim'
+local install_path = vim.fn.stdpath('data') .. '/site/pack/packer/start/packer.nvim'
 if vim.fn.empty(vim.fn.glob(install_path)) > 0 then
-  MUtils.packer_bootstrap = vim.fn.system({'git', 'clone', '--depth', '1', 'https://github.com/wbthomason/packer.nvim', install_path})
+  MUtils.packer_bootstrap = vim.fn.system({ 'git', 'clone', '--depth', '1', 'https://github.com/wbthomason/packer.nvim',
+    install_path })
   print("packer.nvim has been installed.")
 end
 
-utils.create_autocmd('BufWritePost', {
-  pattern=string.gsub(vim.fn.expand'$HOME/.config/nvim/lua/config/*.lua', '\n', ','),
-  command='source <afile> | PackerCompile | echo "packer.nvim is compiling..."'
+vim.api.nvim_create_augroup(utils.prefix.autocmd .. 'Packer', { clear = true })
+vim.api.nvim_create_autocmd('BufWritePost', {
+  pattern = string.gsub(vim.fn.expand '$HOME/.config/nvim/lua/config/*.lua', '\n', ','),
+  callback = function()
+    print("Sourcing " .. vim.fn.expand('%') .. " ...")
+    vim.cmd [[source %]]
+    vim.cmd [[PackerCompile]]
+    print("Packer has compiled the config files.")
+  end,
+  group = utils.prefix.autocmd .. 'Packer'
 })
 
 local packer = require('packer')
@@ -28,8 +36,8 @@ local packer_config = {
 }
 
 local M = packer.startup {
-  function (use)
-    use {'wbthomason/packer.nvim'}
+  function(use)
+    use { 'wbthomason/packer.nvim' }
 
     use 'PascalZh/vim-color-explorer'
     use 'PascalZh/NeoSolarized'
@@ -37,19 +45,19 @@ local M = packer.startup {
     -- Neovim Library
     use 'nvim-lua/plenary.nvim'
 
-    for _, plugin in ipairs(require'config.plugins_ui') do
+    for _, plugin in ipairs(require 'config.plugins_ui') do
       use(plugin)
     end
 
-    for _, plugin in ipairs(require'config.plugins_editor') do
+    for _, plugin in ipairs(require 'config.plugins_editor') do
       use(plugin)
     end
 
-    for _, plugin in ipairs(require'config.plugins_tool') do
+    for _, plugin in ipairs(require 'config.plugins_tool') do
       use(plugin)
     end
 
-    for _, plugin in ipairs(require'config.plugins_ide') do
+    for _, plugin in ipairs(require 'config.plugins_ide') do
       use(plugin)
     end
 

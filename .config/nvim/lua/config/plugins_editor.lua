@@ -1,7 +1,7 @@
 local M = {}
 local not_vscode = function() return not vim.g.vscode end
 
-table.insert(M, {'chamindra/marvim'})
+table.insert(M, { 'chamindra/marvim' })
 
 table.insert(M, {
   'windwp/nvim-autopairs',
@@ -20,42 +20,42 @@ table.insert(M, {
     npairs.add_rules(require('nvim-autopairs.rules.endwise-lua'))
 
     npairs.add_rules {
-      Rule("$", "$", {"tex", "latex", "markdown"})
-        :with_move(cond.not_before_text_check('$'))
-        :with_move(function (opts) return opts.char == '$' end)
+      Rule("$", "$", { "tex", "latex", "markdown" })
+          :with_move(cond.not_before_text_check('$'))
+          :with_move(function(opts) return opts.char == '$' end)
     }
 
     npairs.add_rules {
       Rule(' ', ' ')
-        :with_pair(function(opts)
-          local pair = opts.line:sub(opts.col - 1, opts.col)
-          return vim.tbl_contains({ '()', '{}', '[]' }, pair)
-        end)
-        :with_move(cond.none())
-        :with_cr(cond.none())
-        :with_del(function(opts)
-          local col = vim.api.nvim_win_get_cursor(0)[2]
-          local context = opts.line:sub(col - 1, col + 2)
-          return vim.tbl_contains({ '(  )', '{  }', '[  ]' }, context)
-        end),
+          :with_pair(function(opts)
+            local pair = opts.line:sub(opts.col - 1, opts.col)
+            return vim.tbl_contains({ '()', '{}', '[]' }, pair)
+          end)
+          :with_move(cond.none())
+          :with_cr(cond.none())
+          :with_del(function(opts)
+            local col = vim.api.nvim_win_get_cursor(0)[2]
+            local context = opts.line:sub(col - 1, col + 2)
+            return vim.tbl_contains({ '(  )', '{  }', '[  ]' }, context)
+          end),
       Rule('', ' )')
-        :with_pair(cond.none())
-        :with_move(function(opts) return opts.char == ')' end)
-        :with_cr(cond.none())
-        :with_del(cond.none())
-        :use_key(')'),
+          :with_pair(cond.none())
+          :with_move(function(opts) return opts.char == ')' end)
+          :with_cr(cond.none())
+          :with_del(cond.none())
+          :use_key(')'),
       Rule('', ' }')
-        :with_pair(cond.none())
-        :with_move(function(opts) return opts.char == '}' end)
-        :with_cr(cond.none())
-        :with_del(cond.none())
-        :use_key('}'),
+          :with_pair(cond.none())
+          :with_move(function(opts) return opts.char == '}' end)
+          :with_cr(cond.none())
+          :with_del(cond.none())
+          :use_key('}'),
       Rule('', ' ]')
-        :with_pair(cond.none())
-        :with_move(function(opts) return opts.char == ']' end)
-        :with_cr(cond.none())
-        :with_del(cond.none())
-        :use_key(']'),
+          :with_pair(cond.none())
+          :with_move(function(opts) return opts.char == ']' end)
+          :with_cr(cond.none())
+          :with_del(cond.none())
+          :use_key(']'),
     }
     -- }}}
   end
@@ -66,7 +66,7 @@ table.insert(M, 'andymass/vim-matchup')
 
 table.insert(M, {
   'mg979/vim-visual-multi',
-  keys = {'<C-n>', '<C-Up>', '<C-Down>'},
+  keys = { '<C-n>', '<C-Up>', '<C-Down>' },
   config = function()
     vim.g.VM_theme = 'iceblue'
     vim.g.VM_maps = {
@@ -85,9 +85,11 @@ table.insert(M, {
     vim.g['surround_' .. string.byte('m')] = '-- \1\1 {{{\n\r\n-- }}}'
 
     -- use BufEnter instead of FileType here to allow commentstring to be set
-    utils.create_autocmd('BufEnter', {
-      pattern='*',
-      command='let b:surround_{char2nr("m")} = ' .. utils.prefix.func .. 'SurroundMarker()'
+    vim.api.nvim_create_augroup(utils.prefix.autocmd .. 'Surround', { clear = true })
+    vim.api.nvim_create_autocmd('BufEnter', {
+      pattern = '*',
+      command = 'let b:surround_{char2nr("m")} = ' .. utils.prefix.func .. 'SurroundMarker()',
+      group = utils.prefix.autocmd .. 'Surround'
     })
 
     vim.cmd('function! ' .. utils.prefix.func .. 'SurroundMarker()\n' .. [[
@@ -122,7 +124,7 @@ table.insert(M, {
   'chaoren/vim-wordmotion',
   config = function()
     vim.g.wordmotion_nomap = 1
-    local nvremap_key = require'config.utils'.map_helpers.nvremap_key
+    local nvremap_key = require 'config.utils'.map_helpers.nvremap_key
   end
 })
 
@@ -136,13 +138,13 @@ table.insert(M, {
       for _, mapping in ipairs(table) do
         for _, lhs in ipairs(mapping[2]) do
           wk.register({
-            [lhs] = {'<Plug>Caser' .. mapping[3], mapping[1]}
+            [lhs] = { '<Plug>Caser' .. mapping[3], mapping[1] }
           }, {
             prefix = prefix,
             noremap = false
           })
           wk.register({
-            [lhs] = {'<Plug>CaserV' .. mapping[3], mapping[1]}
+            [lhs] = { '<Plug>CaserV' .. mapping[3], mapping[1] }
           }, {
             prefix = prefix,
             mode = 'v',
@@ -151,13 +153,14 @@ table.insert(M, {
         end
       end
     end
-    local caser_table = {{'MixedCase or PascalCase', {'m', 'p'}, 'MixedCase'}, {'camelCase', {'c'}, 'CamelCase'},
-                         {'snake_case', {'_', 's'}, 'SnakeCase'}, {'UPPER_CASE', {'u', 'U'}, 'UpperCaser'},
-                         {'Title Case', {'t'}, 'TitleCase'}, {'Sentence case', {'S'}, 'SentenceCase'},
-                         {'space case', {'<space>'}, 'SpaceCaser'},
-                         {'dash-case or kebab-case', {'-', 'k'}, 'KebabCase'},
-                         {'Title-Dash-Case or Title-Kebab-Case', {'K'}, 'TitleKebabCase'},
-                         {'dot.case', {'.'}, 'DotCase'}}
+
+    local caser_table = { { 'MixedCase or PascalCase', { 'm', 'p' }, 'MixedCase' }, { 'camelCase', { 'c' }, 'CamelCase' },
+      { 'snake_case', { '_', 's' }, 'SnakeCase' }, { 'UPPER_CASE', { 'u', 'U' }, 'UpperCaser' },
+      { 'Title Case', { 't' }, 'TitleCase' }, { 'Sentence case', { 'S' }, 'SentenceCase' },
+      { 'space case', { '<space>' }, 'SpaceCaser' },
+      { 'dash-case or kebab-case', { '-', 'k' }, 'KebabCase' },
+      { 'Title-Dash-Case or Title-Kebab-Case', { 'K' }, 'TitleKebabCase' },
+      { 'dot.case', { '.' }, 'DotCase' } }
     make_caser_mappings('<leader>k', caser_table)
     wk.register({
       k = {
@@ -184,15 +187,15 @@ table.insert(M, 'notomo/gesture.nvim')
 table.insert(M, {
   'folke/which-key.nvim',
   config = function()
-    require'which-key'.setup {
+    require 'which-key'.setup {
       operators = {},
       triggers_blacklist = {
         -- list of mode / prefixes that should never be hooked by WhichKey
         -- this is mostly relevant for key maps that start with a native binding
         -- most people should not need to change this
-        i = {"j", "k", ";"},
-        v = {"j", "k"},
-        n = {'v'}
+        i = { "j", "k", ";" },
+        v = { "j", "k" },
+        n = { 'v' }
       }
     }
   end

@@ -6,12 +6,20 @@ xpcall(function() require('config.mappings') end, print)
 vim.g.netrw_browsex_viewer = 'cmd.exe /C start' -- TODO FIXME
 vim.g.netrw_suppress_gx_mesg = 0
 
-utils.create_autocmd('TermOpen', {pattern='*', command='startinsert'})
+vim.api.nvim_create_augroup(utils.prefix.autocmd .. 'Init', { clear = true })
 
-utils.create_autocmd('InsertEnter', {pattern='*', callback=utils.im_select.insert_enter})
-utils.create_autocmd('InsertLeavePre', {pattern='*', callback=utils.im_select.insert_leave_pre})
+vim.api.nvim_create_autocmd('TermOpen', {
+  pattern = '*', command = 'startinsert', group = utils.prefix.autocmd .. 'Init'
+})
 
-vim.opt.autochdir = true
+vim.api.nvim_create_autocmd('InsertEnter', {
+  pattern = '*', callback = utils.im_select.insert_enter, group = utils.prefix.autocmd .. 'Init'
+})
+vim.api.nvim_create_autocmd('InsertLeavePre', {
+  pattern = '*', callback = utils.im_select.insert_leave_pre, group = utils.prefix.autocmd .. 'Init'
+})
+
+vim.opt.autochdir = false
 
 -- UI {{{
 
@@ -21,13 +29,13 @@ vim.opt.background = 'light'
 -- Color Scheme
 --cmd[[colorscheme NeoSolarized]]
 vim.opt.laststatus = 3
-local color_list = {'dracula', 'NeoSolarized', 'one'}
+local color_list = { 'dracula', 'NeoSolarized', 'one' }
 if not vim.g.vscode then
   xpcall(function()
-    vim.cmd('colorscheme '..
+    vim.cmd('colorscheme ' ..
       color_list[1 + math.floor(vim.fn.localtime() / (7 * 24 * 60 * 60) % #color_list)])
   end
-    ,print
+    , print
   )
 end
 
@@ -35,18 +43,21 @@ end
 vim.opt.foldtext = "repeat('〇 ',v:foldlevel).printf('%3d',v:foldend-v:foldstart+1).' '.getline(v:foldstart).' '"
 vim.opt.fillchars = 'fold:·'
 
-utils.create_autocmd('FileType', {
-  pattern='vim,racket,javascript,lua',
-  command='setlocal foldmethod=marker | normal zM'
+vim.api.nvim_create_autocmd('FileType', {
+  pattern = 'vim,racket,javascript,lua',
+  command = 'setlocal foldmethod=marker | normal zM',
+  group = utils.prefix.autocmd .. 'Init'
 })
 
-utils.create_autocmd('FileType', {
-  pattern='haskell,python,vim,cpp,c,javascript,lua',
-  command='setlocal colorcolumn=81 | hi ColorColumn ctermbg=Green guibg=Green'
+vim.api.nvim_create_autocmd('FileType', {
+  pattern = 'haskell,python,vim,cpp,c,javascript,lua',
+  command = 'setlocal colorcolumn=81 | hi ColorColumn ctermbg=Green guibg=Green',
+  group = utils.prefix.autocmd .. 'Init'
 })
-utils.create_autocmd('TextYankPost', {
-  pattern='*',
-  callback=function() utils.highlight.on_yank {higroup="IncSearch", timeout=222} end,
+vim.api.nvim_create_autocmd('TextYankPost', {
+  pattern = '*',
+  callback = function() utils.highlight.on_yank { higroup = "IncSearch", timeout = 222 } end,
+  group = utils.prefix.autocmd .. 'Init'
 })
 
 -- Common UI settings {{{
@@ -66,7 +77,7 @@ vim.opt.relativenumber = true
 vim.opt.list = true
 vim.opt.listchars = 'tab:»⋅,nbsp:+,trail:⋅,extends:→,precedes:←'
 
-vim.opt.scrolloff = 7  -- Minimum lines to keep above and below cursor
+vim.opt.scrolloff = 7 -- Minimum lines to keep above and below cursor
 
 vim.opt.conceallevel = 2
 
@@ -93,12 +104,12 @@ vim.opt.shiftwidth = 2
 -- Clipboard {{{
 if vim.fn.exists('$WSL_DISTRO_NAME') == 1 then
   vim.g.clipboard = {
-    name= 'win32yank',
-    copy= {
+    name = 'win32yank',
+    copy = {
       ['+'] = 'win32yank.exe -i --crlf',
       ['*'] = 'win32yank.exe -i --crlf',
     },
-    paste= {
+    paste = {
       ['+'] = 'win32yank.exe -o --lf',
       ['*'] = 'win32yank.exe -o --lf',
     },
@@ -110,9 +121,10 @@ end
 -- }}}
 -- Spell {{{
 vim.opt.spell = false
-utils.create_autocmd('FileType', {
-  pattern='markdown,tex',
-  callback=function() vim.opt_local.spell = true end
+vim.api.nvim_create_autocmd('FileType', {
+  pattern = 'markdown,tex',
+  callback = function() vim.opt_local.spell = true end,
+  group = utils.prefix.autocmd .. 'Init'
 })
 vim.opt.spelllang = 'en,cjk'
 -- }}}
@@ -138,7 +150,7 @@ vim.cmd [[command! SP lua require'animation'.split()]]
 vim.cmd [[command! VS lua require'animation'.vsplit()]]
 
 -------------------------------- for neovide -----------------------------------
-vim.cmd[[
+vim.cmd [[
 let g:neovide_refresh_rate = 90
 let g:neovide_remember_window_size = v:true
 let g:neovide_cursor_animation_length = 0.15
