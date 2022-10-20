@@ -48,17 +48,17 @@ table.insert(M, {
         enable = false,
         update_cwd = false,
         ignore_list = {}
+      },
+      nvim_tree_group_empty = 1,
+      nvim_tree_special_files = {
+        ['README.md'] = true,
+        ['Makefile'] = true,
+        ['MAKEFILE'] = true,
+        ['CMakeLists.txt'] = true
       }
       -- view = {
       --  width = 40
       -- }
-    }
-    vim.g.nvim_tree_group_empty = 1
-    vim.g.nvim_tree_special_files = {
-      ['README.md'] = true,
-      ['Makefile'] = true,
-      ['MAKEFILE'] = true,
-      ['CMakeLists.txt'] = true
     }
   end
 })

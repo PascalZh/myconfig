@@ -13,12 +13,12 @@
 [init]
   defaultBranch = main
 [interactive]
-  diffFilter = delta --color-only
+  diffFilter = delta --color-only --features=interactive
 [delta]
   navigate = true  # use n and N to move between diff sections
   side-by-side = true
   line-numbers = true
-  ;syntax-theme = Solarized
+  syntax-theme = Solarized (light)
 [merge]
   conflictstyle = diff3
 [diff]

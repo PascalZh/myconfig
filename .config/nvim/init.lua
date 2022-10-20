@@ -3,8 +3,6 @@ local _, utils = xpcall(function() return require('config.utils') end, print)
 xpcall(function() require('config.plugins') end, print)
 xpcall(function() require('config.mappings') end, print)
 
-vim.g.do_filetype_lua = 1
-vim.g.did_load_filetypes = 0
 vim.g.netrw_browsex_viewer = 'cmd.exe /C start' -- TODO FIXME
 vim.g.netrw_suppress_gx_mesg = 0
 
@@ -16,7 +14,10 @@ utils.create_autocmd('InsertLeavePre', {pattern='*', callback=utils.im_select.in
 vim.opt.autochdir = true
 
 -- UI {{{
+
 vim.opt.termguicolors = true
+vim.opt.background = 'light'
+
 -- Color Scheme
 --cmd[[colorscheme NeoSolarized]]
 vim.opt.laststatus = 3
@@ -29,6 +30,7 @@ if not vim.g.vscode then
     ,print
   )
 end
+
 -- Fold
 vim.opt.foldtext = "repeat('〇 ',v:foldlevel).printf('%3d',v:foldend-v:foldstart+1).' '.getline(v:foldstart).' '"
 vim.opt.fillchars = 'fold:·'

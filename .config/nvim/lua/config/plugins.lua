@@ -7,7 +7,7 @@ if vim.fn.empty(vim.fn.glob(install_path)) > 0 then
 end
 
 utils.create_autocmd('BufWritePost', {
-  pattern='plugins.lua',
+  pattern=string.gsub(vim.fn.expand'$HOME/.config/nvim/lua/config/*.lua', '\n', ','),
   command='source <afile> | PackerCompile | echo "packer.nvim is compiling..."'
 })
 
@@ -23,7 +23,7 @@ local packer_config = {
   },
   git = {
     clone_timeout = 5 * 60,
-    default_url_format = 'https://hub.fastgit.org/%s'
+    --default_url_format = 'https://hub.fastgit.org/%s'
   },
 }
 

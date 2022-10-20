@@ -124,7 +124,6 @@ function P_install_my_tools
   dialog --checklist "Install some common softwares" 0 0 5 \
   "get_nvim"        "get newest NVIM nightly(unstable) and put it in /usr/local/bin"         off \
   "setup_nvim"      "install pynvim and open nvim, you should run install commands manually" off \
-  "sumneko_lua_lsp" "install sumneko's lua language server protocol"                         off \
   "z_lua_for_fish"  "clone z.lua in ~/.local/share and install z.lua for fish"               off \
   "nodejs"          "show how to install nodejs"                                             off \
   "gui"             "install bspwm, rofi, zathura, feh, sxhkd, compton"                      off \
@@ -169,13 +168,6 @@ function P_install_my_tools
 
       P_install bspwm    ; P_install sxhkd
       P_install compton
-    end
-
-    if grep -w "sumneko_lua_lsp" /tmp/dialogtmp
-      set package_name lua-language-server-3.5.6-linux-x64.tar.gz
-      curl --location https://github.com/sumneko/lua-language-server/releases/download/3.5.6/$package_name --output ~/$package_name
-      mkdir -p $HOME/.local/share/sumneko_lua_lsp
-      tar xf ~/$package_name --directory=$HOME/.local/share/sumneko_lua_lsp
     end
 
   end
