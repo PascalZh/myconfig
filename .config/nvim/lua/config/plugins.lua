@@ -12,7 +12,7 @@ vim.api.nvim_create_autocmd('BufWritePost', {
   pattern = string.gsub(vim.fn.expand '$HOME/.config/nvim/lua/config/*.lua', '\n', ','),
   callback = function()
     print("Sourcing " .. vim.fn.expand('%') .. " ...")
-    vim.cmd [[source %]]
+    vim.cmd [[source ~/.config/nvim/lua/config/plugins.lua]]
     vim.cmd [[PackerCompile]]
     print("Packer has compiled the config files.")
   end,
@@ -45,18 +45,22 @@ local M = packer.startup {
     -- Neovim Library
     use 'nvim-lua/plenary.nvim'
 
+    package.loaded['config.plugins_ui'] = nil
     for _, plugin in ipairs(require 'config.plugins_ui') do
       use(plugin)
     end
 
+    package.loaded['config.plugins_editor'] = nil
     for _, plugin in ipairs(require 'config.plugins_editor') do
       use(plugin)
     end
 
+    package.loaded['config.plugins_tool'] = nil
     for _, plugin in ipairs(require 'config.plugins_tool') do
       use(plugin)
     end
 
+    package.loaded['config.plugins_ide'] = nil
     for _, plugin in ipairs(require 'config.plugins_ide') do
       use(plugin)
     end

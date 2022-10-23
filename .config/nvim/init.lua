@@ -99,7 +99,11 @@ vim.opt.textwidth = 80
 -- Tab {{{
 vim.opt.tabstop = 4
 vim.opt.expandtab = true
-vim.opt.shiftwidth = 4
+vim.opt.shiftwidth = 0 -- Use tabstop
+vim.api.nvim_create_autocmd('FileType', {
+  pattern = 'lua', callback = function ()
+    vim.opt_local.tabstop = 2
+  end})
 -- }}}
 -- Clipboard {{{
 if vim.fn.exists('$WSL_DISTRO_NAME') == 1 then

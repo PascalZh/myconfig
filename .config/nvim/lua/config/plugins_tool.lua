@@ -1,7 +1,12 @@
 local M = {}
 local not_vscode = function() return not vim.g.vscode end
 
-table.insert(M, 'christoomey/vim-tmux-navigator')
+table.insert(M, {'christoomey/vim-tmux-navigator',
+  config = function()
+    vim.g.tmux_navigator_save_on_switch = 1
+    vim.g.tmux_navigator_no_wrap = 1
+  end
+})
 
 table.insert(M, {
   'mhinz/vim-grepper',
