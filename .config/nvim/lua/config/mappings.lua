@@ -123,10 +123,11 @@ nremap_key('<PageUp>', '<C-b>')
 -- }}}
 
 -- Window commands: jump/resize/quit/... {{{
-nmap_key('<C-h>', '<C-w>h')
-nmap_key('<C-j>', '<C-w>j')
-nmap_key('<C-k>', '<C-w>k')
-nmap_key('<C-l>', '<C-w>l')
+-- The mappings will be added by 'christoomey/vim-tmux-navigator'
+--nmap_key('<C-h>', '<C-w>h')
+--nmap_key('<C-j>', '<C-w>j')
+--nmap_key('<C-k>', '<C-w>k')
+--nmap_key('<C-l>', '<C-w>l')
 
 local delta_resize = 6
 nmap_key('<C-w><', string.rep('<C-w><', delta_resize * 2))

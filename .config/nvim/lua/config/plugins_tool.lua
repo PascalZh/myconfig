@@ -1,6 +1,8 @@
 local M = {}
 local not_vscode = function() return not vim.g.vscode end
 
+table.insert(M, 'christoomey/vim-tmux-navigator')
+
 table.insert(M, {
   'mhinz/vim-grepper',
   config = function()

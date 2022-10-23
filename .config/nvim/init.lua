@@ -24,7 +24,7 @@ vim.opt.autochdir = false
 -- UI {{{
 
 vim.opt.termguicolors = true
-vim.opt.background = 'light'
+vim.opt.background = 'dark'
 
 -- Color Scheme
 --cmd[[colorscheme NeoSolarized]]
@@ -97,24 +97,26 @@ vim.opt.mouse = 'a'
 vim.opt.textwidth = 80
 -- }}}
 -- Tab {{{
-vim.opt.tabstop = 2
+vim.opt.tabstop = 4
 vim.opt.expandtab = true
-vim.opt.shiftwidth = 2
+vim.opt.shiftwidth = 4
 -- }}}
 -- Clipboard {{{
 if vim.fn.exists('$WSL_DISTRO_NAME') == 1 then
-  vim.g.clipboard = {
-    name = 'win32yank',
-    copy = {
-      ['+'] = 'win32yank.exe -i --crlf',
-      ['*'] = 'win32yank.exe -i --crlf',
-    },
-    paste = {
-      ['+'] = 'win32yank.exe -o --lf',
-      ['*'] = 'win32yank.exe -o --lf',
-    },
-    cache_enabled = 0,
-  }
+  vim.cmd [[
+    let g:clipboard = {
+    \   'name': 'WslClipboard',
+    \   'copy': {
+    \      '+': 'clip.exe',
+    \      '*': 'clip.exe',
+    \    },
+    \   'paste': {
+    \      '+': 'powershell.exe -c [Console]::Out.Write($(Get-Clipboard -Raw).tostring().replace("`r", ""))',
+    \      '*': 'powershell.exe -c [Console]::Out.Write($(Get-Clipboard -Raw).tostring().replace("`r", ""))',
+    \   },
+    \   'cache_enabled': 0,
+    \ }
+    ]]
 end
 -- disable the following option because it is slowing down daily commands like s, dd
 --opt('clipboard', 'unnamedplus') -- always use yanking to paste in other place

@@ -210,7 +210,7 @@ table.insert(M, {
     table.insert(runtime_path, "lua/?/init.lua")
 
     local lua_globals = { 'vim' }
-    for k, v in pairs(require('config.utils').map_helpers) do
+    for k, _ in pairs(require('config.utils').map_helpers) do
       table.insert(lua_globals, k)
     end
 
