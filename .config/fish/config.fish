@@ -3,6 +3,7 @@ set -a -gx PATH $HOME/julia-1.7.2/bin
 set -gx JULIA_NUM_THREADS auto
 set -a -gx PATH $HOME/.local/bin
 set -a -gx PATH $HOME/.ghcup/bin
+set -a -gx PATH $HOME/scripts
 
 # :terminal :! in neovim need the following environment set to work normally.
 set -gx LC_ALL "en_US.UTF-8"
@@ -22,6 +23,10 @@ end
 
 function P_set_display_wsl
     set -gx DISPLAY :0
+end
+
+function P_settings64
+    set -x PATH $PATH /tools/Xilinx/Vivado/2022.2/bin
 end
 
 P_set_proxy

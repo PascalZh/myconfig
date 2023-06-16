@@ -101,7 +101,7 @@ vim.opt.tabstop = 4
 vim.opt.expandtab = true
 vim.opt.shiftwidth = 0 -- Use tabstop
 vim.api.nvim_create_autocmd('FileType', {
-  pattern = 'lua', callback = function ()
+  pattern = 'lua,haskell', callback = function ()
     vim.opt_local.tabstop = 2
   end})
 -- }}}

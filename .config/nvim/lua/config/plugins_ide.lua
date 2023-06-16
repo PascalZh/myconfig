@@ -77,6 +77,7 @@ table.insert(M, {
 
 -- Completion sources
 table.insert(M, { 'hrsh7th/cmp-buffer', after = 'nvim-cmp' })
+--table.insert(M, { 'saadparwaiz1/cmp_luasnip', after = 'nvim-cmp' })
 table.insert(M, { 'hrsh7th/cmp-nvim-lsp', cond = not_vscode })
 
 table.insert(M, {
@@ -112,7 +113,7 @@ table.insert(M, {
         ['<C-f>'] = cmp.mapping.scroll_docs(4),
         ['<C-Space>'] = cmp.mapping.complete(),
         ['<C-e>'] = cmp.mapping.abort(),
-        ['<CR>'] = cmp.mapping.confirm({ select = true }),
+        ['<CR>'] = cmp.mapping.confirm({ select = false }),
         ['<Tab>'] = cmp.mapping(function(fallback)
           if cmp.visible() and not luasnip.in_snippet() then
             cmp.select_next_item()
@@ -245,6 +246,16 @@ table.insert(M, {
     -- https://github.com/neovim/nvim-lspconfig/blob/master/CONFIG.md#clangd
     require 'lspconfig'.clangd.setup {
       cmd = { "clangd-11", "--background-index" },
+      capabilities = MUtils.capabilities,
+      on_attach = on_attach
+    }
+
+    require'lspconfig'.hls.setup {
+      capabilities = MUtils.capabilities,
+      on_attach = on_attach
+    }
+
+    require'lspconfig'.pylsp.setup {
       capabilities = MUtils.capabilities,
       on_attach = on_attach
     }
