@@ -4,9 +4,12 @@ set -gx JULIA_NUM_THREADS auto
 set -a -gx PATH $HOME/.local/bin
 set -a -gx PATH $HOME/.ghcup/bin
 set -a -gx PATH $HOME/scripts
+set -a -gx PATH /usr/local/cuda-11.7/bin
+set -a -gx LD_LIBRARY_PATH /usr/local/cuda-11.7/lib64
 
 # :terminal :! in neovim need the following environment set to work normally.
 set -gx LC_ALL "en_US.UTF-8"
+set -gx LANG "en_US.UTF-8"
 #bash /opt/ros/noetic/setup.bash
 
 function P_wsl_ip
@@ -125,18 +128,28 @@ function P_install_my_tools
     P_install curl
 
     dialog --checklist "Install some common softwares" 0 0 5 \
-    "get_nvim"        "get newest NVIM nightly(unstable) and put it in /usr/local/bin"         off \
-    "setup_nvim"      "install pynvim and open nvim, you should run install commands manually" off \
-    "z_lua_for_fish"  "clone z.lua in ~/.local/share and install z.lua for fish"               off \
-    "nodejs"          "show how to install nodejs"                                             off \
-    ".tmux"           "get .tmux configuration file installed"                                 off \
-    "gui"             "install bspwm, rofi, zathura, feh, sxhkd, compton"                      off \
+    "get_nvim"            "get newest NVIM nightly(unstable) and put it in /usr/local/bin"         off \
+    "setup_nvim"          "install pynvim and open nvim, you should run install commands manually" off \
+    "install_oh_my_fish"  "install oh-my-fish"                                                     off \
+    "install_fish_plugins" "install fish plugins"                                                   off \
+    "z_lua_for_fish"      "clone z.lua in ~/.local/share and install z.lua for fish"               off \
+    "nodejs"              "show how to install nodejs"                                             off \
+    ".tmux"               "get .tmux configuration file installed"                                 off \
+    "gui"                 "install bspwm, rofi, zathura, feh, sxhkd, compton"                      off \
     2> /tmp/dialogtmp
     if test $status = 0
         if grep -w "get_nvim" /tmp/dialogtmp
             curl -fLo ~/nvim.appimage https://github.com/neovim/neovim/releases/download/nightly/nvim.appimage
             sudo chmod u+x ~/nvim.appimage
             sudo mv ~/nvim.appimage /usr/local/bin/nvim
+        end
+
+        if grep -w "install_oh_my_fish" /tmp/dialogtmp
+            curl https://raw.githubusercontent.com/oh-my-fish/oh-my-fish/master/bin/install | fish
+        end
+
+        if grep -w "install_fish_plugins" /tmp/dialogtmp
+            omf install bass
         end
 
         if grep -w "setup_nvim" /tmp/dialogtmp
