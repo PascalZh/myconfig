@@ -10,7 +10,8 @@ set -a -gx LD_LIBRARY_PATH /usr/local/cuda-11.7/lib64
 # :terminal :! in neovim need the following environment set to work normally.
 set -gx LC_ALL "en_US.UTF-8"
 set -gx LANG "en_US.UTF-8"
-#bash /opt/ros/noetic/setup.bash
+source /opt/ros/noetic/share/rosbash/rosfish
+bass source /opt/ros/noetic/setup.bash
 
 function P_wsl_ip
     echo (ip route | grep default | awk '{print $3}')
@@ -128,15 +129,17 @@ function P_install_my_tools
     P_install curl
 
     dialog --checklist "Install some common softwares" 0 0 5 \
-    "get_nvim"            "get newest NVIM nightly(unstable) and put it in /usr/local/bin"         off \
-    "setup_nvim"          "install pynvim and open nvim, you should run install commands manually" off \
-    "install_oh_my_fish"  "install oh-my-fish"                                                     off \
-    "install_fish_plugins" "install fish plugins"                                                   off \
-    "z_lua_for_fish"      "clone z.lua in ~/.local/share and install z.lua for fish"               off \
-    "nodejs"              "show how to install nodejs"                                             off \
-    ".tmux"               "get .tmux configuration file installed"                                 off \
-    "gui"                 "install bspwm, rofi, zathura, feh, sxhkd, compton"                      off \
+    "get_nvim"                "get newest NVIM nightly(unstable) and put it in /usr/local/bin"         off \
+    "setup_nvim"              "install pynvim and open nvim, you should run install commands manually" off \
+    "install_oh_my_fish"      "install oh-my-fish"                                                     off \
+    "install_fish_plugins"    "install fish plugins"                                                   off \
+    "z_lua_for_fish"          "clone z.lua in ~/.local/share and install z.lua for fish"               off \
+    "nodejs"                  "show how to install nodejs"                                             off \
+    ".tmux"                   "get .tmux configuration file installed"                                 off \
+    "gui"                     "install bspwm, rofi, zathura, feh, sxhkd, compton"                      off \
+    "ros-noetic"              "install ros noetic desktop full"                                        off \
     2> /tmp/dialogtmp
+
     if test $status = 0
         if grep -w "get_nvim" /tmp/dialogtmp
             curl -fLo ~/nvim.appimage https://github.com/neovim/neovim/releases/download/nightly/nvim.appimage
@@ -160,7 +163,7 @@ function P_install_my_tools
             end
 
             python3 -m pip install --user --upgrade pynvim
-            nvim +q
+            nvim +PackerInstall
         end
 
         if grep -w "z_lua_for_fish" /tmp/dialogtmp
@@ -194,6 +197,16 @@ function P_install_my_tools
             cp .tmux/.tmux.conf.local .
         end
 
+        if grep -w "ros-noetic" /tmp/dialogtmp
+            sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list'
+            curl -s https://raw.githubusercontent.com/ros/rosdistro/master/ros.asc | sudo apt-key add -
+            sudo apt update
+            sudo apt install -y ros-noetic-desktop-full
+            sudo apt install -y python3-rosdep python3-rosinstall python3-rosinstall-generator python3-wstool build-essential
+            sudo rosdep init
+            rosdep update
+        end
+
     end
 
     # Some useful command
@@ -209,6 +222,7 @@ function P_install_my_tools
     P_install fd-find
     P_install tldr
     P_install bat
+    P_install exa
 
     # Install delta
     if not echo (apt -qq list git-delta 2>/dev/null) | grep installed
@@ -217,12 +231,13 @@ function P_install_my_tools
     end
 
     # Install btop
-    if not which btop 1>/dev/null
+    if not P_install btop only_check
         git clone https://github.com/aristocratos/btop.git ~/btop
         cd ~/btop
-        sudo apt install coreutils sed git build-essential gcc-11 g++-11
-        make CXX=g++-11
-        sudo make install
+        git submodule update --init --recursive
+        sudo apt install -y coreutils sed git build-essential gcc-10 g++-10
+        make CXX=g++-10
+        sudo make install CXX=g++-10
     end
 
     # C++
@@ -233,8 +248,15 @@ function P_install
         return
     end
     set info (apt -qq list $argv[1] 2>/dev/null)
-    echo -e "P_install:\033[32m apt -qq list $argv[1]\033[0m"
-    if not echo $info | grep installed
+    echo -e "P_install: \033[32m$argv[1]\033[0m"
+
+    if echo $info | grep installed
+        return 0
+    else if which $argv[1]
+        return 0
+    else if not test -z $argv[2]; and test $argv[2] = only_check
+        return 1
+    else
         echo -e "\033[33mInstalling $argv[1]\033[0m"
         sudo apt install -y $argv[1]
     end

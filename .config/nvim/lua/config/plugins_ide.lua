@@ -12,7 +12,7 @@ table.insert(M, {
   'williamboman/mason-lspconfig.nvim',
   after = 'mason.nvim',
   config = function()
-    require 'mason-lspconfig'.setup({ ensure_installed = { 'sumneko_lua' } })
+    require 'mason-lspconfig'.setup({})
   end
 })
 
@@ -206,41 +206,41 @@ table.insert(M, {
     end
 
     -- sumneko lua lsp {{{
-    local runtime_path = vim.split(package.path, ';')
-    table.insert(runtime_path, "lua/?.lua")
-    table.insert(runtime_path, "lua/?/init.lua")
+    --local runtime_path = vim.split(package.path, ';')
+    --table.insert(runtime_path, "lua/?.lua")
+    --table.insert(runtime_path, "lua/?/init.lua")
 
-    local lua_globals = { 'vim' }
-    for k, _ in pairs(require('config.utils').map_helpers) do
-      table.insert(lua_globals, k)
-    end
+    --local lua_globals = { 'vim' }
+    --for k, _ in pairs(require('config.utils').map_helpers) do
+    --  table.insert(lua_globals, k)
+    --end
 
-    require 'lspconfig'.sumneko_lua.setup {
-      settings = {
-        Lua = {
-          runtime = {
-            -- Tell the language server which version of Lua you're using (most likely LuaJIT in the case of Neovim)
-            version = 'LuaJIT',
-            -- Setup your lua path
-            path = runtime_path
-          },
-          diagnostics = {
-            -- Get the language server to recognize the `vim` global
-            globals = lua_globals
-          },
-          workspace = {
-            -- Make the server aware of Neovim runtime files
-            library = vim.api.nvim_get_runtime_file("", true)
-          },
-          -- Do not send telemetry data containing a randomized but unique identifier
-          telemetry = {
-            enable = false
-          }
-        }
-      },
-      capabilities = MUtils.capabilities,
-      on_attach = on_attach
-    }
+    --require 'lspconfig'.sumneko_lua.setup {
+    --  settings = {
+    --    Lua = {
+    --      runtime = {
+    --        -- Tell the language server which version of Lua you're using (most likely LuaJIT in the case of Neovim)
+    --        version = 'LuaJIT',
+    --        -- Setup your lua path
+    --        path = runtime_path
+    --      },
+    --      diagnostics = {
+    --        -- Get the language server to recognize the `vim` global
+    --        globals = lua_globals
+    --      },
+    --      workspace = {
+    --        -- Make the server aware of Neovim runtime files
+    --        library = vim.api.nvim_get_runtime_file("", true)
+    --      },
+    --      -- Do not send telemetry data containing a randomized but unique identifier
+    --      telemetry = {
+    --        enable = false
+    --      }
+    --    }
+    --  },
+    --  capabilities = MUtils.capabilities,
+    --  on_attach = on_attach
+    --}
     -- }}}
 
     -- https://github.com/neovim/nvim-lspconfig/blob/master/CONFIG.md#clangd
