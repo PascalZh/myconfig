@@ -6,7 +6,7 @@ end
 if not vim.g.animation_duration then vim.g.animation_duration = 350 end
 if not vim.g.animation_ease_func then vim.g.animation_ease_func = 'quad' end
 
-local M = {DEBUG = false}
+local M = { DEBUG = false }
 
 -- helper local functions {{{
 ---@return number Time in milliseconds
@@ -16,8 +16,8 @@ local function dprint(str) if M.DEBUG then print(str) end end
 
 local function dprint_state(elapsed_time, cur_state, next_state)
   if (M.DEBUG) then
-    dprint(string.format('{ elapsed_time, cur_state, next_state} = {% 6.1f, % 8.2f, % 4.2f }', elapsed_time, cur_state,
-                         next_state))
+    dprint(string.format('{ elapsed_time, cur_state, next_state} = {% 6.1f, % 8.2f, % 4.2f }',
+                         elapsed_time, cur_state, next_state))
   end
 end
 
@@ -59,7 +59,8 @@ function M.co.animate(start_state, end_state, update, anim_opt)
 
   local timer = vim.loop.new_timer()
 
-  dprint(string.format('duration = %s, start_state = %s, end_state = %s', duration, start_state, end_state))
+  dprint(string.format('duration = %s, start_state = %s, end_state = %s', duration, start_state,
+                       end_state))
 
   local delta_state = end_state - start_state
   local cur_state = start_state
@@ -165,9 +166,13 @@ function M.scroll_down() M.run(function() M.co.scroll_down(vim.fn.winheight(0)) 
 
 function M.scroll_down_half() M.run(function() M.co.scroll_down(vim.fn.winheight(0) / 2) end) end
 
-function M.split(size, file, direction, anim_opt) M.run(function() M.co.split(size, file, direction, anim_opt) end) end
+function M.split(size, file, direction, anim_opt)
+  M.run(function() M.co.split(size, file, direction, anim_opt) end)
+end
 
-function M.vsplit(size, file, direction, anim_opt) M.run(function() M.co.vsplit(size, file, direction, anim_opt) end) end
+function M.vsplit(size, file, direction, anim_opt)
+  M.run(function() M.co.vsplit(size, file, direction, anim_opt) end)
+end
 
 -- Ease functions {{{
 M.ease_funcs = {}

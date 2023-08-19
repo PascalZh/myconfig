@@ -3,7 +3,7 @@ local M = {}
 table.insert(M, {
   'nvim-lualine/lualine.nvim',
   cond = MUtils.not_vscode,
-  requires = {'kyazdani42/nvim-web-devicons'},
+  requires = { 'kyazdani42/nvim-web-devicons' },
   config = function() require('config.statusline.slanted-gaps') end
 })
 
@@ -31,18 +31,23 @@ table.insert(M, {
   end
 })
 
-table.insert(M, {'romgrk/barbar.nvim', cond = MUtils.not_vscode, requires = {'kyazdani42/nvim-web-devicons'}})
+table.insert(M, {
+  'romgrk/barbar.nvim',
+  cond = MUtils.not_vscode,
+  requires = { 'kyazdani42/nvim-web-devicons' }
+})
 
-table.insert(M, {'NvChad/nvim-colorizer.lua', config = function() require('colorizer').setup() end})
+table.insert(M,
+             { 'NvChad/nvim-colorizer.lua', config = function() require('colorizer').setup() end })
 
-table.insert(M, {'rakr/vim-one'})
+table.insert(M, { 'rakr/vim-one' })
 
-table.insert(M, {'dracula/vim', as = 'dracula'})
+table.insert(M, { 'dracula/vim', as = 'dracula' })
 
-table.insert(M, {'p00f/nvim-ts-rainbow', after = 'nvim-treesitter', event = 'BufRead'})
+table.insert(M, { 'p00f/nvim-ts-rainbow', after = 'nvim-treesitter', event = 'BufRead' })
 
-table.insert(M, {'junegunn/goyo.vim', cond = MUtils.not_vscode})
-table.insert(M, {'junegunn/limelight.vim', cond = MUtils.not_vscode})
+table.insert(M, { 'junegunn/goyo.vim', cond = MUtils.not_vscode })
+table.insert(M, { 'junegunn/limelight.vim', cond = MUtils.not_vscode })
 
 -- use 'itchyny/lightline.vim'
 -- use {'mengelbrecht/lightline-bufferline', requires = {'ryanoasis/vim-devicons'}}

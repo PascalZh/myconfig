@@ -131,7 +131,9 @@ end
 local function rebuildColumnPatterns()
   local c = config
   local str = 's: %-'
-  outputHeader = '| %-' .. c.fW .. str .. c.fnW .. str .. c.lW .. str .. c.tW .. str .. c.rW .. str .. c.cW .. 's|\n'
+  outputHeader =
+    '| %-' .. c.fW .. str .. c.fnW .. str .. c.lW .. str .. c.tW .. str .. c.rW .. str .. c.cW ..
+      's|\n'
   formatHeader = string.format(outputHeader, 'FILE', 'FUNCTION', 'LINE', 'TIME', '%', '#')
   outputTitle = '%-' .. c.fW .. '.' .. c.fW .. str .. c.fnW .. '.' .. c.fnW .. str .. c.lW .. 's'
   formatOutput = '| %s: %-' .. c.tW .. str .. c.rW .. str .. c.cW .. 's|\n'
@@ -155,11 +157,13 @@ local function functionReport(information)
   elseif string.sub(name, #name - 1, #name) == '_l' then
     name = string.sub(name, 1, #name - 2)
   end
-  local title = string.format(outputTitle, src, name, string.format(formatFunLine, information.linedefined or 0))
+  local title = string.format(outputTitle, src, name,
+                              string.format(formatFunLine, information.linedefined or 0))
   local report = reportCache[title]
   if not report then
     report = {
-      title = string.format(outputTitle, src, name, string.format(formatFunLine, information.linedefined or 0)),
+      title = string.format(outputTitle, src, name,
+                            string.format(formatFunLine, information.linedefined or 0)),
       count = 0,
       timer = 0
     }

@@ -5,24 +5,27 @@ xpcall(function() require('config.mappings') end, print)
 
 vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1
---vim.g.netrw_browsex_viewer = 'cmd.exe /C start' -- TODO FIXME
---vim.g.netrw_suppress_gx_mesg = 0
+-- vim.g.netrw_browsex_viewer = 'cmd.exe /C start' -- TODO FIXME
+-- vim.g.netrw_suppress_gx_mesg = 0
 
 local init_group = utils.prefix.autocmd .. 'Init'
 vim.api.nvim_create_augroup(init_group, { clear = true })
 
-vim.api.nvim_create_autocmd('TermOpen', {
-    pattern = '*', command = 'startinsert', group = init_group
-})
+vim.api.nvim_create_autocmd('TermOpen',
+                            { pattern = '*', command = 'startinsert', group = init_group })
 
 vim.opt.autochdir = false
 
 -- IM-Select {{{
 vim.api.nvim_create_autocmd('InsertEnter', {
-    pattern = '*', callback = utils.im_select.insert_enter, group = init_group
+  pattern = '*',
+  callback = utils.im_select.insert_enter,
+  group = init_group
 })
 vim.api.nvim_create_autocmd('InsertLeavePre', {
-    pattern = '*', callback = utils.im_select.insert_leave_pre, group = init_group
+  pattern = '*',
+  callback = utils.im_select.insert_leave_pre,
+  group = init_group
 })
 -- }}}
 
@@ -32,37 +35,36 @@ vim.opt.termguicolors = true
 vim.opt.background = 'dark'
 
 -- Color Scheme
---cmd[[colorscheme NeoSolarized]]
+-- cmd[[colorscheme NeoSolarized]]
 vim.opt.laststatus = 3
 local color_list = { 'dracula', 'NeoSolarized', 'one' }
 if not vim.g.vscode then
-    xpcall(function()
-        math.randomseed(math.floor(vim.fn.localtime() / 60 / 24))
-        vim.cmd('colorscheme ' ..
-            color_list[math.random(1, #color_list)])
-    end, function(arg) end)
+  xpcall(function()
+    math.randomseed(math.floor(vim.fn.localtime() / 60 / 24))
+    vim.cmd('colorscheme ' .. color_list[math.random(1, #color_list)])
+  end, function(arg) end)
 end
 
 -- Fold
---vim.opt.foldtext = "''.printf('%3d',v:foldend-v:foldstart+1).' '.getline(v:foldstart).' '"
---vim.opt.fillchars = 'fold:·'
+-- vim.opt.foldtext = "''.printf('%3d',v:foldend-v:foldstart+1).' '.getline(v:foldstart).' '"
+-- vim.opt.fillchars = 'fold:·'
 vim.opt.foldcolumn = 'auto'
 
 vim.api.nvim_create_autocmd('FileType', {
-    pattern = 'vim,racket,javascript,lua',
-    command = 'setlocal foldmethod=marker | normal zM',
-    group = init_group
+  pattern = 'vim,racket,javascript,lua',
+  command = 'setlocal foldmethod=marker | normal zM',
+  group = init_group
 })
 
 vim.api.nvim_create_autocmd('FileType', {
-    pattern = 'haskell,python,vim,cpp,c,javascript,lua',
-    command = 'setlocal colorcolumn=120 | hi ColorColumn ctermbg=Green guibg=Green',
-    group = init_group
+  pattern = 'haskell,python,vim,cpp,c,javascript,lua',
+  command = 'setlocal colorcolumn=120 | hi ColorColumn ctermbg=Green guibg=Green',
+  group = init_group
 })
 vim.api.nvim_create_autocmd('TextYankPost', {
-    pattern = '*',
-    callback = function() utils.highlight.on_yank { higroup = "IncSearch", timeout = 222 } end,
-    group = init_group
+  pattern = '*',
+  callback = function() utils.highlight.on_yank { higroup = 'IncSearch', timeout = 222 } end,
+  group = init_group
 })
 
 -- Common UI settings
@@ -106,15 +108,13 @@ vim.opt.tabstop = 4
 vim.opt.expandtab = true
 vim.opt.shiftwidth = 0 -- Use tabstop
 vim.api.nvim_create_autocmd('FileType', {
-    pattern = 'lua,haskell',
-    callback = function()
-        vim.opt_local.tabstop = 2
-    end
+  pattern = 'lua,haskell',
+  callback = function() vim.opt_local.tabstop = 2 end
 })
 -- }}}
 -- Clipboard {{{
 if vim.fn.exists('$WSL_DISTRO_NAME') == 1 then
-    vim.cmd [[
+  vim.cmd [[
     let g:clipboard = {
     \   'name': 'WslClipboard',
     \   'copy': {
@@ -130,14 +130,14 @@ if vim.fn.exists('$WSL_DISTRO_NAME') == 1 then
     ]]
 end
 -- disable the following option because it is slowing down daily commands like s, dd
---opt('clipboard', 'unnamedplus') -- always use yanking to paste in other place
+-- opt('clipboard', 'unnamedplus') -- always use yanking to paste in other place
 -- }}}
 -- Spell {{{
 vim.opt.spell = false
 vim.api.nvim_create_autocmd('FileType', {
-    pattern = 'markdown,tex',
-    callback = function() vim.opt_local.spell = true end,
-    group = init_group
+  pattern = 'markdown,tex',
+  callback = function() vim.opt_local.spell = true end,
+  group = init_group
 })
 vim.opt.spelllang = 'en,cjk'
 -- }}}
@@ -150,7 +150,7 @@ vim.opt.virtualedit = 'onemore'
 
 vim.opt.wrap = false
 
---vim.opt.smartindent = true
+-- vim.opt.smartindent = true
 
 vim.opt.history = 1000
 
@@ -162,6 +162,7 @@ vim.opt.smartcase = true
 vim.cmd [[command! Zenmode execute "Goyo | Limelight"]]
 vim.cmd [[command! SP lua require'animation'.split()]]
 vim.cmd [[command! VS lua require'animation'.vsplit()]]
+vim.cmd [[command! FormatAllLuaConfigs echo system("cd ~/.config/nvim && find . -name '*.lua' ! -name 'packer_compiled.lua' | xargs -n1 -t lua-format -i")]]
 
 -- neovide {{{
 vim.cmd [[

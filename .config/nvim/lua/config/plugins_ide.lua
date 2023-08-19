@@ -1,12 +1,16 @@
 local M = {}
 
-table.insert(M, {'williamboman/mason.nvim', after = 'nvim-lspconfig', config = function() require('mason').setup() end})
+table.insert(M, {
+  'williamboman/mason.nvim',
+  after = 'nvim-lspconfig',
+  config = function() require('mason').setup() end
+})
 
 table.insert(M, {
   'williamboman/mason-lspconfig.nvim',
   after = 'mason.nvim',
   config = function()
-    require('mason-lspconfig').setup({ensure_installed = {'lua_ls', 'pylsp'}})
+    require('mason-lspconfig').setup({ ensure_installed = { 'lua_ls', 'pylsp' } })
     require('mason-lspconfig').setup_handlers({
       -- The first entry (without a key) will be the default handler
       -- and will be called for each installed server that doesn't have
@@ -21,22 +25,25 @@ table.insert(M, {
         require('lspconfig').lua_ls.setup({
           on_init = function(client)
             local path = client.workspace_folders[1].name
-            if not vim.loop.fs_stat(path .. '/.luarc.json') and not vim.loop.fs_stat(path .. '/.luarc.jsonc') then
-              client.config.settings.Lua = vim.tbl_deep_extend('force', client.config.settings.Lua, {
+            if not vim.loop.fs_stat(path .. '/.luarc.json') and
+              not vim.loop.fs_stat(path .. '/.luarc.jsonc') then
+              client.config.settings.Lua = vim.tbl_deep_extend('force', client.config.settings.Lua,
+                                                               {
                 runtime = {
                   -- Tell the language server which version of Lua you're using (most likely LuaJIT in the case of Neovim)
                   version = 'LuaJIT'
                 },
-                diagnostics = {globals = {'vim'}},
+                diagnostics = { globals = { 'vim' } },
                 -- Make the server aware of Neovim runtime files
                 workspace = {
-                  library = {vim.env.VIMRUNTIME}
+                  library = { vim.env.VIMRUNTIME }
                   -- or pull in all of 'runtimepath'. NOTE: this is a lot slower
                   -- library = vim.api.nvim_get_runtime_file('', true)
                 }
               })
 
-              client.notify('workspace/didChangeConfiguration', {settings = client.config.settings})
+              client.notify('workspace/didChangeConfiguration',
+                            { settings = client.config.settings })
             end
             return true
           end
@@ -47,7 +54,10 @@ table.insert(M, {
 })
 
 table.insert(M, 'rafamadriz/friendly-snippets')
-table.insert(M, {'L3MON4D3/LuaSnip', config = function() require('luasnip.loaders.from_vscode').lazy_load() end})
+table.insert(M, {
+  'L3MON4D3/LuaSnip',
+  config = function() require('luasnip.loaders.from_vscode').lazy_load() end
+})
 
 table.insert(M, {
   'simrat39/symbols-outline.nvim',
@@ -55,7 +65,7 @@ table.insert(M, {
   cond = MUtils.not_vscode,
   config = function()
     vim.cmd('au FileType Outline setlocal nowrap | setlocal nolist | setlocal signcolumn=no')
-    vim.g.symbols_outline = {width = 50}
+    vim.g.symbols_outline = { width = 50 }
   end
 })
 
@@ -65,7 +75,7 @@ table.insert(M, {
   run = ':TSUpdate',
   config = function()
     require('nvim-treesitter.configs').setup({
-      ensure_installed = {'c', 'lua', 'python', 'vim', 'vimdoc', 'haskell', 'cpp', 'fish'},
+      ensure_installed = { 'c', 'lua', 'python', 'vim', 'vimdoc', 'haskell', 'cpp', 'fish' },
       highlight = {
         enable = true, -- false will disable the whole extension
         additional_vim_regex_highlighting = false
@@ -73,8 +83,8 @@ table.insert(M, {
 
       auto_install = true,
 
-      indent = {enable = true},
-      autopairs = {enable = true},
+      indent = { enable = true },
+      autopairs = { enable = true },
       rainbow = {
         enable = true,
         -- disable = { 'jsx', 'cpp' }, list of languages you want to disable the plugin for
@@ -88,27 +98,29 @@ table.insert(M, {
         -- disable = { 'c', 'ruby' },  -- optional, list of language that will be disabled
       }
     })
-    if vim.fn.has('win32') == 1 then require('nvim-treesitter.install').compilers = {'clang'} end
+    if vim.fn.has('win32') == 1 then require('nvim-treesitter.install').compilers = { 'clang' } end
   end
 })
 
 -- Completion sources
-table.insert(M, {'hrsh7th/cmp-buffer', after = 'nvim-cmp'})
+table.insert(M, { 'hrsh7th/cmp-buffer', after = 'nvim-cmp' })
 -- table.insert(M, { 'saadparwaiz1/cmp_luasnip', after = 'nvim-cmp' })
-table.insert(M, {'hrsh7th/cmp-nvim-lsp', cond = MUtils.not_vscode})
+table.insert(M, { 'hrsh7th/cmp-nvim-lsp', cond = MUtils.not_vscode })
 
 table.insert(M, {
   'hrsh7th/nvim-cmp',
-  after = {'nvim-autopairs', 'cmp-nvim-lsp', 'LuaSnip'},
+  after = { 'nvim-autopairs', 'cmp-nvim-lsp', 'LuaSnip' },
   config = function()
     -- hrsh7th/nvim-cmp {{{
     local cmp = require('cmp')
 
-    vim.opt.completeopt = {'menu', 'menuone', 'noselect'}
+    vim.opt.completeopt = { 'menu', 'menuone', 'noselect' }
 
     local has_words_before = function()
       local line, col = unpack(vim.api.nvim_win_get_cursor(0))
-      return col ~= 0 and vim.api.nvim_buf_get_lines(0, line - 1, line, true)[1]:sub(col, col):match('%s') == nil
+      return col ~= 0 and
+               vim.api.nvim_buf_get_lines(0, line - 1, line, true)[1]:sub(col, col):match('%s') ==
+               nil
     end
 
     local feedkey = function(key, mode)
@@ -124,13 +136,13 @@ table.insert(M, {
           require('luasnip').lsp_expand(args.body) -- For `luasnip` users.
         end
       },
-      window = {documentation = cmp.config.window.bordered()},
+      window = { documentation = cmp.config.window.bordered() },
       mapping = cmp.mapping.preset.insert({
         ['<C-b>'] = cmp.mapping.scroll_docs(-4),
         ['<C-f>'] = cmp.mapping.scroll_docs(4),
         ['<C-Space>'] = cmp.mapping.complete(),
         ['<C-e>'] = cmp.mapping.abort(),
-        ['<CR>'] = cmp.mapping.confirm({select = false}),
+        ['<CR>'] = cmp.mapping.confirm({ select = false }),
         ['<Tab>'] = cmp.mapping(function(fallback)
           if cmp.visible() and not luasnip.in_snippet() then
             cmp.select_next_item()
@@ -141,7 +153,7 @@ table.insert(M, {
           else
             fallback()
           end
-        end, {'i', 's'}),
+        end, { 'i', 's' }),
         ['<S-Tab>'] = cmp.mapping(function(fallback)
           if cmp.visible() and not luasnip.in_snippet() then
             cmp.select_prev_item()
@@ -150,14 +162,14 @@ table.insert(M, {
           else
             fallback()
           end
-        end, {'i', 's'})
+        end, { 'i', 's' })
       }),
       sources = cmp.config.sources({
-        {name = 'nvim_lsp'}, -- { name = 'vsnip' }, -- For vsnip users.
-        {name = 'luasnip'} -- For luasnip users.
+        { name = 'nvim_lsp' }, -- { name = 'vsnip' }, -- For vsnip users.
+        { name = 'luasnip' } -- For luasnip users.
         -- { name = 'ultisnips' }, -- For ultisnips users.
         -- { name = 'snippy' }, -- For snippy users.
-      }, {{name = 'buffer'}})
+      }, { { name = 'buffer' } })
     })
     -- The nvim-cmp almost supports LSP's capabilities so You should advertise it to LSP servers..
     MUtils.capabilities = require('cmp_nvim_lsp').default_capabilities()
@@ -165,7 +177,7 @@ table.insert(M, {
     -- you need setup cmp first put this after cmp.setup() {{{
     -- If you want insert `(` after select function or method item
     local cmp_autopairs = require('nvim-autopairs.completion.cmp')
-    cmp.event:on('confirm_done', cmp_autopairs.on_confirm_done({map_char = {tex = ''}}))
+    cmp.event:on('confirm_done', cmp_autopairs.on_confirm_done({ map_char = { tex = '' } }))
 
     -- add a lisp filetype (wrap my-function), FYI: Hardcoded = { 'clojure', 'clojurescript', 'fennel', 'janet' }
     -- cmp_autopairs.lisp[#cmp_autopairs.lisp + 1] = 'racket'
@@ -198,7 +210,7 @@ table.insert(M, {
 
         -- Buffer local mappings.
         -- See `:help vim.lsp.*` for documentation on any of the below functions
-        local opts = {buffer = ev.buf}
+        local opts = { buffer = ev.buf }
         vim.keymap.set('n', 'gD', vim.lsp.buf.declaration, opts)
         vim.keymap.set('n', 'gd', vim.lsp.buf.definition, opts)
         vim.keymap.set('n', 'K', vim.lsp.buf.hover, opts)
@@ -206,13 +218,14 @@ table.insert(M, {
         vim.keymap.set('n', '<M-k>', vim.lsp.buf.signature_help, opts)
         vim.keymap.set('n', '<space>wa', vim.lsp.buf.add_workspace_folder, opts)
         vim.keymap.set('n', '<space>wr', vim.lsp.buf.remove_workspace_folder, opts)
-        vim.keymap.set('n', '<space>wl', function() print(vim.inspect(vim.lsp.buf.list_workspace_folders())) end, opts)
+        vim.keymap.set('n', '<space>wl',
+                       function() print(vim.inspect(vim.lsp.buf.list_workspace_folders())) end, opts)
         vim.keymap.set('n', '<space>D', vim.lsp.buf.type_definition, opts)
         vim.keymap.set('n', '<space>rn', vim.lsp.buf.rename, opts)
-        vim.keymap.set({'n', 'v'}, '<space>ca', vim.lsp.buf.code_action, opts)
+        vim.keymap.set({ 'n', 'v' }, '<space>ca', vim.lsp.buf.code_action, opts)
         vim.keymap.set('n', 'gr', vim.lsp.buf.references, opts)
 
-        vim.keymap.set('n', '<space>f', function() vim.lsp.buf.format({async = true}) end, opts)
+        vim.keymap.set('n', '<space>f', function() vim.lsp.buf.format({ async = true }) end, opts)
       end
     })
   end
@@ -258,7 +271,7 @@ table.insert(M, {
 table.insert(M, {
   'lewis6991/gitsigns.nvim',
   cond = MUtils.not_vscode,
-  requires = {'nvim-lua/plenary.nvim'},
+  requires = { 'nvim-lua/plenary.nvim' },
   config = function() require('gitsigns').setup() end
 })
 
@@ -268,18 +281,24 @@ table.insert(M, {
   cond = MUtils.not_vscode,
   config = function()
     local dap = require('dap')
-    dap.configurations.lua = {{type = 'nlua', request = 'attach', name = 'Attach to running Neovim instance'}}
+    dap.configurations.lua = {
+      { type = 'nlua', request = 'attach', name = 'Attach to running Neovim instance' }
+    }
 
     dap.adapters.nlua = function(callback, config)
-      callback({type = 'server', host = config.host or '127.0.0.1', port = config.port or 8088})
+      callback({ type = 'server', host = config.host or '127.0.0.1', port = config.port or 8088 })
     end
   end
 })
 
-table.insert(M, {'jbyuki/one-small-step-for-vimkind', cond = MUtils.not_vscode, requires = 'mfussenegger/nvim-dap'})
+table.insert(M, {
+  'jbyuki/one-small-step-for-vimkind',
+  cond = MUtils.not_vscode,
+  requires = 'mfussenegger/nvim-dap'
+})
 
 -- Language support
-table.insert(M, {'lervag/vimtex', ft = {'tex', 'latex'}})
+table.insert(M, { 'lervag/vimtex', ft = { 'tex', 'latex' } })
 
 table.insert(M, {
   'plasticboy/vim-markdown',

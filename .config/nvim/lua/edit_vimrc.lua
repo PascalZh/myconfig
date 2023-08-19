@@ -6,7 +6,8 @@ local p = vim.fn.stdpath('config')
 -- change the sequence, only appending the table is allowed.
 local files = {
   'init.lua', 'lua/config/plugins.lua', 'lua/config/utils.lua', 'lua/config/plugins_ui.lua',
-  'lua/config/plugins_editor.lua', 'lua/config/plugins_ide.lua', 'lua/config/plugins_tool.lua', 'lua/edit_vimrc.lua'
+  'lua/config/plugins_editor.lua', 'lua/config/plugins_ide.lua', 'lua/config/plugins_tool.lua',
+  'lua/edit_vimrc.lua'
 }
 for i, _ in ipairs(files) do files[i] = globpath(p, files[i]) end
 
@@ -37,16 +38,16 @@ local function edit_vimrc()
   local duration = 200
   animation.run(function()
     vim.cmd('tabedit ' .. files[1])
-    animation.co.vsplit(0.5, files[2], '', {duration = duration})
-    animation.co.split(0.5, files[3], '', {duration = duration})
+    animation.co.vsplit(0.5, files[2], '', { duration = duration })
+    animation.co.split(0.5, files[3], '', { duration = duration })
     vim.cmd('tabedit ' .. files[4])
-    animation.co.vsplit(0.5, files[5], '', {duration = duration * 2 / 3})
-    animation.co.split(0.5, files[6], '', {duration = duration * 2 / 3})
+    animation.co.vsplit(0.5, files[5], '', { duration = duration * 2 / 3 })
+    animation.co.split(0.5, files[6], '', { duration = duration * 2 / 3 })
     vim.cmd('wincmd h')
-    animation.co.split(0.5, files[7], '', {duration = duration * 2 / 3})
+    animation.co.split(0.5, files[7], '', { duration = duration * 2 / 3 })
   end)
 
 end
 
-return {start = edit_vimrc}
+return { start = edit_vimrc }
 

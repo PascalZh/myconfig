@@ -7,7 +7,7 @@ M.prefix = {
   autocmd = 'MyAutocmd',
   statusline_func = 'MyStatusLineFunc_',
   func = 'MyFunc',
-  notify_title = 'nvim-config',
+  notify_title = 'nvim-config'
 }
 
 -- By default noremap
@@ -16,9 +16,7 @@ function M.map_key(modes, lhs, rhs, opts)
   opts.noremap = true
 
   modes = type(modes) == 'string' and { modes } or modes
-  for _, mode in ipairs(modes) do
-    vim.api.nvim_set_keymap(mode, lhs, rhs, opts)
-  end
+  for _, mode in ipairs(modes) do vim.api.nvim_set_keymap(mode, lhs, rhs, opts) end
 end
 
 function M.remap_key(modes, lhs, rhs, opts)
@@ -26,9 +24,7 @@ function M.remap_key(modes, lhs, rhs, opts)
   opts.noremap = false
 
   modes = type(modes) == 'string' and { modes } or modes
-  for _, mode in ipairs(modes) do
-    vim.api.nvim_set_keymap(mode, lhs, rhs, opts)
-  end
+  for _, mode in ipairs(modes) do vim.api.nvim_set_keymap(mode, lhs, rhs, opts) end
 end
 
 M.map_helpers = { map_key = M.map_key, remap_key = M.remap_key }
@@ -62,9 +58,7 @@ end
 local shell = vim.opt.shell:get()
 local shellcmdflag = vim.opt.shellcmdflag:get()
 
-M.im_select = {
-  opts = { normal_imkey = '1033' }
-}
+M.im_select = { opts = { normal_imkey = '1033' } }
 
 M.im_select.insert_leave_pre = function()
   local Job = require 'plenary.job'
@@ -98,8 +92,9 @@ M.im_select.insert_enter = function()
 
   Job:new({
     command = shell,
-    args = { shellcmdflag, 'im-select.exe ' ..
-        (M.im_select.last_imkey or M.im_select.opts.normal_imkey) }
+    args = {
+      shellcmdflag, 'im-select.exe ' .. (M.im_select.last_imkey or M.im_select.opts.normal_imkey)
+    }
   }):start()
 end
 -- }}}
@@ -107,17 +102,11 @@ end
 M.highlight = {}
 
 function M.highlight.on_yank(args)
-  if (vim.b.visual_multi == nil) then
-    vim.highlight.on_yank(args)
-  end
+  if (vim.b.visual_multi == nil) then vim.highlight.on_yank(args) end
 end
 
 function M.show_loaded_plugins()
-  for name, v in pairs(packer_plugins) do
-    if (v.loaded) then
-      print(name)
-    end
-  end
+  for name, v in pairs(packer_plugins) do if (v.loaded) then print(name) end end
 end
 
 return M
