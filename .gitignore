@@ -1,9 +1,11 @@
 /*
 !/.gitignore
+!/scripts/
 
 !/README.md
 !/.gitconfig
 !/.myshrc
+!/.Xmodmaprc
 !/.xmodmaprc
 !/.tmux.conf.local.local
 !/.compton.conf

@@ -10,15 +10,20 @@ set -a -gx LD_LIBRARY_PATH /usr/local/cuda-11.7/lib64
 # :terminal :! in neovim need the following environment set to work normally.
 set -gx LC_ALL "en_US.UTF-8"
 set -gx LANG "en_US.UTF-8"
-source /opt/ros/noetic/share/rosbash/rosfish
-bass source /opt/ros/noetic/setup.bash
+bass source ~/.cargo/env
+
+if which rosdep 1>/dev/null
+    source /opt/ros/noetic/share/rosbash/rosfish
+    bass source /opt/ros/noetic/setup.bash
+end
 
 function P_wsl_ip
     echo (ip route | grep default | awk '{print $3}')
 end
 function P_set_proxy
-    set -gx https_proxy http://(P_wsl_ip):10809
-    set -gx http_proxy http://(P_wsl_ip):10809
+    set -gx https_proxy http://127.0.0.1:7890
+    set -gx http_proxy http://127.0.0.1:7890
+    set -gx all_proxy socks5://127.0.0.1:7891
 end
 
 function P_set_display_vcxsrv
@@ -31,6 +36,11 @@ end
 
 function P_settings64
     set -x PATH $PATH /tools/Xilinx/Vivado/2022.2/bin
+end
+
+function P_get_proxy_config
+    wget -O ~/config.yaml 'http://sub.maoxiongnet.com/sub?target=clash&udp=true&filename=maoxiong&interval=86400&append_info&url=https://ierboryt.spphhnhg.top/link/fGFmoZ57rIPIK7Vw?clash=1&extend=1'
+    sudo mv ~/config.yaml /etc/clash
 end
 
 P_set_proxy
@@ -58,6 +68,7 @@ if status --is-interactive
     abbr -a -g gl 'git lslog'
     abbr -a -g gd 'git diff'
 
+    abbr -a -g sa 'sudo apt'
     abbr -a -g sai 'sudo apt install'
     abbr -a -g sar 'sudo apt remove'
     abbr -a -g sau 'sudo apt update'
@@ -168,6 +179,7 @@ function P_install_my_tools
 
         if grep -w "z_lua_for_fish" /tmp/dialogtmp
             P_install lua5.3
+            P_install liblua5.3-dev
             if test ! -d ~/.config/fish/conf.d
                 mkdir ~/.config/fish/conf.d
             end
@@ -222,6 +234,8 @@ function P_install_my_tools
     P_install fd-find
     P_install tldr
     P_install bat
+
+    # apt install exa only after Ubuntu 20.10
     P_install exa
 
     # Install delta
