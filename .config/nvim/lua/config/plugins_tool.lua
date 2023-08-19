@@ -47,7 +47,7 @@ table.insert(M, {
 table.insert(M, {
 	"kyazdani42/nvim-tree.lua",
 	requires = { "kyazdani42/nvim-web-devicons" },
-	cmd = { "NvimTreeFocus", "NvimTreeToggle" },
+	--cmd = { "NvimTreeFocus", "NvimTreeToggle" },
 	config = function()
 		require("nvim-tree").setup({
 			hijack_cursor = true,

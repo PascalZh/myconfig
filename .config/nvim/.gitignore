@@ -1,5 +1,6 @@
 /* 
 !/.gitignore
+!/.lua-format
 
 !/init.lua
 !/ginit.vim

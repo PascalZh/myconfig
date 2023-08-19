@@ -3,30 +3,21 @@ if not vim.g.animation_fps then
   -- It doesn't mean the true fps, you should try it in your machine
   vim.g.animation_fps = 90
 end
-if not vim.g.animation_duration then
-  vim.g.animation_duration = 350
-end
-if not vim.g.animation_ease_func then
-  vim.g.animation_ease_func = 'quad'
-end
+if not vim.g.animation_duration then vim.g.animation_duration = 350 end
+if not vim.g.animation_ease_func then vim.g.animation_ease_func = 'quad' end
 
 local M = {DEBUG = false}
 
 -- helper local functions {{{
 ---@return number Time in milliseconds
-local function time_ms()
-  return vim.loop.hrtime() / 1000000
-end
+local function time_ms() return vim.loop.hrtime() / 1000000 end
 
-local function dprint(str)
-  if M.DEBUG then
-    print(str)
-  end
-end
+local function dprint(str) if M.DEBUG then print(str) end end
 
 local function dprint_state(elapsed_time, cur_state, next_state)
   if (M.DEBUG) then
-    dprint(string.format('{ elapsed_time, cur_state, next_state} = {% 6.1f, % 8.2f, % 4.2f }', elapsed_time, cur_state, next_state))
+    dprint(string.format('{ elapsed_time, cur_state, next_state} = {% 6.1f, % 8.2f, % 4.2f }', elapsed_time, cur_state,
+                         next_state))
   end
 end
 
@@ -73,8 +64,8 @@ function M.co.animate(start_state, end_state, update, anim_opt)
   local delta_state = end_state - start_state
   local cur_state = start_state
   local start_time
-  timer:start(delay, interval, vim.schedule_wrap(function ()
-    if (not start_time) then  -- first iteration, save the start_time
+  timer:start(delay, interval, vim.schedule_wrap(function()
+    if (not start_time) then -- first iteration, save the start_time
       start_time = time_ms()
       return
     end
@@ -85,7 +76,7 @@ function M.co.animate(start_state, end_state, update, anim_opt)
     if (elapsed_time > duration) then
       timer:stop()
 
-      update(cur_state, end_state)  -- ensure end_state is reached
+      update(cur_state, end_state) -- ensure end_state is reached
 
       coroutine.resume(co)
     else
@@ -103,10 +94,10 @@ end
 
 -- Predefined 'update' functions {{{
 local function make_scroll_update(action)
-  return function (cur_state, next_state)
+  return function(cur_state, next_state)
     local diff = math.floor(next_state - cur_state)
     if (diff >= 1) then
-      vim.cmd('execute "normal! '..tostring(diff)..action..'"')
+      vim.cmd('execute "normal! ' .. tostring(diff) .. action .. '"')
       return cur_state + diff
     else
       return cur_state
@@ -115,11 +106,11 @@ local function make_scroll_update(action)
 end
 
 local function make_resize_update(cmd)
-  return function (cur_state, next_state)
+  return function(cur_state, next_state)
     next_state = math.floor(next_state)
     local diff = next_state - cur_state
     if (diff ~= 0) then
-      vim.cmd("execute '"..cmd..tostring(next_state).."'")
+      vim.cmd('execute \'' .. cmd .. tostring(next_state) .. '\'')
       return next_state
     else
       return cur_state
@@ -127,22 +118,18 @@ local function make_resize_update(cmd)
   end
 end
 
-local scroll_up_update = make_scroll_update("\\<C-e>")
-local scroll_down_update = make_scroll_update("\\<C-y>")
+local scroll_up_update = make_scroll_update('\\<C-e>')
+local scroll_down_update = make_scroll_update('\\<C-y>')
 
-local resize_update = make_resize_update("resize ")
-local vresize_update = make_resize_update("vertical resize ")
+local resize_update = make_resize_update('resize ')
+local vresize_update = make_resize_update('vertical resize ')
 -- }}}
 
 -- Common api
 
-function M.co.scroll_up(delta, anim_opt)
-  M.co.animate(0, delta, scroll_up_update, anim_opt)
-end
+function M.co.scroll_up(delta, anim_opt) M.co.animate(0, delta, scroll_up_update, anim_opt) end
 
-function M.co.scroll_down(delta, anim_opt)
-  M.co.animate(0, delta, scroll_down_update, anim_opt)
-end
+function M.co.scroll_down(delta, anim_opt) M.co.animate(0, delta, scroll_down_update, anim_opt) end
 
 function M.co.resize_delta(delta, anim_opt)
   M.co.animate(vim.fn.winheight(0), vim.fn.winheight(0) + delta, resize_update, anim_opt)
@@ -156,7 +143,7 @@ end
 -- @param file string Default: ''.
 -- @param direction string Could be 'leftabove', 'rightbelow', ... see :leftabove in the help of vim. Default: ''.
 function M.co.split(size, file, direction, anim_opt)
-  vim.cmd((direction or '')..' 0sp '..(file or ''))
+  vim.cmd((direction or '') .. ' 0sp ' .. (file or ''))
   M.co.resize_delta(math.floor(vim.o.lines * (size or 0.5)) - 2, anim_opt)
   vim.cmd('redraw')
 end
@@ -165,34 +152,22 @@ end
 -- @param file string Default: ''.
 -- @param direction string Could be 'leftabove', 'rightbelow', ... see :leftabove in the help of vim. Default: ''.
 function M.co.vsplit(size, file, direction, anim_opt)
-  vim.cmd((direction or '')..' 0vs '..(file or ''))
+  vim.cmd((direction or '') .. ' 0vs ' .. (file or ''))
   M.co.vresize_delta(math.floor(vim.o.columns * (size or 0.5)) - 2, anim_opt)
   vim.cmd('redraw')
 end
 
-function M.scroll_up()
-  M.run(function ()
-    M.co.scroll_up(vim.fn.winheight(0))
-  end)
-end
+function M.scroll_up() M.run(function() M.co.scroll_up(vim.fn.winheight(0)) end) end
 
-function M.scroll_up_half()
-  M.run(function ()
-    M.co.scroll_up(vim.fn.winheight(0)/2)
-  end)
-end
+function M.scroll_up_half() M.run(function() M.co.scroll_up(vim.fn.winheight(0) / 2) end) end
 
-function M.scroll_down() M.run(function () M.co.scroll_down(vim.fn.winheight(0)) end) end
+function M.scroll_down() M.run(function() M.co.scroll_down(vim.fn.winheight(0)) end) end
 
-function M.scroll_down_half() M.run(function () M.co.scroll_down(vim.fn.winheight(0)/2) end) end
+function M.scroll_down_half() M.run(function() M.co.scroll_down(vim.fn.winheight(0) / 2) end) end
 
-function M.split(size, file, direction, anim_opt)
-  M.run(function () M.co.split(size, file, direction, anim_opt) end)
-end
+function M.split(size, file, direction, anim_opt) M.run(function() M.co.split(size, file, direction, anim_opt) end) end
 
-function M.vsplit(size, file, direction, anim_opt)
-  M.run(function () M.co.vsplit(size, file, direction, anim_opt) end)
-end
+function M.vsplit(size, file, direction, anim_opt) M.run(function() M.co.vsplit(size, file, direction, anim_opt) end) end
 
 -- Ease functions {{{
 M.ease_funcs = {}
@@ -200,13 +175,11 @@ M.ease_funcs = {}
 ---@param y_ number end state - start state
 ---@param t_ number duration
 ---@param t  number current time
-function M.ease_funcs.linear(y_, t_, t)
-  return y_ * (t / t_)
-end
+function M.ease_funcs.linear(y_, t_, t) return y_ * (t / t_) end
 
 function M.ease_funcs.quad(y_, t_, t)
   local u = t / t_
-  return - y_ * u * (u - 2)
+  return -y_ * u * (u - 2)
 end
 
 function M.ease_funcs.cubic(y_, t_, t)

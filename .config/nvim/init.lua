@@ -80,7 +80,7 @@ vim.opt.number = true
 vim.opt.relativenumber = true
 
 vim.opt.list = true
-vim.opt.listchars = 'tab:»⋅,nbsp:+,trail:⋅,extends:→,precedes:←'
+vim.opt.listchars = 'tab:»⋅,nbsp:+,trail:⋅,extends:→,precedes:←,eol:↴'
 
 vim.opt.scrolloff = 7 -- Minimum lines to keep above and below cursor
 vim.opt.sidescrolloff = 14
