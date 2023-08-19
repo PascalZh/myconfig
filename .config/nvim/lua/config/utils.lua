@@ -1,14 +1,13 @@
-_G.MUtils = MUtils == nil and {} or MUtils
 local M = {}
-local cmd = vim.cmd
+_G.MUtils = MUtils == nil and {} or MUtils
 
-local shell = vim.opt.shell:get()
-local shellcmdflag = vim.opt.shellcmdflag:get()
+MUtils.not_vscode = function() return not vim.g.vscode end
 
 M.prefix = {
   autocmd = 'MyAutocmd',
   statusline_func = 'MyStatusLineFunc_',
-  func = 'MyFunc'
+  func = 'MyFunc',
+  notify_title = 'nvim-config',
 }
 
 -- By default noremap
@@ -35,38 +34,21 @@ end
 M.map_helpers = { map_key = M.map_key, remap_key = M.remap_key }
 
 function M.map_helpers.imap_key(lhs, rhs, opts) M.map_key('i', lhs, rhs, opts) end
-
 function M.map_helpers.nmap_key(lhs, rhs, opts) M.map_key('n', lhs, rhs, opts) end
-
 function M.map_helpers.vmap_key(lhs, rhs, opts) M.map_key('v', lhs, rhs, opts) end
-
 function M.map_helpers.xmap_key(lhs, rhs, opts) M.map_key('v', lhs, rhs, opts) end
-
 function M.map_helpers.omap_key(lhs, rhs, opts) M.map_key('o', lhs, rhs, opts) end
-
 function M.map_helpers.nvmap_key(lhs, rhs, opts) M.map_key({ 'n', 'v' }, lhs, rhs, opts) end
-
 function M.map_helpers.nvomap_key(lhs, rhs, opts) M.map_key({ 'n', 'v', 'o' }, lhs, rhs, opts) end
-
 function M.map_helpers.lmap_key(lhs, rhs, opts) M.map_key('l', lhs, rhs, opts) end
-
 function M.map_helpers.iremap_key(lhs, rhs, opts) M.remap_key('i', lhs, rhs, opts) end
-
 function M.map_helpers.nremap_key(lhs, rhs, opts) M.remap_key('n', lhs, rhs, opts) end
-
 function M.map_helpers.vremap_key(lhs, rhs, opts) M.remap_key('v', lhs, rhs, opts) end
-
 function M.map_helpers.xremap_key(lhs, rhs, opts) M.remap_key('v', lhs, rhs, opts) end
-
 function M.map_helpers.oremap_key(lhs, rhs, opts) M.remap_key('o', lhs, rhs, opts) end
-
 function M.map_helpers.nvremap_key(lhs, rhs, opts) M.remap_key({ 'n', 'v' }, lhs, rhs, opts) end
-
 function M.map_helpers.nvoremap_key(lhs, rhs, opts) M.remap_key({ 'n', 'v', 'o' }, lhs, rhs, opts) end
-
 function M.map_helpers.lremap_key(lhs, rhs, opts) M.remap_key('l', lhs, rhs, opts) end
-
----------------------------------- MUtils --------------------------------------
 
 M.toggle_background = function()
   if vim.opt.background:get() == 'dark' then
@@ -76,8 +58,10 @@ M.toggle_background = function()
   end
 end
 
--- im_select {{{
--- A module to switch input method in normal mode
+-- im_select: A module to switch input method in normal mode {{{
+local shell = vim.opt.shell:get()
+local shellcmdflag = vim.opt.shellcmdflag:get()
+
 M.im_select = {
   opts = { normal_imkey = '1033' }
 }

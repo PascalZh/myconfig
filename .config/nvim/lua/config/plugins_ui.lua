@@ -1,96 +1,55 @@
 local M = {}
-local not_vscode = function() return not vim.g.vscode end
 
 table.insert(M, {
-  'nvim-lualine/lualine.nvim',
-  cond = not_vscode,
-  requires = { 'kyazdani42/nvim-web-devicons' },
-  config = function()
-
-    local function statusline_encoding()
-      local fenc = vim.o.fileencoding
-      return fenc == 'utf-8' and '' or fenc
-    end
-
-    require 'lualine'.setup {
-      options = {
-        icons_enabled = true,
-        theme = 'material',
-        component_separators = {
-          left = '',
-          right = ''
-        },
-        section_separators = {
-          left = '',
-          right = ''
-        },
-        disabled_filetypes = { 'NvimTree', 'Outline' },
-        always_divide_middle = true
-      },
-      sections = {
-        lualine_a = { 'mode' },
-        lualine_b = { 'branch', 'diff', 'diagnostics' },
-        lualine_c = { 'filename' },
-        lualine_x = { statusline_encoding, 'fileformat', {
-          'filetype',
-          icon_only = true
-        } },
-        lualine_y = { 'progress' },
-        lualine_z = { 'location' }
-      },
-      inactive_sections = {
-        lualine_a = {},
-        lualine_b = {},
-        lualine_c = { 'filename' },
-        lualine_x = { 'location' },
-        lualine_y = {},
-        lualine_z = {}
-      },
-      tabline = {},
-      extensions = {}
-    }
-  end
+	"nvim-lualine/lualine.nvim",
+	cond = MUtils.not_vscode,
+	requires = { "kyazdani42/nvim-web-devicons" },
+	config = function()
+		require("config.statusline.slanted-gaps")
+	end,
 })
 
 table.insert(M, {
-  "lukas-reineke/indent-blankline.nvim",
-  cond = not_vscode,
-  config = function()
-    vim.g.indent_blankline_filetype_exclude = { 'help', 'qf', 'NvimTree', 'Outline', 'startuptime', 'packer',
-      'ColorExplorer' }
-    vim.cmd [[highlight IndentBlanklineIndent1 guifg=#E06C75 gui=nocombine]]
-    vim.cmd [[highlight IndentBlanklineIndent2 guifg=#E5C07B gui=nocombine]]
-    vim.cmd [[highlight IndentBlanklineIndent3 guifg=#98C379 gui=nocombine]]
-    vim.cmd [[highlight IndentBlanklineIndent4 guifg=#56B6C2 gui=nocombine]]
-    vim.cmd [[highlight IndentBlanklineIndent5 guifg=#61AFEF gui=nocombine]]
-    vim.cmd [[highlight IndentBlanklineIndent6 guifg=#C678DD gui=nocombine]]
+	"lukas-reineke/indent-blankline.nvim",
+	cond = MUtils.not_vscode,
+	config = function()
+		vim.g.indent_blankline_filetype_exclude =
+			{ "help", "qf", "NvimTree", "Outline", "startuptime", "packer", "ColorExplorer" }
+		vim.cmd([[highlight IndentBlanklineIndent1 guifg=#E06C75 gui=nocombine]])
+		vim.cmd([[highlight IndentBlanklineIndent2 guifg=#E5C07B gui=nocombine]])
+		vim.cmd([[highlight IndentBlanklineIndent3 guifg=#98C379 gui=nocombine]])
+		vim.cmd([[highlight IndentBlanklineIndent4 guifg=#56B6C2 gui=nocombine]])
+		vim.cmd([[highlight IndentBlanklineIndent5 guifg=#61AFEF gui=nocombine]])
+		vim.cmd([[highlight IndentBlanklineIndent6 guifg=#C678DD gui=nocombine]])
 
-    vim.opt.list = true
-    -- vim.opt.listchars:append("space:⋅")
-    vim.opt.listchars:append("eol:↴")
+		--vim.opt.list = true
+		--vim.opt.listchars:append("space:⋅")
+		vim.opt.listchars:append("eol:↴")
 
-    require("indent_blankline").setup {
-      space_char_blankline = " ",
-      --char_highlight_list = {"IndentBlanklineIndent1", "IndentBlanklineIndent2", "IndentBlanklineIndent3",
-      --                       "IndentBlanklineIndent4", "IndentBlanklineIndent5", "IndentBlanklineIndent6"}
-    }
-  end
+		require("indent_blankline").setup({
+			show_current_context = true,
+			show_current_context_start = true,
+			--space_char_blankline = " ",
+			--char_highlight_list = {"IndentBlanklineIndent1", "IndentBlanklineIndent2", "IndentBlanklineIndent3",
+			--                       "IndentBlanklineIndent4", "IndentBlanklineIndent5", "IndentBlanklineIndent6"}
+		})
+	end,
 })
 
 table.insert(M, {
-  'romgrk/barbar.nvim',
-  cond = not_vscode,
-  requires = { 'kyazdani42/nvim-web-devicons' }
+	"romgrk/barbar.nvim",
+	cond = MUtils.not_vscode,
+	requires = { "kyazdani42/nvim-web-devicons" },
 })
 
-table.insert(M, { 'rakr/vim-one' })
+table.insert(M, { "rakr/vim-one" })
 
-table.insert(M, { 'dracula/vim', as = 'dracula' })
+table.insert(M, { "dracula/vim", as = "dracula" })
 
 table.insert(M, { "p00f/nvim-ts-rainbow", after = "nvim-treesitter", event = "BufRead" })
 
-table.insert(M, { 'junegunn/goyo.vim', cond = not_vscode })
-table.insert(M, { 'junegunn/limelight.vim', cond = not_vscode })
+table.insert(M, { "junegunn/goyo.vim", cond = MUtils.not_vscode })
+table.insert(M, { "junegunn/limelight.vim", cond = MUtils.not_vscode })
 
 -- use 'itchyny/lightline.vim'
 -- use {'mengelbrecht/lightline-bufferline', requires = {'ryanoasis/vim-devicons'}}

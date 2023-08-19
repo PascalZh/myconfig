@@ -129,11 +129,11 @@ nremap_key('<PageUp>', '<C-b>')
 --nmap_key('<C-k>', '<C-w>k')
 --nmap_key('<C-l>', '<C-w>l')
 
-local delta_resize = 6
-nmap_key('<C-w><', string.rep('<C-w><', delta_resize * 2))
-nmap_key('<C-w>>', string.rep('<C-w>>', delta_resize * 2))
-nmap_key('<C-w>+', string.rep('<C-w>+', delta_resize))
-nmap_key('<C-w>-', string.rep('<C-w>-', delta_resize))
+local step = 6
+nmap_key('<C-w><', string.rep('<C-w><', step * 2))
+nmap_key('<C-w>>', string.rep('<C-w>>', step * 2))
+nmap_key('<C-w>+', string.rep('<C-w>+', step))
+nmap_key('<C-w>-', string.rep('<C-w>-', step))
 
 nmap_key('<C-q>', '<C-w>q')
 -- }}}
