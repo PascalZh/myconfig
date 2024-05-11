@@ -5,8 +5,8 @@ local p = vim.fn.stdpath('config')
 -- The sequence of this table is hardcoded in the following codes, so don't
 -- change the sequence, only appending the table is allowed.
 local files = {
-  'init.lua', 'lua/config/plugins.lua', 'lua/config/utils.lua', 'lua/config/plugins_ui.lua',
-  'lua/config/plugins_editor.lua', 'lua/config/plugins_ide.lua', 'lua/config/plugins_tool.lua',
+  'init.lua', 'lua/plugins/plugins.lua', 'lua/config/utils.lua', 'lua/plugins/plugins_ui.lua',
+  'lua/plugins/plugins_editor.lua', 'lua/plugins/plugins_ide.lua', 'lua/plugins/plugins_tool.lua',
   'lua/edit_vimrc.lua'
 }
 for i, _ in ipairs(files) do files[i] = globpath(p, files[i]) end

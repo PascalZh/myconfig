@@ -1,16 +1,20 @@
+# :terminal :! in neovim need the following environment set to work normally.
+set -gx LC_ALL "en_US.UTF-8"
+#set -gx LANG "en_US.UTF-8"
+#
 set -gx IDF_PATH "/home/laozhang/esp/esp-idf"
 set -a -gx PATH $HOME/julia-1.7.2/bin
+set -a -gx PATH $HOME/miniconda3/bin
 set -gx JULIA_NUM_THREADS auto
 set -a -gx PATH $HOME/.local/bin
 set -a -gx PATH $HOME/.ghcup/bin
 set -a -gx PATH $HOME/scripts
 set -a -gx PATH /usr/local/cuda-11.7/bin
+set -a -gx PATH /home/zsy/Downloads/PCDViewer-4.9.0-Ubuntu20.04
 set -a -gx LD_LIBRARY_PATH /usr/local/cuda-11.7/lib64
-
-# :terminal :! in neovim need the following environment set to work normally.
-set -gx LC_ALL "en_US.UTF-8"
-set -gx LANG "en_US.UTF-8"
+#pyenv init - | source
 bass source ~/.cargo/env
+bass source /opt/ros/noetic/setup.bash
 
 if which rosdep 1>/dev/null
     source /opt/ros/noetic/share/rosbash/rosfish
@@ -20,10 +24,17 @@ end
 function P_wsl_ip
     echo (ip route | grep default | awk '{print $3}')
 end
-function P_set_proxy
+
+function proxy_all
     set -gx https_proxy http://127.0.0.1:7890
     set -gx http_proxy http://127.0.0.1:7890
     set -gx all_proxy socks5://127.0.0.1:7891
+end
+
+function unproxy_all
+    set -gx https_proxy
+    set -gx http_proxy
+    set -gx all_proxy
 end
 
 function P_set_display_vcxsrv
@@ -43,7 +54,6 @@ function P_get_proxy_config
     sudo mv ~/config.yaml /etc/clash
 end
 
-P_set_proxy
 
 if status --is-interactive
     #alias ll 'ls -alhF'
@@ -59,6 +69,10 @@ if status --is-interactive
     abbr -a -g vim 'nvim'
     abbr -a -g pls 'sudo'
     abbr -a -g t 'tree -h'
+    abbr -a -g dr 'docker run'
+    abbr -a -g de 'docker exec -it'
+    abbr -a -g di 'docker images'
+    abbr -a -g dp 'docker ps'
 
     abbr -a -g gs 'git status'
     abbr -a -g ga 'git add'
@@ -140,7 +154,7 @@ function P_install_my_tools
     P_install curl
 
     dialog --checklist "Install some common softwares" 0 0 5 \
-    "get_nvim"                "get newest NVIM nightly(unstable) and put it in /usr/local/bin"         off \
+    "get_nvim"                "get NVIM and put it in /usr/local/bin"         off \
     "setup_nvim"              "install pynvim and open nvim, you should run install commands manually" off \
     "install_oh_my_fish"      "install oh-my-fish"                                                     off \
     "install_fish_plugins"    "install fish plugins"                                                   off \
@@ -153,7 +167,7 @@ function P_install_my_tools
 
     if test $status = 0
         if grep -w "get_nvim" /tmp/dialogtmp
-            curl -fLo ~/nvim.appimage https://github.com/neovim/neovim/releases/download/nightly/nvim.appimage
+            curl -fLo ~/nvim.appimage https://github.com/neovim/neovim/releases/download/v0.9.4/nvim.appimage
             sudo chmod u+x ~/nvim.appimage
             sudo mv ~/nvim.appimage /usr/local/bin/nvim
         end
@@ -210,13 +224,14 @@ function P_install_my_tools
         end
 
         if grep -w "ros-noetic" /tmp/dialogtmp
-            sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list'
-            curl -s https://raw.githubusercontent.com/ros/rosdistro/master/ros.asc | sudo apt-key add -
-            sudo apt update
-            sudo apt install -y ros-noetic-desktop-full
-            sudo apt install -y python3-rosdep python3-rosinstall python3-rosinstall-generator python3-wstool build-essential
-            sudo rosdep init
-            rosdep update
+            echo "Not available now."
+            #sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list'
+            #curl -s https://raw.githubusercontent.com/ros/rosdistro/master/ros.asc | sudo apt-key add -
+            #sudo apt update
+            #sudo apt install -y ros-noetic-desktop-full
+            #sudo apt install -y python3-rosdep python3-rosinstall python3-rosinstall-generator python3-wstool build-essential
+            #sudo rosdep init
+            #rosdep update
         end
 
     end

@@ -1,10 +1,12 @@
+vim.g.python3_host_prog = '/usr/bin/python3' -- setting python3 manually to boost startup time
+
 local _, utils = xpcall(function() return require('config.utils') end, print)
 
-xpcall(function() require('config.plugins') end, print)
 xpcall(function() require('config.mappings') end, print)
 
-vim.g.loaded_netrw = 1
-vim.g.loaded_netrwPlugin = 1
+-- disable netrw
+--vim.g.loaded_netrw = 1
+--vim.g.loaded_netrwPlugin = 1
 -- vim.g.netrw_browsex_viewer = 'cmd.exe /C start' -- TODO FIXME
 -- vim.g.netrw_suppress_gx_mesg = 0
 
@@ -12,7 +14,7 @@ local init_group = utils.prefix.autocmd .. 'Init'
 vim.api.nvim_create_augroup(init_group, { clear = true })
 
 vim.api.nvim_create_autocmd('TermOpen',
-                            { pattern = '*', command = 'startinsert', group = init_group })
+  { pattern = '*', command = 'startinsert', group = init_group })
 
 vim.opt.autochdir = false
 
@@ -34,16 +36,7 @@ vim.api.nvim_create_autocmd('InsertLeavePre', {
 vim.opt.termguicolors = true
 vim.opt.background = 'dark'
 
--- Color Scheme
--- cmd[[colorscheme NeoSolarized]]
 vim.opt.laststatus = 3
-local color_list = { 'dracula', 'NeoSolarized', 'one' }
-if not vim.g.vscode then
-  xpcall(function()
-    math.randomseed(math.floor(vim.fn.localtime() / 60 / 24))
-    vim.cmd('colorscheme ' .. color_list[math.random(1, #color_list)])
-  end, function(arg) end)
-end
 
 -- Fold
 -- vim.opt.foldtext = "''.printf('%3d',v:foldend-v:foldstart+1).' '.getline(v:foldstart).' '"
@@ -101,6 +94,7 @@ vim.opt.mouse = 'a'
 -- Format {{{
 -- `formatoptions` is set by ftplugin/*.vim in neovim runtime folder and other
 -- plugins' folder, I don't know how to override them. TODO
+vim.opt.formatoptions = ''
 vim.opt.textwidth = 80
 -- }}}
 -- Tab {{{
@@ -130,7 +124,7 @@ if vim.fn.exists('$WSL_DISTRO_NAME') == 1 then
     ]]
 end
 -- disable the following option because it is slowing down daily commands like s, dd
--- opt('clipboard', 'unnamedplus') -- always use yanking to paste in other place
+vim.opt.clipboard = 'unnamedplus' -- always use yanking to paste in other place
 -- }}}
 -- Spell {{{
 vim.opt.spell = false
@@ -163,6 +157,33 @@ vim.cmd [[command! Zenmode execute "Goyo | Limelight"]]
 vim.cmd [[command! SP lua require'animation'.split()]]
 vim.cmd [[command! VS lua require'animation'.vsplit()]]
 vim.cmd [[command! FormatAllLuaConfigs echo system("cd ~/.config/nvim && find . -name '*.lua' ! -name 'packer_compiled.lua' | xargs -n1 -t lua-format -i")]]
+
+-- lazy.nvim {{{
+local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
+if not vim.loop.fs_stat(lazypath) then
+  vim.fn.system({
+    "git",
+    "clone",
+    "--filter=blob:none",
+    "https://github.com/folke/lazy.nvim.git",
+    "--branch=stable", -- latest stable release
+    lazypath,
+  })
+end
+vim.opt.rtp:prepend(lazypath)
+
+require("lazy").setup("plugins")
+-- }}}
+
+---- randomly choose one color scheme
+--local color_list = { 'NeoSolarized', 'one' }
+--if not vim.g.vscode then
+--  xpcall(function()
+--    math.randomseed(math.floor(vim.fn.localtime() / 60 / 24))
+--    vim.cmd('colorscheme ' .. color_list[math.random(1, #color_list)])
+--  end, function(arg) end)
+--end
+vim.cmd [[colorscheme catppuccin]]
 
 -- neovide {{{
 vim.cmd [[

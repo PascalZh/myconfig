@@ -29,21 +29,20 @@ table.insert(M, {
   config = function() vim.cmd([[call wilder#setup({'modes': [':', '/', '?']})]]) end
 })
 
-table.insert(M, {
-  'dstein64/vim-startuptime',
-  cond = MUtils.not_vscode,
-  config = function()
-    vim.g.startuptime_self = 1
-    -- vim.g.startuptime_exe_args = {'-u', 'NONE'}
-  end
-})
+--table.insert(M, {
+  --'dstein64/vim-startuptime',
+  --cond = MUtils.not_vscode,
+  --config = function()
+    --vim.g.startuptime_self = 1
+    ---- vim.g.startuptime_exe_args = {'-u', 'NONE'}
+  --end
+--})
 
 -- use 'mhinz/vim-startify'
 
 table.insert(M, {
   'kyazdani42/nvim-tree.lua',
-  requires = { 'kyazdani42/nvim-web-devicons' },
-  -- cmd = { "NvimTreeFocus", "NvimTreeToggle" },
+  dependencies = { 'kyazdani42/nvim-web-devicons' },
   config = function()
     require('nvim-tree').setup({
       hijack_cursor = true,
